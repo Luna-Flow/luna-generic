@@ -1,35 +1,35 @@
 ///|
-pub trait Mul {
+pub(open) trait Mul {
   op_mul(Self, Self) -> Self
 }
 
 ///|
-pub trait Add {
+pub(open) trait Add {
   op_add(Self, Self) -> Self
 }
 
 ///|
-pub trait Neg {
+pub(open) trait Neg {
   op_neg(Self) -> Self
 }
 
 ///|
-pub trait One {
+pub(open) trait One {
   one() -> Self
 }
 
 ///|
-pub trait Zero {
+pub(open) trait Zero {
   zero() -> Self
 }
 
 ///|
-pub trait Conjugate {
+pub(open) trait Conjugate {
   conjugate(Self) -> Self
 }
 
 ///|
-pub trait Sub {
+pub(open) trait Sub {
   op_sub(Self, Self) -> Self
 }
 
