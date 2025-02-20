@@ -1,11 +1,11 @@
 ///|
-pub trait AddMonoid: Add + Zero {}
+pub(open) trait AddMonoid: Add + Zero {}
 
 ///|
-pub trait MulMonoid: Mul + One {}
+pub(open) trait MulMonoid: Mul + One {}
 
 ///|
-pub trait Semiring: AddMonoid + MulMonoid {}
+pub(open) trait Semiring: AddMonoid + MulMonoid {}
 
 ///|
-pub trait Num: Semiring + Neg {}
+pub(open) trait Num: Semiring + Neg {}
