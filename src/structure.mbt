@@ -8,4 +8,10 @@ pub(open) trait MulMonoid: Mul + One {}
 pub(open) trait Semiring: AddMonoid + MulMonoid {}
 
 ///|
-pub(open) trait Num: Semiring + Neg {}
+pub(open) trait Ring: Semiring + Neg {}
+
+///|
+pub(open) trait Num: Ring {
+  abs(Self) -> Self
+  signum(Self) -> Self
+}
