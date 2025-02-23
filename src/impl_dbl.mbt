@@ -27,3 +27,12 @@ pub impl One for Double with one() -> Double {
 pub impl Zero for Double with zero() -> Double {
   0.0
 }
+
+///|
+pub impl Num for Double with abs(a) -> Double {
+  @double.abs(a)
+}
+
+pub impl Num for Double with signum(a) -> Double {
+  @double.signum(a)
+}
