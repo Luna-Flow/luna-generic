@@ -14,6 +14,11 @@ pub(open) trait Neg {
 }
 
 ///|
+pub(open) trait Inverse {
+  inv(Self) -> Self
+}
+
+///|
 pub(open) trait One {
   one() -> Self
 }

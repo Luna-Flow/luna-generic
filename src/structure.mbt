@@ -8,7 +8,7 @@ pub(open) trait MulMonoid: Mul + One {}
 pub(open) trait AddGroup: AddMonoid + Neg {}
 
 ///|
-pub(open) trait MulGroup: MulMonoid + Neg {}
+pub(open) trait MulGroup: MulMonoid + Inverse {}
 
 ///|
 pub(open) trait Semiring: AddMonoid + MulMonoid {}

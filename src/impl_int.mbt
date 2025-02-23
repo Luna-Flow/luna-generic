@@ -19,6 +19,12 @@ pub impl Neg for Int with op_neg(a) -> Int {
 }
 
 ///|
+pub impl Inverse for Int with inv(a) -> Int {
+  guard a != 0
+  1 / a
+}
+
+///|
 pub impl One for Int with one() -> Int {
   1
 }
