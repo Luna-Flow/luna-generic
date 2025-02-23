@@ -22,4 +22,3 @@ pub impl Zero for Bool with zero() -> Bool {
 pub impl One for Bool with one() -> Bool {
   true
 }
-
