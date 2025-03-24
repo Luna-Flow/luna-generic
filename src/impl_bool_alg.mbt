@@ -1,24 +1,24 @@
 ///|
-pub impl Mul for Bool with op_mul(a, b) -> Bool {
-  a && b
+pub impl Mul for BoolAlg with op_mul(a, b) -> BoolAlg {
+  a.and(b)
 }
 
 ///|
-pub impl Add for Bool with op_add(a, b) -> Bool {
-  a || b
+pub impl Add for BoolAlg with op_add(a, b) -> BoolAlg {
+  a.or(b)
 }
 
 ///|
-pub impl Neg for Bool with op_neg(a) -> Bool {
-  not(a)
+pub impl Neg for BoolAlg with op_neg(a) -> BoolAlg {
+  a.not()
 }
 
 ///|
-pub impl Zero for Bool with zero() -> Bool {
+pub impl Zero for BoolAlg with zero() -> BoolAlg {
   false
 }
 
 ///|
-pub impl One for Bool with one() -> Bool {
+pub impl One for BoolAlg with one() -> BoolAlg {
   true
 }
