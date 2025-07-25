@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Luna-Flow/luna-generic"
+
+// Values
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+pub(open) trait AddGroup : AddMonoid + Neg {
+}
+
+pub(open) trait AddMonoid : Add + Zero {
+}
+
+pub(open) trait Conjugate {
+  conjugate(Self) -> Self
+}
+
+pub(open) trait Inverse {
+  inv(Self) -> Self
+}
+impl Inverse for Int
+impl Inverse for Float
+impl Inverse for Double
+
+pub(open) trait MulGroup : MulMonoid + Inverse {
+}
+
+pub(open) trait MulMonoid : Mul + One {
+}
+
+pub(open) trait Num : Ring {
+  abs(Self) -> Self
+  signum(Self) -> Self
+}
+impl Num for Int
+impl Num for Float
+impl Num for Double
+
+pub(open) trait One {
+  one() -> Self
+}
+impl One for Int
+impl One for Float
+impl One for Double
+
+pub(open) trait Ring : Semiring + Neg {
+}
+
+pub(open) trait Semiring : AddMonoid + MulMonoid {
+}
+
+pub(open) trait Zero {
+  zero() -> Self
+}
+impl Zero for Int
+impl Zero for Float
+impl Zero for Double
+
