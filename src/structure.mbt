@@ -5,10 +5,10 @@ pub(open) trait AddMonoid: Add + Zero {}
 pub(open) trait MulMonoid: Mul + One {}
 
 ///|
-pub(open) trait AddGroup: AddMonoid + Neg {}
+pub(open) trait AddGroup: AddMonoid + Neg + Sub {}
 
 ///|
-pub(open) trait MulGroup: MulMonoid + Inverse {}
+pub(open) trait MulGroup: MulMonoid + Inverse + Div {}
 
 ///|
 pub(open) trait Semiring: AddMonoid + MulMonoid {}
