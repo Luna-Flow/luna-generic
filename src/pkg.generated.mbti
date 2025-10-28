@@ -10,7 +10,7 @@ package "Luna-Flow/luna-generic"
 // Type aliases
 
 // Traits
-pub(open) trait AddGroup : AddMonoid + Neg {
+pub(open) trait AddGroup : AddMonoid + Neg + Sub {
 }
 
 pub(open) trait AddMonoid : Add + Zero {
@@ -29,7 +29,7 @@ pub(open) trait Inverse {
 impl Inverse for Float
 impl Inverse for Double
 
-pub(open) trait MulGroup : MulMonoid + Inverse {
+pub(open) trait MulGroup : MulMonoid + Inverse + Div {
 }
 
 pub(open) trait MulMonoid : Mul + One {
