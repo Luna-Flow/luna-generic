@@ -14,7 +14,10 @@ pub(open) trait MulGroup: MulMonoid + Inverse {}
 pub(open) trait Semiring: AddMonoid + MulMonoid {}
 
 ///|
-pub(open) trait Ring: Semiring + Neg {}
+pub(open) trait Ring: Semiring + Neg + Sub {}
+
+///|
+pub(open) trait Field: Ring + Inverse + Div {}
 
 ///|
 pub(open) trait Num: Ring {
