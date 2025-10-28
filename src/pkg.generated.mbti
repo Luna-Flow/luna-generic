@@ -20,10 +20,12 @@ pub(open) trait Conjugate {
   conjugate(Self) -> Self
 }
 
+pub(open) trait Field : Ring + Inverse + Div {
+}
+
 pub(open) trait Inverse {
   inv(Self) -> Self
 }
-impl Inverse for Int
 impl Inverse for Float
 impl Inverse for Double
 
@@ -48,7 +50,7 @@ impl One for Int
 impl One for Float
 impl One for Double
 
-pub(open) trait Ring : Semiring + Neg {
+pub(open) trait Ring : Semiring + Neg + Sub {
 }
 
 pub(open) trait Semiring : AddMonoid + MulMonoid {
