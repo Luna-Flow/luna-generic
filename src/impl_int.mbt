@@ -10,7 +10,7 @@ pub impl Zero for Int with zero() -> Int {
 
 ///|
 pub impl Num for Int with abs(a) -> Int {
-  @int.abs(a)
+  Int::abs(a)
 }
 
 ///|

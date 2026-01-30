@@ -16,7 +16,7 @@ pub impl Zero for Float with zero() -> Float {
 
 ///|
 pub impl Num for Float with abs(a) -> Float {
-  @float.abs(a)
+  Float::abs(a)
 }
 
 ///|
