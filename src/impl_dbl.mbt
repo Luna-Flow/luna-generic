@@ -16,7 +16,7 @@ pub impl Zero for Double with zero() -> Double {
 
 ///|
 pub impl Num for Double with abs(a) -> Double {
-  @double.abs(a)
+  Double::abs(a)
 }
 
 ///|
