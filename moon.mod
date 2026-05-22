@@ -1,0 +1,17 @@
+name = "Luna-Flow/luna-generic"
+
+version = "0.2.3"
+
+readme = "README.md"
+
+repository = "https://github.com/Luna-Flow/luna-generic"
+
+license = "Apache-2.0"
+
+keywords = [ "math", "algebra", "interface" ]
+
+description = "General abstraction and structures for Luna Project"
+
+options(
+  source: "src",
+)

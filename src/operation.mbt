@@ -1,19 +1,19 @@
 ///|
 pub(open) trait Inverse {
-  inv(Self) -> Self
+  fn inv(Self) -> Self
 }
 
 ///|
 pub(open) trait One {
-  one() -> Self
+  fn one() -> Self
 }
 
 ///|
 pub(open) trait Zero {
-  zero() -> Self
+  fn zero() -> Self
 }
 
 ///|
 pub(open) trait Conjugate {
-  conjugate(Self) -> Self
+  fn conjugate(Self) -> Self
 }

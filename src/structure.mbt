@@ -21,6 +21,6 @@ pub(open) trait Field: Ring + Inverse + Div {}
 
 ///|
 pub(open) trait Num: Ring {
-  abs(Self) -> Self
-  signum(Self) -> Self
+  fn abs(Self) -> Self
+  fn signum(Self) -> Self
 }

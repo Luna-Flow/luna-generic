@@ -12,54 +12,73 @@ package "Luna-Flow/luna-generic"
 // Traits
 pub(open) trait AddGroup : AddMonoid + Neg + Sub {
 }
+pub impl AddGroup for Int
+pub impl AddGroup for Float
+pub impl AddGroup for Double
 
 pub(open) trait AddMonoid : Add + Zero {
 }
+pub impl AddMonoid for Int
+pub impl AddMonoid for Float
+pub impl AddMonoid for Double
 
 pub(open) trait Conjugate {
-  conjugate(Self) -> Self
+  fn conjugate(Self) -> Self
 }
 
 pub(open) trait Field : Ring + Inverse + Div {
 }
+pub impl Field for Float
+pub impl Field for Double
 
 pub(open) trait Inverse {
-  inv(Self) -> Self
+  fn inv(Self) -> Self
 }
-impl Inverse for Float
-impl Inverse for Double
+pub impl Inverse for Float
+pub impl Inverse for Double
 
 pub(open) trait MulGroup : MulMonoid + Inverse + Div {
 }
+pub impl MulGroup for Float
+pub impl MulGroup for Double
 
 pub(open) trait MulMonoid : Mul + One {
 }
+pub impl MulMonoid for Int
+pub impl MulMonoid for Float
+pub impl MulMonoid for Double
 
 pub(open) trait Num : Ring {
-  abs(Self) -> Self
-  signum(Self) -> Self
+  fn abs(Self) -> Self
+  fn signum(Self) -> Self
 }
-impl Num for Int
-impl Num for Float
-impl Num for Double
+pub impl Num for Int
+pub impl Num for Float
+pub impl Num for Double
 
 pub(open) trait One {
-  one() -> Self
+  fn one() -> Self
 }
-impl One for Int
-impl One for Float
-impl One for Double
+pub impl One for Int
+pub impl One for Float
+pub impl One for Double
 
 pub(open) trait Ring : Semiring + Neg + Sub {
 }
+pub impl Ring for Int
+pub impl Ring for Float
+pub impl Ring for Double
 
 pub(open) trait Semiring : AddMonoid + MulMonoid {
 }
+pub impl Semiring for Int
+pub impl Semiring for Float
+pub impl Semiring for Double
 
 pub(open) trait Zero {
-  zero() -> Self
+  fn zero() -> Self
 }
-impl Zero for Int
-impl Zero for Float
-impl Zero for Double
+pub impl Zero for Int
+pub impl Zero for Float
+pub impl Zero for Double
 
