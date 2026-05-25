@@ -13,12 +13,19 @@ package "Luna-Flow/luna-generic"
 pub(open) trait AddGroup : AddMonoid + Neg + Sub {
 }
 pub impl AddGroup for Int
+pub impl AddGroup for Int16
+pub impl AddGroup for Int64
 pub impl AddGroup for Float
 pub impl AddGroup for Double
 
 pub(open) trait AddMonoid : Add + Zero {
 }
 pub impl AddMonoid for Int
+pub impl AddMonoid for Int16
+pub impl AddMonoid for Int64
+pub impl AddMonoid for UInt
+pub impl AddMonoid for UInt16
+pub impl AddMonoid for UInt64
 pub impl AddMonoid for Float
 pub impl AddMonoid for Double
 
@@ -30,6 +37,17 @@ pub(open) trait Field : Ring + Inverse + Div {
 }
 pub impl Field for Float
 pub impl Field for Double
+
+pub(open) trait Integral : Semiring {
+  fn to_float(Self) -> Float
+  fn to_double(Self) -> Double
+}
+pub impl Integral for Int
+pub impl Integral for Int16
+pub impl Integral for Int64
+pub impl Integral for UInt
+pub impl Integral for UInt16
+pub impl Integral for UInt64
 
 pub(open) trait Inverse {
   fn inv(Self) -> Self
@@ -45,14 +63,27 @@ pub impl MulGroup for Double
 pub(open) trait MulMonoid : Mul + One {
 }
 pub impl MulMonoid for Int
+pub impl MulMonoid for Int16
+pub impl MulMonoid for Int64
+pub impl MulMonoid for UInt
+pub impl MulMonoid for UInt16
+pub impl MulMonoid for UInt64
 pub impl MulMonoid for Float
 pub impl MulMonoid for Double
+
+pub(open) trait Nat : Integral {
+}
+pub impl Nat for UInt
+pub impl Nat for UInt16
+pub impl Nat for UInt64
 
 pub(open) trait Num : Ring {
   fn abs(Self) -> Self
   fn signum(Self) -> Self
 }
 pub impl Num for Int
+pub impl Num for Int16
+pub impl Num for Int64
 pub impl Num for Float
 pub impl Num for Double
 
@@ -60,18 +91,30 @@ pub(open) trait One {
   fn one() -> Self
 }
 pub impl One for Int
+pub impl One for Int16
+pub impl One for Int64
+pub impl One for UInt
+pub impl One for UInt16
+pub impl One for UInt64
 pub impl One for Float
 pub impl One for Double
 
 pub(open) trait Ring : Semiring + Neg + Sub {
 }
 pub impl Ring for Int
+pub impl Ring for Int16
+pub impl Ring for Int64
 pub impl Ring for Float
 pub impl Ring for Double
 
 pub(open) trait Semiring : AddMonoid + MulMonoid {
 }
 pub impl Semiring for Int
+pub impl Semiring for Int16
+pub impl Semiring for Int64
+pub impl Semiring for UInt
+pub impl Semiring for UInt16
+pub impl Semiring for UInt64
 pub impl Semiring for Float
 pub impl Semiring for Double
 
@@ -79,6 +122,11 @@ pub(open) trait Zero {
   fn zero() -> Self
 }
 pub impl Zero for Int
+pub impl Zero for Int16
+pub impl Zero for Int64
+pub impl Zero for UInt
+pub impl Zero for UInt16
+pub impl Zero for UInt64
 pub impl Zero for Float
 pub impl Zero for Double
 
