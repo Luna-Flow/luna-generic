@@ -82,37 +82,6 @@ pub impl Zero for Int64 with fn zero() -> Int64 {
   0L
 }
 
-///|
-pub impl Integral for Int with fn to_float(a) -> Float {
-  Float::from_int(a)
-}
-
-///|
-pub impl Integral for Int16 with fn to_float(a) -> Float {
-  Float::from_int64(a.to_int64())
-}
-
-///|
-pub impl Integral for Int64 with fn to_float(a) -> Float {
-  Float::from_int64(a)
-}
-
-///|
-pub impl Integral for Int with fn to_double(a) -> Double {
-  a.to_double()
-}
-
-///|
-pub impl Integral for Int16 with fn to_double(a) -> Double {
-  a.to_int64().to_double()
-}
-
-///|
-pub impl Integral for Int64 with fn to_double(a) -> Double {
-  a.to_double()
-}
-
-///|
 pub impl Num for Int with fn abs(a) -> Int {
   Int::abs(a)
 }

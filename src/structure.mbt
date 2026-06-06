@@ -20,13 +20,27 @@ pub(open) trait Ring: Semiring + Neg + Sub {}
 pub(open) trait Field: Ring + Inverse + Div {}
 
 ///|
-pub(open) trait Integral: Semiring {
-  fn to_float(Self) -> Float
-  fn to_double(Self) -> Double
+pub(open) trait Integral: Semiring {}
+
+///|
+pub(open) trait Nat: Integral {
+  fn to_integral(Self) -> BigInt
 }
 
 ///|
-pub(open) trait Nat: Integral {}
+pub(open) trait NatHomomorphism {
+  fn from_uint(UInt) -> Self
+  fn from_uint16(UInt16) -> Self
+  fn from_uint64(UInt64) -> Self
+}
+
+///|
+pub(open) trait IntegralHomomorphism: NatHomomorphism {
+  fn from_int(Int) -> Self
+  fn from_int16(Int16) -> Self
+  fn from_int64(Int64) -> Self
+  fn from_bigint(BigInt) -> Self
+}
 
 ///|
 pub(open) trait Num: Ring {

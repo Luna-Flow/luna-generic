@@ -2,65 +2,76 @@
 
 General algebraic traits and default numeric instances for Luna projects.
 
-## Exports
+## v0.3.1 - BigInt Coverage and Integral Embeddings
 
-- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Integral`, `Nat`, `Num`
+This documentation tracks the intended `v0.3.1` release content.
+
+### Package Positioning
+
+- `luna-generic` provides lightweight algebraic traits for additive, multiplicative, ring-like, field-like, and numeric behavior.
+- The package ships default instances for signed integers, unsigned integers, `BigInt`, `Float`, and `Double`.
+- Integral-to-target embeddings are now modeled explicitly through homomorphism traits instead of being mixed into `Integral`.
+
+### What Defines v0.3.1
+
+- `BigInt` is now part of the default exported numeric surface.
+- `Integral` remains the marker for integral semiring types.
+- `Nat` now exposes `to_integral` for exact embeddings from natural-number types into `BigInt`.
+- `NatHomomorphism` and `IntegralHomomorphism` provide target-side constructors for natural and integral source types.
+- Floating-point embeddings remain approximate and follow target floating-point precision limits.
+
+### Public Surface
+
+- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Integral`, `Nat`, `NatHomomorphism`, `IntegralHomomorphism`, `Num`
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
-- Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `Float`, `Double`
+- Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`
 
-## Integer Families
+### Integer Families
 
 - `Nat` covers pure unsigned integer types: `UInt`, `UInt16`, `UInt64`
-- `Integral` covers signed and unsigned integers: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`
+- `Integral` covers signed and unsigned integers plus `BigInt`: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`
 - `Byte` is intentionally excluded from both traits
+- Unsigned integer instances stop at `Semiring` and do not implement `AddGroup`, `Ring`, or `Num`
 
-Unsigned integer instances stop at `Semiring`. They do not implement `AddGroup`, `Ring`, or `Num`.
+### Embedding Guidance
 
-## Floating-Point Embeddings
+- `Nat::to_integral` provides an exact embedding from `Nat` values into `BigInt`
+- `NatHomomorphism::{from_uint, from_uint16, from_uint64}` exposes target-side natural embeddings
+- `IntegralHomomorphism::{from_int, from_int16, from_int64, from_bigint}` exposes target-side integral embeddings
+- `BigInt` embeddings are exact
+- `Float` and `Double` embeddings are approximate and may round large values
 
-`Integral::to_float` and `Integral::to_double` provide embeddings into floating-point types.
+### Documentation
 
-- `Float` preserves integer values and semiring structure only within its exact integer range, i.e. absolute values up to `2^24`
-- `Double` preserves integer values and semiring structure only within its exact integer range, i.e. absolute values up to `2^53`
+Comprehensive API documentation is available at [mooncakes.io](https://mooncakes.io/docs/Luna-Flow/luna-generic).
 
-## Conversion Safety
+We provide README-level documentation in multiple languages:
 
-Here "absolutely safe" means every value of the source integral type is represented exactly in the target floating-point type, so small algebraic laws over integer values remain intact after conversion.
+- English: [doc/en_US/README.md](./doc/en_US/README.md)
+- Simplified Chinese: [doc/zh_CN/README.md](./doc/zh_CN/README.md)
+- Japanese: [doc/ja_JP/README.md](./doc/ja_JP/README.md)
 
-### `Integral::to_float`
+## Version History
 
-Absolutely safe:
+| Version | Date | Status | Notes |
+| --- | --- | --- | --- |
+| `0.3.1` | 2026-06-06 | release candidate | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |
+| `0.3.0` | 2026-06-06 | previous release baseline | Earlier generic algebraic trait surface before the current integral embedding redesign |
 
-- `Int16 -> Float`
-- `UInt16 -> Float`
+## Development
 
-Risky, user must pay attention:
+Useful local commands:
 
-- `Int -> Float`
-- `UInt -> Float`
-- `Int64 -> Float`
-- `UInt64 -> Float`
+```bash
+moon check
+moon test
+```
 
-For these risky conversions, values outside the exact integer range `[-2^24, 2^24]` may be rounded. The result is still finite for these integral types, but it may no longer preserve exact integer equality, addition, or multiplication.
+## Release Checklist
 
-### `Integral::to_double`
+Before triggering the publish workflow:
 
-Absolutely safe:
-
-- `Int16 -> Double`
-- `UInt16 -> Double`
-- `Int -> Double`
-- `UInt -> Double`
-
-Risky, user must pay attention:
-
-- `Int64 -> Double`
-- `UInt64 -> Double`
-
-For these risky conversions, values outside the exact integer range `[-2^53, 2^53]` may be rounded. The result is still finite for these integral types, but it may no longer preserve exact integer equality, addition, or multiplication.
-
-If exactness matters, keep computations in the integral domain until the final step, or explicitly restrict inputs to the exact range of the target floating-point type.
-
-## Testing
-
-Run `moon check` to validate trait impls and package metadata.
+1. Confirm `moon.mod` contains the intended version.
+2. Confirm the README files match the exported package surface.
+3. Run `moon check` and `moon test`.
+4. Trigger `publish-package` after the release commit is pushed.

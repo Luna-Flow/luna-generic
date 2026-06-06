@@ -20,6 +20,49 @@ pub impl Ring for Double
 pub impl Field for Double
 
 ///|
+pub impl NatHomomorphism for Double
+
+///|
+pub impl IntegralHomomorphism for Double
+
+///|
+pub impl NatHomomorphism for Double with fn from_uint(a) -> Double {
+  a.to_double()
+}
+
+///|
+pub impl NatHomomorphism for Double with fn from_uint16(a) -> Double {
+  a.to_uint().to_double()
+}
+
+///|
+pub impl NatHomomorphism for Double with fn from_uint64(a) -> Double {
+  a.to_double()
+}
+
+///|
+pub impl IntegralHomomorphism for Double with fn from_int(a) -> Double {
+  a.to_double()
+}
+
+///|
+pub impl IntegralHomomorphism for Double with fn from_int16(a) -> Double {
+  a.to_int64().to_double()
+}
+
+///|
+pub impl IntegralHomomorphism for Double with fn from_int64(a) -> Double {
+  a.to_double()
+}
+
+///|
+pub impl IntegralHomomorphism for Double with fn from_bigint(a) -> Double {
+  @string.from_str(BigInt::to_string(a)) catch {
+    _ => abort("BigInt decimal conversion failed")
+  }
+}
+
+///|
 pub impl Inverse for Double with fn inv(a) -> Double {
   guard a != 0
   1.0 / a
