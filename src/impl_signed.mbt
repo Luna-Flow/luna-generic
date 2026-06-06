@@ -53,6 +53,21 @@ pub impl Integral for Int16
 pub impl Integral for Int64
 
 ///|
+pub impl Integral for Int with fn normalize(a) -> BigInt {
+  BigInt::from_int(a)
+}
+
+///|
+pub impl Integral for Int16 with fn normalize(a) -> BigInt {
+  BigInt::from_int64(a.to_int64())
+}
+
+///|
+pub impl Integral for Int64 with fn normalize(a) -> BigInt {
+  BigInt::from_int64(a)
+}
+
+///|
 pub impl One for Int with fn one() -> Int {
   1
 }

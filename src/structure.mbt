@@ -20,7 +20,9 @@ pub(open) trait Ring: Semiring + Neg + Sub {}
 pub(open) trait Field: Ring + Inverse + Div {}
 
 ///|
-pub(open) trait Integral: Semiring {}
+pub(open) trait Integral: Semiring {
+  fn normalize(Self) -> BigInt
+}
 
 ///|
 pub(open) trait Nat: Integral {

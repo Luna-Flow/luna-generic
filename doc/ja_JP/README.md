@@ -1,15 +1,16 @@
 # Luna-Generic
 
-これは `Luna-Flow/luna-generic` の想定 `v0.3.1` リリース向け日本語ドキュメントです。
+これは `Luna-Flow/luna-generic` の想定 `v0.3.2` リリース向け日本語ドキュメントです。
 
 ## 概要
 
 `luna-generic` は Luna プロジェクト向けに、一般的な代数 trait と標準数値型の既定インスタンスを提供します。
 
-このリリース候補の中心は次の 2 点です。
+このリリース候補の中心は次の 3 点です。
 
 - `BigInt` が既定で公開される数値型に追加されました。
 - 整数から対象型への埋め込みは、明示的な準同型 trait として整理されました。
+- `Integral::normalize` により、すべての整数ソース型に対して正規化済みの `BigInt` 入口が追加されました。
 
 ## 公開 Trait
 
@@ -30,6 +31,7 @@
 - `Nat` は `UInt`、`UInt16`、`UInt64` を対象とします
 - `Integral` は符号付き整数、符号なし整数、および `BigInt` を対象とします
 - 符号なし整数インスタンスは `Semiring` までです
+- `Integral::normalize` は任意の整数値を `BigInt` へ正規化します
 - `Nat::to_integral` は `BigInt` への正確な埋め込みを提供します
 
 ## 埋め込み API

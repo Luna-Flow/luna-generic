@@ -17,6 +17,11 @@ pub impl Ring for BigInt
 pub impl Integral for BigInt
 
 ///|
+pub impl Integral for BigInt with fn normalize(a) -> BigInt {
+  a
+}
+
+///|
 pub impl NatHomomorphism for BigInt
 
 ///|

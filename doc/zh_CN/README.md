@@ -1,15 +1,16 @@
 # Luna-Generic
 
-这是 `Luna-Flow/luna-generic` 预期 `v0.3.1` 发布版本的简体中文文档。
+这是 `Luna-Flow/luna-generic` 预期 `v0.3.2` 发布版本的简体中文文档。
 
 ## 概览
 
 `luna-generic` 为 Luna 项目提供通用代数 trait 与默认数值类型实例。
 
-当前版本的重点有两项：
+当前版本的重点有三项：
 
 - `BigInt` 已纳入默认导出的数值类型集合。
 - 整数到目标类型的嵌入被重构为显式的同态 trait。
+- `Integral::normalize` 为所有整数源类型提供统一的 `BigInt` 规范化入口。
 
 ## 导出 Trait
 
@@ -30,6 +31,7 @@
 - `Nat` 覆盖 `UInt`、`UInt16`、`UInt64`
 - `Integral` 覆盖有符号整数、无符号整数以及 `BigInt`
 - 无符号整数实例只到 `Semiring`
+- `Integral::normalize` 会把任意整数值规范化为 `BigInt`
 - `Nat::to_integral` 提供到 `BigInt` 的精确嵌入
 
 ## 嵌入接口

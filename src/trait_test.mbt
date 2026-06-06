@@ -22,6 +22,11 @@ fn[T : Nat] nat_to_integral(x : T) -> BigInt {
 }
 
 ///|
+fn[T : Integral] integral_normalize(x : T) -> BigInt {
+  Integral::normalize(x)
+}
+
+///|
 fn[F : NatHomomorphism] nat_hom_from_uint(x : UInt) -> F {
   NatHomomorphism::from_uint(x)
 }
@@ -85,6 +90,7 @@ test {
   inspect(add_group_cancel(3), content="0")
   inspect(ring_roundtrip(3), content="3")
   assert_eq(z0, BigInt::from_int(3))
+  assert_eq(integral_normalize(3), BigInt::from_int(3))
   assert_eq(z1, (3.0 : Float))
   assert_eq(z2, (3.0 : Double))
   assert_eq(z3, z4)
@@ -119,6 +125,7 @@ test {
   assert_eq(add_group_cancel((3 : Int16)), (0 : Int16))
   assert_eq(ring_roundtrip((3 : Int16)), (3 : Int16))
   assert_eq(z, BigInt::from_int(3))
+  assert_eq(integral_normalize((-3 : Int16)), BigInt::from_int(-3))
   assert_eq(Int16::abs((-3 : Int16)), (3 : Int16))
   assert_eq(Num::signum((-3 : Int16)), (-1 : Int16))
   assert_eq(Num::signum((0 : Int16)), (0 : Int16))
@@ -137,6 +144,7 @@ test {
   assert_eq(add_group_cancel(3L), 0L)
   assert_eq(ring_roundtrip(3L), 3L)
   assert_eq(z, BigInt::from_int64(3L))
+  assert_eq(integral_normalize(-3L), BigInt::from_int64(-3L))
   assert_eq(Int64::abs(-3L), 3L)
   assert_eq(Num::signum(-3L), -1L)
   assert_eq(Num::signum(0L), 0L)
@@ -157,6 +165,7 @@ test {
   assert_eq(add_monoid_identity(3U), 3U)
   assert_eq(mul_monoid_identity(3U), 3U)
   assert_eq(nat_semiring_identity(3U), 3U)
+  assert_eq(integral_normalize(3U), BigInt::from_uint(3U))
   assert_eq(nat_to_integral(3U), BigInt::from_uint(3U))
   assert_eq(z0, BigInt::from_uint(3U))
   assert_eq(z1, (3.0 : Float))
@@ -173,6 +182,7 @@ test {
   assert_eq(add_monoid_identity((3 : UInt16)), (3 : UInt16))
   assert_eq(mul_monoid_identity((3 : UInt16)), (3 : UInt16))
   assert_eq(nat_semiring_identity((3 : UInt16)), (3 : UInt16))
+  assert_eq(integral_normalize((3 : UInt16)), BigInt::from_uint(3U))
   assert_eq(nat_to_integral((3 : UInt16)), BigInt::from_uint(3U))
   assert_eq(z, BigInt::from_int(3))
   assert_eq(zf, (3.0 : Float))
@@ -187,6 +197,7 @@ test {
   assert_eq(add_monoid_identity(3UL), 3UL)
   assert_eq(mul_monoid_identity(3UL), 3UL)
   assert_eq(nat_semiring_identity(3UL), 3UL)
+  assert_eq(integral_normalize(3UL), BigInt::from_uint64(3UL))
   assert_eq(nat_to_integral(3UL), BigInt::from_uint64(3UL))
   assert_eq(z, BigInt::from_uint64(3UL))
   assert_eq(zf, (3.0 : Float))
@@ -208,6 +219,7 @@ test {
   assert_eq(add_group_cancel(x), BigInt::from_int(0))
   assert_eq(ring_roundtrip(x), x)
   assert_eq(z0, x)
+  assert_eq(integral_normalize(x), x)
   assert_eq(z1, (3.0 : Float))
   assert_eq(z2, (3.0 : Double))
   assert_eq(Num::abs(BigInt::from_string("-3")), x)

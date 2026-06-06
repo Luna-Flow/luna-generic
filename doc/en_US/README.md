@@ -1,15 +1,16 @@
 # Luna-Generic
 
-English documentation for the intended `v0.3.1` release of `Luna-Flow/luna-generic`.
+English documentation for the intended `v0.3.2` release of `Luna-Flow/luna-generic`.
 
 ## Overview
 
 `luna-generic` provides general algebraic traits and default numeric instances for Luna projects.
 
-The current release candidate centers on two changes:
+The current release candidate centers on three changes:
 
 - `BigInt` is now part of the default exported numeric surface.
 - Integral-to-target conversions are expressed through explicit homomorphism traits.
+- `Integral::normalize` now provides a canonical `BigInt` form for all integral source types.
 
 ## Exported Traits
 
@@ -30,6 +31,7 @@ The current release candidate centers on two changes:
 - `Nat` covers `UInt`, `UInt16`, and `UInt64`
 - `Integral` covers signed integers, unsigned integers, and `BigInt`
 - Unsigned integer instances stop at `Semiring`
+- `Integral::normalize` canonicalizes any integral value into `BigInt`
 - `Nat::to_integral` provides an exact embedding into `BigInt`
 
 ## Embeddings

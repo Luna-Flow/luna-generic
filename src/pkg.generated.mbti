@@ -45,6 +45,7 @@ pub impl Field for Float
 pub impl Field for Double
 
 pub(open) trait Integral : Semiring {
+  fn normalize(Self) -> @bigint.BigInt
 }
 pub impl Integral for Int
 pub impl Integral for Int16
@@ -160,4 +161,3 @@ pub impl Zero for UInt64
 pub impl Zero for Float
 pub impl Zero for Double
 pub impl Zero for @bigint.BigInt
-

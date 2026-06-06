@@ -35,6 +35,21 @@ pub impl Integral for UInt16
 pub impl Integral for UInt64
 
 ///|
+pub impl Integral for UInt with fn normalize(a) -> BigInt {
+  BigInt::from_uint(a)
+}
+
+///|
+pub impl Integral for UInt16 with fn normalize(a) -> BigInt {
+  BigInt::from_uint(a.to_uint())
+}
+
+///|
+pub impl Integral for UInt64 with fn normalize(a) -> BigInt {
+  BigInt::from_uint64(a)
+}
+
+///|
 pub impl Nat for UInt
 
 ///|
@@ -45,17 +60,17 @@ pub impl Nat for UInt64
 
 ///|
 pub impl Nat for UInt with fn to_integral(a) -> BigInt {
-  BigInt::from_uint(a)
+  Integral::normalize(a)
 }
 
 ///|
 pub impl Nat for UInt16 with fn to_integral(a) -> BigInt {
-  BigInt::from_uint(a.to_uint())
+  Integral::normalize(a)
 }
 
 ///|
 pub impl Nat for UInt64 with fn to_integral(a) -> BigInt {
-  BigInt::from_uint64(a)
+  Integral::normalize(a)
 }
 
 ///|

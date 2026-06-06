@@ -2,9 +2,9 @@
 
 General algebraic traits and default numeric instances for Luna projects.
 
-## v0.3.1 - BigInt Coverage and Integral Embeddings
+## v0.3.2 - Integral Normalization and Embedding Prep
 
-This documentation tracks the intended `v0.3.1` release content.
+This documentation tracks the intended `v0.3.2` release content.
 
 ### Package Positioning
 
@@ -12,12 +12,13 @@ This documentation tracks the intended `v0.3.1` release content.
 - The package ships default instances for signed integers, unsigned integers, `BigInt`, `Float`, and `Double`.
 - Integral-to-target embeddings are now modeled explicitly through homomorphism traits instead of being mixed into `Integral`.
 
-### What Defines v0.3.1
+### What Defines v0.3.2
 
 - `BigInt` is now part of the default exported numeric surface.
-- `Integral` remains the marker for integral semiring types.
+- `Integral` now provides `normalize`, which canonicalizes any integral value into `BigInt`.
 - `Nat` now exposes `to_integral` for exact embeddings from natural-number types into `BigInt`.
 - `NatHomomorphism` and `IntegralHomomorphism` provide target-side constructors for natural and integral source types.
+- `Integral::normalize` establishes a canonical source-side entry point for future integral-to-floating homomorphisms.
 - Floating-point embeddings remain approximate and follow target floating-point precision limits.
 
 ### Public Surface
@@ -35,7 +36,8 @@ This documentation tracks the intended `v0.3.1` release content.
 
 ### Embedding Guidance
 
-- `Nat::to_integral` provides an exact embedding from `Nat` values into `BigInt`
+- `Integral::normalize` provides a canonical `BigInt` representation for any integral value
+- `Nat::to_integral` provides the natural-number-specific exact embedding and now aligns with `Integral::normalize`
 - `NatHomomorphism::{from_uint, from_uint16, from_uint64}` exposes target-side natural embeddings
 - `IntegralHomomorphism::{from_int, from_int16, from_int64, from_bigint}` exposes target-side integral embeddings
 - `BigInt` embeddings are exact
@@ -55,7 +57,8 @@ We provide README-level documentation in multiple languages:
 
 | Version | Date | Status | Notes |
 | --- | --- | --- | --- |
-| `0.3.1` | 2026-06-06 | release candidate | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |
+| `0.3.2` | 2026-06-06 | release candidate | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
+| `0.3.1` | 2026-06-06 | published on mooncakes | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |
 | `0.3.0` | 2026-06-06 | previous release baseline | Earlier generic algebraic trait surface before the current integral embedding redesign |
 
 ## Development
