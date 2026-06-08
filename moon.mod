@@ -10,7 +10,7 @@ license = "Apache-2.0"
 
 keywords = [ "math", "algebra", "interface" ]
 
-description = "General abstraction and structures for Luna Project"
+description = "Algebraic traits and default numeric instances that define the generic foundation for LunaFlow math packages."
 
 options(
   source: "src",
