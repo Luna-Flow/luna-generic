@@ -26,12 +26,15 @@ multiple integral source types.
 
 ```moonbit
 fn embed_nat[F : NatHomomorphism](x : UInt) -> F {
-  F::from_uint(x)
+  NatHomomorphism::from_nat(x)
 }
 ```
 
 This keeps conversions explicit and avoids hidden assumptions in higher-level
 packages.
+
+Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the
+source into `BigInt` first, then performing the target-specific conversion.
 
 ## Practical guidance
 

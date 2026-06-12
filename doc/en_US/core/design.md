@@ -16,6 +16,8 @@ their own incompatible capability layers.
 - Embeddings are explicit through `NatHomomorphism` and
   `IntegralHomomorphism`.
 - `Integral::normalize` is the canonical exact bridge into `BigInt`.
+- Target-side default homomorphism implementations are expected to route
+  through normalized `BigInt` values.
 - Unsigned types stop before additive inverse, so the abstraction stays
   mathematically honest.
 

@@ -26,11 +26,15 @@ fn canonical_text[T : Integral + Show](x : T) -> String {
 
 ```moonbit
 fn embed_nat[F : NatHomomorphism](x : UInt) -> F {
-  F::from_uint(x)
+  NatHomomorphism::from_nat(x)
 }
 ```
 
 これにより、上位パッケージが暗黙変換を勝手に前提化するのを防げます。
+
+`NatHomomorphism` と `IntegralHomomorphism` は、まずソース値を
+`Integral::normalize` で `BigInt` に正規化し、その後に対象型ごとの変換を
+行うよう実装します。
 
 ## 実践ガイド
 

@@ -56,10 +56,7 @@ pub impl Integral for UInt64
 pub impl Integral for @bigint.BigInt
 
 pub(open) trait IntegralHomomorphism : NatHomomorphism {
-  fn from_int(Int) -> Self
-  fn from_int16(Int16) -> Self
-  fn from_int64(Int64) -> Self
-  fn from_bigint(@bigint.BigInt) -> Self
+  fn[S : Integral] from_integral(S) -> Self
 }
 pub impl IntegralHomomorphism for Float
 pub impl IntegralHomomorphism for Double
@@ -89,16 +86,13 @@ pub impl MulMonoid for Double
 pub impl MulMonoid for @bigint.BigInt
 
 pub(open) trait Nat : Integral {
-  fn to_integral(Self) -> @bigint.BigInt
 }
 pub impl Nat for UInt
 pub impl Nat for UInt16
 pub impl Nat for UInt64
 
 pub(open) trait NatHomomorphism {
-  fn from_uint(UInt) -> Self
-  fn from_uint16(UInt16) -> Self
-  fn from_uint64(UInt64) -> Self
+  fn[S : Nat] from_nat(S) -> Self
 }
 pub impl NatHomomorphism for Float
 pub impl NatHomomorphism for Double
@@ -161,3 +155,4 @@ pub impl Zero for UInt64
 pub impl Zero for Float
 pub impl Zero for Double
 pub impl Zero for @bigint.BigInt
+

@@ -39,10 +39,12 @@ These traits live in `src/operation.mbt`.
 
 - `Integral::normalize(Self) -> BigInt` is the canonical exact bridge from any
   integral instance into `BigInt`.
-- `Nat::to_integral(Self) -> BigInt` is the natural-number-specific exact
-  embedding path.
-- `NatHomomorphism` and `IntegralHomomorphism` keep target-side embeddings
-  explicit instead of relying on ad hoc casts.
+- `Nat` reuses the same `normalize(Self) -> BigInt` bridge via trait inheritance.
+- `NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are
+  polymorphic embedding entry points over source traits instead of width-specific
+  constructors.
+- The default embedding strategy is `Integral::normalize` followed by
+  target-specific conversion from `BigInt`.
 - Unsigned integer instances stop at `Semiring`; they do not pretend to be
   additive groups or rings.
 - `Float` and `Double` implement homomorphism traits as approximate embeddings,

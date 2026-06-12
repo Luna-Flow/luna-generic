@@ -59,21 +59,6 @@ pub impl Nat for UInt16
 pub impl Nat for UInt64
 
 ///|
-pub impl Nat for UInt with fn to_integral(a) -> BigInt {
-  Integral::normalize(a)
-}
-
-///|
-pub impl Nat for UInt16 with fn to_integral(a) -> BigInt {
-  Integral::normalize(a)
-}
-
-///|
-pub impl Nat for UInt64 with fn to_integral(a) -> BigInt {
-  Integral::normalize(a)
-}
-
-///|
 pub impl One for UInt with fn one() -> UInt {
   1U
 }

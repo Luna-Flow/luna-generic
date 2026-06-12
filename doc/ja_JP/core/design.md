@@ -13,6 +13,7 @@
   `Zero`、`One`、`Inverse`、`Conjugate` のような操作 traits を分離する。
 - 埋め込みは `NatHomomorphism` と `IntegralHomomorphism` で明示する。
 - `Integral::normalize` を `BigInt` への標準的な厳密ブリッジにする。
+- 対象側の既定実装は、正規化済み `BigInt` を経由する。
 - 符号なし型に加法逆元を主張させず、数学的整合性を保つ。
 
 ## 境界

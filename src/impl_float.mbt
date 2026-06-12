@@ -26,42 +26,22 @@ pub impl NatHomomorphism for Float
 pub impl IntegralHomomorphism for Float
 
 ///|
-pub impl NatHomomorphism for Float with fn from_uint(a) -> Float {
-  Float::from_uint(a)
-}
-
-///|
-pub impl NatHomomorphism for Float with fn from_uint16(a) -> Float {
-  Float::from_uint(a.to_uint())
-}
-
-///|
-pub impl NatHomomorphism for Float with fn from_uint64(a) -> Float {
-  Float::from_uint64(a)
-}
-
-///|
-pub impl IntegralHomomorphism for Float with fn from_int(a) -> Float {
-  Float::from_int(a)
-}
-
-///|
-pub impl IntegralHomomorphism for Float with fn from_int16(a) -> Float {
-  Float::from_int64(a.to_int64())
-}
-
-///|
-pub impl IntegralHomomorphism for Float with fn from_int64(a) -> Float {
-  Float::from_int64(a)
-}
-
-///|
-pub impl IntegralHomomorphism for Float with fn from_bigint(a) -> Float {
+fn float_from_bigint(a : BigInt) -> Float {
   Float::from_double(
     @string.from_str(BigInt::to_string(a)) catch {
       _ => abort("BigInt decimal conversion failed")
     },
   )
+}
+
+///|
+pub impl NatHomomorphism for Float with fn[S : Nat] from_nat(a : S) -> Float {
+  float_from_bigint(Integral::normalize(a))
+}
+
+///|
+pub impl IntegralHomomorphism for Float with fn[S : Integral] from_integral(a : S) -> Float {
+  float_from_bigint(Integral::normalize(a))
 }
 
 ///|

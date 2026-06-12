@@ -26,11 +26,14 @@ fn canonical_text[T : Integral + Show](x : T) -> String {
 
 ```moonbit
 fn embed_nat[F : NatHomomorphism](x : UInt) -> F {
-  F::from_uint(x)
+  NatHomomorphism::from_nat(x)
 }
 ```
 
 这样可以避免上层包偷偷依赖隐式转换规则。
+
+`NatHomomorphism` 和 `IntegralHomomorphism` 的实现方式应当统一为：
+先用 `Integral::normalize` 把源值规约到 `BigInt`，再做目标类型自己的转换。
 
 ## 实践建议
 

@@ -97,6 +97,7 @@ pub impl Zero for Int64 with fn zero() -> Int64 {
   0L
 }
 
+///|
 pub impl Num for Int with fn abs(a) -> Int {
   Int::abs(a)
 }

@@ -17,48 +17,43 @@ fn[T : Nat] nat_semiring_identity(x : T) -> T {
 }
 
 ///|
-fn[T : Nat] nat_to_integral(x : T) -> BigInt {
-  Nat::to_integral(x)
-}
-
-///|
 fn[T : Integral] integral_normalize(x : T) -> BigInt {
   Integral::normalize(x)
 }
 
 ///|
 fn[F : NatHomomorphism] nat_hom_from_uint(x : UInt) -> F {
-  NatHomomorphism::from_uint(x)
+  NatHomomorphism::from_nat(x)
 }
 
 ///|
 fn[F : NatHomomorphism] nat_hom_from_uint16(x : UInt16) -> F {
-  NatHomomorphism::from_uint16(x)
+  NatHomomorphism::from_nat(x)
 }
 
 ///|
 fn[F : NatHomomorphism] nat_hom_from_uint64(x : UInt64) -> F {
-  NatHomomorphism::from_uint64(x)
+  NatHomomorphism::from_nat(x)
 }
 
 ///|
 fn[F : IntegralHomomorphism] integral_hom_from_int(x : Int) -> F {
-  IntegralHomomorphism::from_int(x)
+  IntegralHomomorphism::from_integral(x)
 }
 
 ///|
 fn[F : IntegralHomomorphism] integral_hom_from_int16(x : Int16) -> F {
-  IntegralHomomorphism::from_int16(x)
+  IntegralHomomorphism::from_integral(x)
 }
 
 ///|
 fn[F : IntegralHomomorphism] integral_hom_from_int64(x : Int64) -> F {
-  IntegralHomomorphism::from_int64(x)
+  IntegralHomomorphism::from_integral(x)
 }
 
 ///|
 fn[F : IntegralHomomorphism] integral_hom_from_bigint(x : BigInt) -> F {
-  IntegralHomomorphism::from_bigint(x)
+  IntegralHomomorphism::from_integral(x)
 }
 
 ///|
@@ -166,7 +161,6 @@ test {
   assert_eq(mul_monoid_identity(3U), 3U)
   assert_eq(nat_semiring_identity(3U), 3U)
   assert_eq(integral_normalize(3U), BigInt::from_uint(3U))
-  assert_eq(nat_to_integral(3U), BigInt::from_uint(3U))
   assert_eq(z0, BigInt::from_uint(3U))
   assert_eq(z1, (3.0 : Float))
   assert_eq(z2, (3.0 : Double))
@@ -183,7 +177,6 @@ test {
   assert_eq(mul_monoid_identity((3 : UInt16)), (3 : UInt16))
   assert_eq(nat_semiring_identity((3 : UInt16)), (3 : UInt16))
   assert_eq(integral_normalize((3 : UInt16)), BigInt::from_uint(3U))
-  assert_eq(nat_to_integral((3 : UInt16)), BigInt::from_uint(3U))
   assert_eq(z, BigInt::from_int(3))
   assert_eq(zf, (3.0 : Float))
   assert_eq(zd, (3.0 : Double))
@@ -198,7 +191,6 @@ test {
   assert_eq(mul_monoid_identity(3UL), 3UL)
   assert_eq(nat_semiring_identity(3UL), 3UL)
   assert_eq(integral_normalize(3UL), BigInt::from_uint64(3UL))
-  assert_eq(nat_to_integral(3UL), BigInt::from_uint64(3UL))
   assert_eq(z, BigInt::from_uint64(3UL))
   assert_eq(zf, (3.0 : Float))
   assert_eq(zd, (3.0 : Double))
@@ -211,9 +203,11 @@ test {
   let z1 : Float = integral_hom_from_bigint(x)
   let z2 : Double = integral_hom_from_bigint(x)
   let z3 : Float = integral_hom_from_bigint(x + BigInt::from_int(4))
-  let z4 : Float = integral_hom_from_bigint(x) + integral_hom_from_bigint(BigInt::from_int(4))
+  let z4 : Float = integral_hom_from_bigint(x) +
+    integral_hom_from_bigint(BigInt::from_int(4))
   let z5 : Double = integral_hom_from_bigint(x + BigInt::from_int(4))
-  let z6 : Double = integral_hom_from_bigint(x) + integral_hom_from_bigint(BigInt::from_int(4))
+  let z6 : Double = integral_hom_from_bigint(x) +
+    integral_hom_from_bigint(BigInt::from_int(4))
   assert_eq(add_monoid_identity(x), x)
   assert_eq(mul_monoid_identity(x), x)
   assert_eq(add_group_cancel(x), BigInt::from_int(0))

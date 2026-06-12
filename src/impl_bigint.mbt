@@ -28,38 +28,13 @@ pub impl NatHomomorphism for BigInt
 pub impl IntegralHomomorphism for BigInt
 
 ///|
-pub impl NatHomomorphism for BigInt with fn from_uint(a) -> BigInt {
-  BigInt::from_uint(a)
+pub impl NatHomomorphism for BigInt with fn[S : Nat] from_nat(a : S) -> BigInt {
+  Integral::normalize(a)
 }
 
 ///|
-pub impl NatHomomorphism for BigInt with fn from_uint16(a) -> BigInt {
-  BigInt::from_uint(a.to_uint())
-}
-
-///|
-pub impl NatHomomorphism for BigInt with fn from_uint64(a) -> BigInt {
-  BigInt::from_uint64(a)
-}
-
-///|
-pub impl IntegralHomomorphism for BigInt with fn from_int(a) -> BigInt {
-  BigInt::from_int(a)
-}
-
-///|
-pub impl IntegralHomomorphism for BigInt with fn from_int16(a) -> BigInt {
-  BigInt::from_int64(a.to_int64())
-}
-
-///|
-pub impl IntegralHomomorphism for BigInt with fn from_int64(a) -> BigInt {
-  BigInt::from_int64(a)
-}
-
-///|
-pub impl IntegralHomomorphism for BigInt with fn from_bigint(a) -> BigInt {
-  a
+pub impl IntegralHomomorphism for BigInt with fn[S : Integral] from_integral(a : S) -> BigInt {
+  Integral::normalize(a)
 }
 
 ///|
@@ -72,6 +47,7 @@ pub impl Zero for BigInt with fn zero() -> BigInt {
   BigInt::from_int(0)
 }
 
+///|
 pub impl Num for BigInt with fn abs(a) -> BigInt {
   if a < BigInt::from_int(0) {
     -a

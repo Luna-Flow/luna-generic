@@ -2,9 +2,9 @@
 
 General algebraic traits and default numeric instances for Luna projects.
 
-## v0.3.2 - Integral Normalization and Embedding Prep
+## v0.3.3 - Normalize-Driven Homomorphism Cleanup
 
-This documentation tracks the intended `v0.3.2` release content.
+This documentation tracks the intended `v0.3.3` release content.
 
 ### Package Positioning
 
@@ -12,13 +12,12 @@ This documentation tracks the intended `v0.3.2` release content.
 - The package ships default instances for signed integers, unsigned integers, `BigInt`, `Float`, and `Double`.
 - Integral-to-target embeddings are now modeled explicitly through homomorphism traits instead of being mixed into `Integral`.
 
-### What Defines v0.3.2
+### What Defines v0.3.3
 
 - `BigInt` is now part of the default exported numeric surface.
 - `Integral` now provides `normalize`, which canonicalizes any integral value into `BigInt`.
-- `Nat` now exposes `to_integral` for exact embeddings from natural-number types into `BigInt`.
-- `NatHomomorphism` and `IntegralHomomorphism` provide target-side constructors for natural and integral source types.
-- `Integral::normalize` establishes a canonical source-side entry point for future integral-to-floating homomorphisms.
+- `NatHomomorphism` and `IntegralHomomorphism` provide polymorphic target-side embeddings for natural and integral source types.
+- `Integral::normalize` is the canonical source-side entry point for both `Integral` and `Nat`.
 - Floating-point embeddings remain approximate and follow target floating-point precision limits.
 
 ### Public Surface
@@ -37,9 +36,9 @@ This documentation tracks the intended `v0.3.2` release content.
 ### Embedding Guidance
 
 - `Integral::normalize` provides a canonical `BigInt` representation for any integral value
-- `Nat::to_integral` provides the natural-number-specific exact embedding and now aligns with `Integral::normalize`
-- `NatHomomorphism::{from_uint, from_uint16, from_uint64}` exposes target-side natural embeddings
-- `IntegralHomomorphism::{from_int, from_int16, from_int64, from_bigint}` exposes target-side integral embeddings
+- `Nat` sources reuse the same `normalize(Self) -> BigInt` path through trait inheritance
+- `NatHomomorphism::from_nat` embeds any `Nat` source via `normalize`
+- `IntegralHomomorphism::from_integral` embeds any `Integral` source via `normalize`
 - `BigInt` embeddings are exact
 - `Float` and `Double` embeddings are approximate and may round large values
 
@@ -57,7 +56,8 @@ We provide README-level documentation in multiple languages:
 
 | Version | Date | Status | Notes |
 | --- | --- | --- | --- |
-| `0.3.2` | 2026-06-06 | release candidate | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
+| `0.3.3` | 2026-06-12 | release candidate | Refactors homomorphism traits around polymorphic methods and unifies natural/integral embeddings through `normalize` |
+| `0.3.2` | 2026-06-06 | published on mooncakes | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
 | `0.3.1` | 2026-06-06 | published on mooncakes | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |
 | `0.3.0` | 2026-06-06 | previous release baseline | Earlier generic algebraic trait surface before the current integral embedding redesign |
 

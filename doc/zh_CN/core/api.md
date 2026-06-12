@@ -38,8 +38,11 @@
 
 - `Integral::normalize(Self) -> BigInt` 是把任意整型值规范化到 `BigInt`
   的标准入口。
-- `Nat::to_integral(Self) -> BigInt` 是自然数语义下的精确嵌入。
-- `NatHomomorphism` 和 `IntegralHomomorphism` 让目标侧嵌入保持显式。
+- `Nat` 也通过 trait 继承复用同一条 `normalize(Self) -> BigInt` 路径。
+- `NatHomomorphism::from_nat` 与 `IntegralHomomorphism::from_integral`
+  不再按位宽拆方法，而是对源 trait 做多态嵌入。
+- 默认嵌入路径是先做 `Integral::normalize`，再做目标类型自己的 `BigInt`
+  转换。
 - 无符号整数实例止步于 `Semiring`，不会伪装成带加法逆元的结构。
 - `Float` 与 `Double` 的同态嵌入是近似的，大整数可能发生舍入。
 

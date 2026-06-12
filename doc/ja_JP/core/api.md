@@ -39,8 +39,11 @@
 
 - `Integral::normalize(Self) -> BigInt` は任意の整数値を `BigInt` へ正規化する
   標準入口です。
-- `Nat::to_integral(Self) -> BigInt` は自然数ソースの正確埋め込みです。
-- `NatHomomorphism` と `IntegralHomomorphism` は対象側埋め込みを明示します。
+- `Nat` も trait 継承により同じ `normalize(Self) -> BigInt` 経路を使います。
+- `NatHomomorphism::from_nat` と `IntegralHomomorphism::from_integral` は、
+  幅ごとの専用コンストラクタではなく、ソース trait に対する多相的な埋め込み入口です。
+- 既定の埋め込み経路は `Integral::normalize` の後に対象型ごとの `BigInt`
+  変換を呼ぶ形です。
 - 符号なし整数は `Semiring` までで止まり、加法逆元を持つ構造のふりをしません。
 - `Float` と `Double` の埋め込みは近似であり、大きな整数は丸められ得ます。
 

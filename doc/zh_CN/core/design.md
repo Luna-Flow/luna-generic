@@ -13,6 +13,7 @@
   `Inverse`、`Conjugate` 这类操作 traits 分离。
 - 嵌入通过 `NatHomomorphism` 和 `IntegralHomomorphism` 明确表达。
 - `Integral::normalize` 作为到 `BigInt` 的统一精确桥接。
+- 目标侧的默认同态实现统一经由规范化后的 `BigInt`。
 - 无符号类型不提供加法逆元，保证抽象在数学上保持诚实。
 
 ## 边界
