@@ -40,13 +40,15 @@ pub impl NatHomomorphism for Float with fn[S : Nat] from_nat(a : S) -> Float {
 }
 
 ///|
-pub impl IntegralHomomorphism for Float with fn[S : Integral] from_integral(a : S) -> Float {
+pub impl IntegralHomomorphism for Float with fn[S : Integral] from_integral(
+  a : S,
+) -> Float {
   float_from_bigint(Integral::normalize(a))
 }
 
 ///|
 pub impl Inverse for Float with fn inv(a) -> Float {
-  guard a != 0
+  guard a != 0 else { abort("Float::inv: division by zero") }
   1.0 / a
 }
 

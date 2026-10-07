@@ -12,6 +12,4 @@ keywords = [ "math", "algebra", "interface" ]
 
 description = "Algebraic traits and default numeric instances that define the generic foundation for LunaFlow math packages."
 
-options(
-  source: "src",
-)
+source = "src"

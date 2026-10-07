@@ -33,7 +33,9 @@ pub impl NatHomomorphism for BigInt with fn[S : Nat] from_nat(a : S) -> BigInt {
 }
 
 ///|
-pub impl IntegralHomomorphism for BigInt with fn[S : Integral] from_integral(a : S) -> BigInt {
+pub impl IntegralHomomorphism for BigInt with fn[S : Integral] from_integral(
+  a : S,
+) -> BigInt {
   Integral::normalize(a)
 }
 

@@ -38,13 +38,15 @@ pub impl NatHomomorphism for Double with fn[S : Nat] from_nat(a : S) -> Double {
 }
 
 ///|
-pub impl IntegralHomomorphism for Double with fn[S : Integral] from_integral(a : S) -> Double {
+pub impl IntegralHomomorphism for Double with fn[S : Integral] from_integral(
+  a : S,
+) -> Double {
   double_from_bigint(Integral::normalize(a))
 }
 
 ///|
 pub impl Inverse for Double with fn inv(a) -> Double {
-  guard a != 0
+  guard a != 0 else { abort("Double::inv: division by zero") }
   1.0 / a
 }
 
