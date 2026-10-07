@@ -3,8 +3,8 @@
 ## Write algorithms against structure, not concrete numbers
 
 ```moonbit
-fn double_and_add_one[T : Ring + One](x : T) -> T {
-  x + x + T::one()
+fn[T : Ring + One] double_and_add_one(x : T) -> T {
+  x + x + One::one()
 }
 ```
 
@@ -14,8 +14,8 @@ future external types that implement the same traits.
 ## Normalize integral inputs through `BigInt`
 
 ```moonbit
-fn canonical_text[T : Integral + Show](x : T) -> String {
-  x.normalize().to_string()
+fn[T : Integral] canonical_text(x : T) -> String {
+  Integral::normalize(x).to_string()
 }
 ```
 
@@ -25,7 +25,7 @@ multiple integral source types.
 ## Use explicit target-side embeddings
 
 ```moonbit
-fn embed_nat[F : NatHomomorphism](x : UInt) -> F {
+fn[F : NatHomomorphism] embed_nat(x : UInt) -> F {
   NatHomomorphism::from_nat(x)
 }
 ```

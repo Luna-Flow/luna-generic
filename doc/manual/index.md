@@ -42,6 +42,14 @@ The current release candidate centers on three changes:
 - `BigInt` embeddings are exact
 - `Float` and `Double` embeddings are approximate and may round large values
 
+## Generalized homomorphisms
+
+- `Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation) or inference rules
+- Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
+- Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`
+- `Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength
+- See the [hom API](api/hom.md), [tutorial](tutorial/hom.md) and [design](design/hom.md)
+
 ## Where to read next
 
 The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way.

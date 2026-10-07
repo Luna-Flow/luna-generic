@@ -16,6 +16,7 @@ msgid "core API"
 msgstr "core API"
 
 #: manual/api/core.md:3
+#: manual/api/hom.md:3
 msgid "Purpose"
 msgstr "役割"
 
@@ -60,6 +61,7 @@ msgid "Floating instances: `Float`, `Double`"
 msgstr "浮動小数点：`Float`、`Double`"
 
 #: manual/api/core.md:38
+#: manual/api/hom.md:87
 msgid "Semantic notes"
 msgstr "意味論メモ"
 
@@ -103,6 +105,146 @@ msgstr "`src/operation.mbt`：基礎操作 traits"
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：既定インスタンス"
 
+#: manual/api/hom.md:1
+msgid "hom API"
+msgstr "hom API"
+
+#: manual/api/hom.md:5
+msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a map `A -> B` that carries a certificate stating it preserves every operation of the signature `S`. The certificate cannot be forged outside this package, and the only unproven entry point is `Hom::postulate`."
+msgstr "`hom` サブシステムは一般化された準同型を提供します。`Hom[S, A, B]` は写像 `A -> B` であり、「シグネチャ `S` のすべての演算を保つ」という証明書を伴います。証明書はこのパッケージの外では偽造できず、証明なしの入口は `Hom::postulate` だけです。"
+
+#: manual/api/hom.md:10
+msgid "Source: `src/hom.mbt`."
+msgstr "ソース: `src/hom.mbt`。"
+
+#: manual/api/hom.md:12
+msgid "Signature tags"
+msgstr "シグネチャタグ"
+
+#: manual/api/hom.md:20
+msgid "Signature tags are empty enums that only appear at the type level. Users may define their own."
+msgstr "シグネチャタグは型レベルにだけ現れる空の列挙型です。利用者が独自に定義することもできます。"
+
+#: manual/api/hom.md:23
+msgid "Algebra dictionaries"
+msgstr "代数辞書"
+
+#: manual/api/hom.md:25
+msgid "`Op[A]`: one operation with `name`, `arity` and `eval`. `arity == 0` is a constant."
+msgstr "`Op[A]`: `name`、`arity`、`eval` を持つ一つの演算。`arity == 0` は定数。"
+
+#: manual/api/hom.md:26
+msgid "`Algebra[S, A]`: an interpretation of the signature `S` on the carrier `A`."
+msgstr "`Algebra[S, A]`: キャリア `A` 上でのシグネチャ `S` の解釈。"
+
+#: manual/api/hom.md:27
+msgid "`Algebra::add_monoid`, `mul_monoid`, `add_group`, `semiring`, `ring`: derived from the existing structure trait instances."
+msgstr "`Algebra::add_monoid`、`mul_monoid`、`add_group`、`semiring`、`ring`: 既存の構造 trait インスタンスから導出されます。"
+
+#: manual/api/hom.md:29
+msgid "`Algebra::make(ops)`: builds a dictionary for a custom signature tag."
+msgstr "`Algebra::make(ops)`: 独自シグネチャタグ用の辞書を作ります。"
+
+#: manual/api/hom.md:30
+msgid "`Algebra::prod(a, b)`: the componentwise product algebra on `Prod[A, B]`."
+msgstr "`Algebra::prod(a, b)`: `Prod[A, B]` 上の成分ごとの積代数。"
+
+#: manual/api/hom.md:32
+msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort."
+msgstr "同じ `S` の二つの辞書は、同じ演算（名前とアリティ）を同じ順序で並べる必要があります。そうでない場合 `Algebra::prod` と `Hom::check_by` は abort します。"
+
+#: manual/api/hom.md:35
+msgid "Product type"
+msgstr "積型"
+
+#: manual/api/hom.md:37
+msgid "`Prod[A, B]`: fields `fst` and `snd`. Implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
+msgstr "`Prod[A, B]`: フィールド `fst`、`snd`。`Add`、`Mul`、`Neg`、`Sub`、`Zero`、`One` を実装し、両成分が満たす場合は `AddMonoid`、`MulMonoid`、`AddGroup`、`Semiring`、`Ring` も実装します。"
+
+#: manual/api/hom.md:41
+msgid "Homomorphisms"
+msgstr "準同型"
+
+#: manual/api/hom.md:43
+msgid "Trust entry (creates a proof obligation):"
+msgstr "信頼の入口（証明義務を生む）:"
+
+#: manual/api/hom.md:45
+msgid "`Hom::postulate(f)`: the caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`."
+msgstr "`Hom::postulate(f)`: 呼び出し側は、`S` のすべての演算 `op` とすべての引数 `xs` について `f(op_A(xs)) == op_B(xs.map(f))` を約束します。"
+
+#: manual/api/hom.md:48
+msgid "Inference rules (no new obligation):"
+msgstr "推論規則（新しい義務を生まない）:"
+
+#: manual/api/hom.md:50
+msgid "`Hom::id()`, `h.then(g)`: identity and composition."
+msgstr "`Hom::id()`、`h.then(g)`: 恒等と合成。"
+
+#: manual/api/hom.md:51
+msgid "`h.forget(r)`: forgets structure along a `Reduct[S, T]` witness."
+msgstr "`h.forget(r)`: 縮約の証人 `Reduct[S, T]` に沿って構造を忘れます。"
+
+#: manual/api/hom.md:52
+msgid "`Hom::pair(f, g)`, `Hom::fst()`, `Hom::snd()`: pairing and projections."
+msgstr "`Hom::pair(f, g)`、`Hom::fst()`、`Hom::snd()`: 積への組と射影。"
+
+#: manual/api/hom.md:53
+msgid "`h.to_add_group()`: an additive monoid hom between groups preserves `neg`."
+msgstr "`h.to_add_group()`: 群の間の加法モノイド準同型は `neg` を保ちます。"
+
+#: manual/api/hom.md:54
+msgid "`h.to_ring()`: a semiring hom between rings preserves `neg`."
+msgstr "`h.to_ring()`: 環の間の半環準同型は `neg` を保ちます。"
+
+#: manual/api/hom.md:56
+msgid "Canonical embeddings (the obligation sits on the trait instance):"
+msgstr "標準的な埋め込み（義務は対応する trait インスタンスにあります）:"
+
+#: manual/api/hom.md:58
+msgid "`Hom::from_nat()`: backed by the target's `NatHomomorphism` instance, typed `Hom[SemiringSig, N, R]`."
+msgstr "`Hom::from_nat()`: 対象の `NatHomomorphism` インスタンスに基づき、型は `Hom[SemiringSig, N, R]`。"
+
+#: manual/api/hom.md:60
+msgid "`Hom::from_integral()`: backed by the target's `IntegralHomomorphism` instance, typed `Hom[SemiringSig, Z, R]`. Upgrade with `to_ring` when both sides are rings."
+msgstr "`Hom::from_integral()`: 対象の `IntegralHomomorphism` インスタンスに基づき、型は `Hom[SemiringSig, Z, R]`。両側が環なら `to_ring` で昇格します。"
+
+#: manual/api/hom.md:64
+msgid "Use:"
+msgstr "使用:"
+
+#: manual/api/hom.md:68
+msgid "Reduct witnesses"
+msgstr "縮約の証人"
+
+#: manual/api/hom.md:75
+msgid "Only this package constructs `Reduct` values."
+msgstr "`Reduct` はこのパッケージだけが構築できます。"
+
+#: manual/api/hom.md:77
+msgid "Law checks"
+msgstr "法則の検査"
+
+#: manual/api/hom.md:79
+msgid "`h.check(src, dst, samples)`: checks the law with exact equality; requires `B : Eq`."
+msgstr "`h.check(src, dst, samples)`: 厳密な等号で検査します。`B : Eq` が必要です。"
+
+#: manual/api/hom.md:80
+msgid "`h.check_by(src, dst, samples, rel)`: checks `rel(f(op_A(xs)), op_B(f(xs)))`. `rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets."
+msgstr "`h.check_by(src, dst, samples, rel)`: `rel(f(op_A(xs)), op_B(f(xs)))` を検査します。`rel` が保存の強さを決めます。等号なら厳密な準同型、`<=` なら劣加法的写像のような lax 準同型、許容誤差付きの比較なら浮動小数点への近似準同型です。"
+
+#: manual/api/hom.md:85
+msgid "An operation of arity `n` is tested on `samples.length()^n` tuples."
+msgstr "アリティ `n` の演算は `samples.length()^n` 個の組で検査されます。"
+
+#: manual/api/hom.md:89
+msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) stop being the integers once arithmetic wraps, so `Hom::from_integral` only holds on samples whose source arithmetic does not overflow."
+msgstr "固定幅整数（`Int`、`Int64`、`UInt` など）は演算がラップすると整数環ではなくなるため、`Hom::from_integral` は元の演算がオーバーフローしないサンプルでのみ成り立ちます。"
+
+#: manual/api/hom.md:92
+msgid "`Float` and `Double` targets satisfy the laws only up to rounding; use `check_by` with a tolerance. See the embedding notes in the [core API](core.md)."
+msgstr "`Float` と `Double` を対象とする場合、法則は丸め誤差の範囲でのみ成り立つため、許容誤差付きの `check_by` を使ってください。[core API](core.md) の埋め込みの説明も参照してください。"
+
 #: manual/design/core.md:1
 msgid "core design"
 msgstr "core 設計"
@@ -144,6 +286,7 @@ msgid "Unsigned types stop before additive inverse, so the abstraction stays mat
 msgstr "符号なし型に加法逆元を主張させず、数学的整合性を保つ。"
 
 #: manual/design/core.md:24
+#: manual/design/hom.md:32
 msgid "Boundaries"
 msgstr "境界"
 
@@ -154,6 +297,66 @@ msgstr "このパッケージは行列、複素数、多項式、解析関数、
 #: manual/design/core.md:28
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr "正確系と近似系の意味論差を無理に隠しません。"
+
+#: manual/design/hom.md:1
+msgid "hom design"
+msgstr "hom 設計"
+
+#: manual/design/hom.md:3
+msgid "Goals"
+msgstr "目標"
+
+#: manual/design/hom.md:5
+msgid "Express structure-preserving maps within MoonBit's current type system, hand the laws the type system cannot prove to the developer, and keep those obligations auditable and testable."
+msgstr "MoonBit の現在の型システムの中で構造を保つ写像を表現し、型システムが証明できない法則を開発者に委ねつつ、その義務を監査可能かつ検査可能に保つこと。"
+
+#: manual/design/hom.md:9
+msgid "Constraints"
+msgstr "制約"
+
+#: manual/design/hom.md:11
+msgid "MoonBit traits only have the `Self` parameter: there are no multi-parameter traits and no associated types, so a homomorphism `A -> B` cannot be a trait."
+msgstr "MoonBit の trait は `Self` しか引数を持たず、多引数 trait も関連型もないため、準同型 `A -> B` を trait として書けません。"
+
+#: manual/design/hom.md:13
+msgid "Homomorphisms out of ℕ and ℤ are unique (initial objects), which is why `NatHomomorphism` and `IntegralHomomorphism` can live as target-side traits. Other homomorphisms are generally not unique and must be values."
+msgstr "ℕ と ℤ からの準同型は一意（始対象）なので、`NatHomomorphism` と `IntegralHomomorphism` は対象側の trait として存在できます。それ以外の準同型は一般に一意ではなく、値でなければなりません。"
+
+#: manual/design/hom.md:17
+msgid "Core decisions"
+msgstr "中核となる設計判断"
+
+#: manual/design/hom.md:19
+msgid "LCF-style certificates: `Hom[S, A, B]` has private fields and is only constructed inside this package."
+msgstr "LCF 流の証明書: `Hom[S, A, B]` のフィールドは非公開で、このパッケージの中でのみ構築されます。"
+
+#: manual/design/hom.md:21
+msgid "The only public trust entry is `Hom::postulate`. Kernel rules use the package-private `trust`, so searching for `postulate` lists exactly the user-level obligations. (`assume` is a reserved word in MoonBit, hence the name.)"
+msgstr "公開された信頼の入口は `Hom::postulate` だけです。カーネルの規則はパッケージ内部の `trust` を使うため、`postulate` を検索すると利用者側の義務だけが正確に列挙されます。（`assume` は MoonBit の予約語のため使いません。）"
+
+#: manual/design/hom.md:25
+msgid "The signature is a phantom type `S` on the certificate, while the algebra is passed as a dictionary value `Algebra[S, A]`: the certificate says what is preserved, the dictionary is used for checking."
+msgstr "シグネチャは証明書の幽霊型 `S` として現れ、代数は辞書値 `Algebra[S, A]` として渡されます。証明書は何を保つかを述べ、辞書は検査に使われます。"
+
+#: manual/design/hom.md:28
+msgid "Signature inclusions are `Reduct[S, T]` witnesses only this package can build."
+msgstr "シグネチャ間の包含は、このパッケージだけが作れる `Reduct[S, T]` の証人で表します。"
+
+#: manual/design/hom.md:29
+msgid "The strength of preservation is the relation `rel` chosen at check time, so strict, lax and approximate homomorphisms share one API."
+msgstr "保存の強さは検査時に選ぶ関係 `rel` で決まり、厳密・lax・近似の準同型が一つの API を共有します。"
+
+#: manual/design/hom.md:34
+msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
+msgstr "単一ソートのシグネチャのみを扱います。加群（スカラーとベクトル）のような多ソート構造はこのサブシステムの範囲外です。"
+
+#: manual/design/hom.md:36
+msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
+msgstr "高階カインドがないため、関手的な持ち上げ（多項式、行列など）はそれぞれのパッケージが提供し、ここでは一般化しません。"
+
+#: manual/design/hom.md:38
+msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
+msgstr "法則は証明されず、検査されるだけです。証明書が保証するのは由来の追跡可能性であり、法則が成り立つことではありません。"
 
 #: manual/index.md:1
 msgid "luna-generic"
@@ -252,18 +455,42 @@ msgid "`Float` and `Double` embeddings are approximate and may round large value
 msgstr "`Float` と `Double` への埋め込みは近似であり、大きな値は丸められる可能性があります"
 
 #: manual/index.md:45
+msgid "Generalized homomorphisms"
+msgstr "一般化された準同型"
+
+#: manual/index.md:47
+msgid "`Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation) or inference rules"
+msgstr "`Hom[S, A, B]`: シグネチャ `S` を保つ写像の証明書。`Hom::postulate`（証明義務を生む）か推論規則でのみ構築されます"
+
+#: manual/index.md:48
+msgid "Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`"
+msgstr "シグネチャタグ: `AddMonoidSig`、`MulMonoidSig`、`AddGroupSig`、`SemiringSig`、`RingSig`"
+
+#: manual/index.md:49
+msgid "Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`"
+msgstr "代数辞書 `Algebra[S, A]`、演算 `Op[A]`、積型 `Prod[A, B]`、縮約の証人 `Reduct[S, T]`"
+
+#: manual/index.md:50
+msgid "`Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength"
+msgstr "`Hom::check` / `Hom::check_by` はサンプル上で準同型の法則を厳密・lax・近似の強さで検査します"
+
+#: manual/index.md:51
+msgid "See the [hom API](api/hom.md), [tutorial](tutorial/hom.md) and [design](design/hom.md)"
+msgstr "詳しくは [hom API](api/hom.md)、[チュートリアル](tutorial/hom.md)、[設計](design/hom.md) を参照"
+
+#: manual/index.md:53
 msgid "Where to read next"
 msgstr "次に読むもの"
 
-#: manual/index.md:47
+#: manual/index.md:55
 msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way."
 msgstr "[core チュートリアル](tutorial/core.md)では、これらの trait に対して小さな汎用アルゴリズムを書きます。[core API](api/core.md) はエクスポートされたすべての trait とインスタンスを列挙し、[core 設計](design/core.md)は階層と埋め込みがこの形になっている理由を説明します。"
 
-#: manual/index.md:49
+#: manual/index.md:57
 msgid "Validation"
 msgstr "検証"
 
-#: manual/index.md:51
+#: manual/index.md:59
 msgid "Recommended release checks:"
 msgstr "推奨するリリース前チェック:"
 
@@ -300,6 +527,7 @@ msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the
 msgstr "`NatHomomorphism` と `IntegralHomomorphism` は、まずソース値を `Integral::normalize` で `BigInt` に正規化し、その後に対象型ごとの変換を行うよう実装します。"
 
 #: manual/tutorial/core.md:39
+#: manual/tutorial/hom.md:63
 msgid "Practical guidance"
 msgstr "実践ガイド"
 
@@ -314,6 +542,54 @@ msgstr "逆元や除法が必要なときだけ `Field` を要求する。"
 #: manual/tutorial/core.md:43
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
 msgstr "`Float` と `Double` は同じ抽象面を持っていても近似バックエンドとして扱う。"
+
+#: manual/tutorial/hom.md:1
+msgid "hom tutorial"
+msgstr "hom チュートリアル"
+
+#: manual/tutorial/hom.md:3
+msgid "Leaf homomorphisms: one `postulate`, one check"
+msgstr "葉の準同型: `postulate` 一つにつき検査を一つ"
+
+#: manual/tutorial/hom.md:16
+msgid "Every `Hom::postulate` is a proof obligation. Searching the repository for `postulate` lists every unproven homomorphism, and each one should have a matching `check` test."
+msgstr "`Hom::postulate` はすべて証明義務です。リポジトリで `postulate` を検索すれば未証明の準同型がすべて列挙され、それぞれに対応する `check` テストを置くべきです。"
+
+#: manual/tutorial/hom.md:20
+msgid "Lifting from smaller homomorphisms"
+msgstr "小さな準同型から持ち上げる"
+
+#: manual/tutorial/hom.md:30
+msgid "Composition, forgetting, pairing, projection and upgrades are inference rules and create no new obligations."
+msgstr "合成、忘却、組、射影、昇格は推論規則であり、新しい義務を生みません。"
+
+#: manual/tutorial/hom.md:33
+msgid "Choosing the strength of preservation"
+msgstr "保存の強さを選ぶ"
+
+#: manual/tutorial/hom.md:41
+msgid "Use a tolerance for floating-point targets:"
+msgstr "浮動小数点の対象には許容誤差を使います:"
+
+#: manual/tutorial/hom.md:50
+msgid "Custom signatures"
+msgstr "独自シグネチャ"
+
+#: manual/tutorial/hom.md:60
+msgid "`Hom` and `check` work for any single-sorted signature as long as both dictionaries list the same operations in the same order."
+msgstr "両側の辞書が同じ演算を同じ順序で並べていれば、任意の単一ソートのシグネチャで `Hom` と `check` を使えます。"
+
+#: manual/tutorial/hom.md:65
+msgid "Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as traits and bring them into `Hom` through `Hom::from_nat` / `Hom::from_integral`."
+msgstr "一意な準同型（ℕ、ℤ からの標準的な埋め込み）は trait で表し、`Hom::from_nat` / `Hom::from_integral` を通して `Hom` に持ち込みます。"
+
+#: manual/tutorial/hom.md:68
+msgid "Write non-unique homomorphisms (such as two conjugate embeddings) as explicit `Hom` values, never as trait instances."
+msgstr "一意でない準同型（たとえば二つの共役な埋め込み）は明示的な `Hom` 値として書き、trait インスタンスにはしません。"
+
+#: manual/tutorial/hom.md:70
+msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
+msgstr "`check` のサンプルには境界値を含めます: 0、1、負数、固定幅型ではオーバーフローに近い値。"
 
 #~ msgid "Documentation Standard"
 #~ msgstr "ドキュメント標準"

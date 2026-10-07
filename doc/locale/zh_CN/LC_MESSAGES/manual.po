@@ -16,6 +16,7 @@ msgid "core API"
 msgstr "core API"
 
 #: manual/api/core.md:3
+#: manual/api/hom.md:3
 msgid "Purpose"
 msgstr "作用"
 
@@ -60,6 +61,7 @@ msgid "Floating instances: `Float`, `Double`"
 msgstr "浮点实例：`Float`、`Double`"
 
 #: manual/api/core.md:38
+#: manual/api/hom.md:87
 msgid "Semantic notes"
 msgstr "语义说明"
 
@@ -103,6 +105,146 @@ msgstr "`src/operation.mbt`：基础操作 traits"
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：默认实例"
 
+#: manual/api/hom.md:1
+msgid "hom API"
+msgstr "hom API"
+
+#: manual/api/hom.md:5
+msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a map `A -> B` that carries a certificate stating it preserves every operation of the signature `S`. The certificate cannot be forged outside this package, and the only unproven entry point is `Hom::postulate`."
+msgstr "`hom` 子系统提供广义同态：一个 `Hom[S, A, B]` 是一个映射 `A -> B`，并带有\"保持签名 `S` 中所有运算\"的证书。证书在本包外无法伪造，未经证明的入口只有 `Hom::postulate`。"
+
+#: manual/api/hom.md:10
+msgid "Source: `src/hom.mbt`."
+msgstr "源码位于 `src/hom.mbt`。"
+
+#: manual/api/hom.md:12
+msgid "Signature tags"
+msgstr "签名标签"
+
+#: manual/api/hom.md:20
+msgid "Signature tags are empty enums that only appear at the type level. Users may define their own."
+msgstr "签名标签是空枚举，只在类型层出现。用户可以定义自己的标签。"
+
+#: manual/api/hom.md:23
+msgid "Algebra dictionaries"
+msgstr "代数字典"
+
+#: manual/api/hom.md:25
+msgid "`Op[A]`: one operation with `name`, `arity` and `eval`. `arity == 0` is a constant."
+msgstr "`Op[A]`：一个运算，包含 `name`、`arity`、`eval`。`arity == 0` 表示常量。"
+
+#: manual/api/hom.md:26
+msgid "`Algebra[S, A]`: an interpretation of the signature `S` on the carrier `A`."
+msgstr "`Algebra[S, A]`：签名 `S` 在载体 `A` 上的一种解释。"
+
+#: manual/api/hom.md:27
+msgid "`Algebra::add_monoid`, `mul_monoid`, `add_group`, `semiring`, `ring`: derived from the existing structure trait instances."
+msgstr "`Algebra::add_monoid`、`mul_monoid`、`add_group`、`semiring`、`ring`：从现有结构 trait 实例派生。"
+
+#: manual/api/hom.md:29
+msgid "`Algebra::make(ops)`: builds a dictionary for a custom signature tag."
+msgstr "`Algebra::make(ops)`：为自定义签名标签构造字典。"
+
+#: manual/api/hom.md:30
+msgid "`Algebra::prod(a, b)`: the componentwise product algebra on `Prod[A, B]`."
+msgstr "`Algebra::prod(a, b)`：逐分量的积代数，载体为 `Prod[A, B]`。"
+
+#: manual/api/hom.md:32
+msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort."
+msgstr "同一个 `S` 的两个字典必须按相同顺序列出相同的运算（名字与元数一致），否则 `Algebra::prod` 与 `Hom::check_by` 会 abort。"
+
+#: manual/api/hom.md:35
+msgid "Product type"
+msgstr "积类型"
+
+#: manual/api/hom.md:37
+msgid "`Prod[A, B]`: fields `fst` and `snd`. Implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
+msgstr "`Prod[A, B]`：字段 `fst`、`snd`。实现了 `Add`、`Mul`、`Neg`、`Sub`、`Zero`、`One`，并在分量满足时实现 `AddMonoid`、`MulMonoid`、`AddGroup`、`Semiring`、`Ring`。"
+
+#: manual/api/hom.md:41
+msgid "Homomorphisms"
+msgstr "同态"
+
+#: manual/api/hom.md:43
+msgid "Trust entry (creates a proof obligation):"
+msgstr "信任入口（产生证明义务）："
+
+#: manual/api/hom.md:45
+msgid "`Hom::postulate(f)`: the caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`."
+msgstr "`Hom::postulate(f)`：调用者承诺，对 `S` 的每个运算 `op` 和所有参数 `xs`，`f(op_A(xs)) == op_B(xs.map(f))`。"
+
+#: manual/api/hom.md:48
+msgid "Inference rules (no new obligation):"
+msgstr "推理规则（不产生新义务）："
+
+#: manual/api/hom.md:50
+msgid "`Hom::id()`, `h.then(g)`: identity and composition."
+msgstr "`Hom::id()`、`h.then(g)`：恒等与复合。"
+
+#: manual/api/hom.md:51
+msgid "`h.forget(r)`: forgets structure along a `Reduct[S, T]` witness."
+msgstr "`h.forget(r)`：沿约化见证 `Reduct[S, T]` 遗忘结构。"
+
+#: manual/api/hom.md:52
+msgid "`Hom::pair(f, g)`, `Hom::fst()`, `Hom::snd()`: pairing and projections."
+msgstr "`Hom::pair(f, g)`、`Hom::fst()`、`Hom::snd()`：积的配对与投影。"
+
+#: manual/api/hom.md:53
+msgid "`h.to_add_group()`: an additive monoid hom between groups preserves `neg`."
+msgstr "`h.to_add_group()`：群之间的加法幺半群同态自动保持 `neg`。"
+
+#: manual/api/hom.md:54
+msgid "`h.to_ring()`: a semiring hom between rings preserves `neg`."
+msgstr "`h.to_ring()`：环之间的半环同态自动保持 `neg`。"
+
+#: manual/api/hom.md:56
+msgid "Canonical embeddings (the obligation sits on the trait instance):"
+msgstr "典范嵌入（义务落在对应 trait 实例上）："
+
+#: manual/api/hom.md:58
+msgid "`Hom::from_nat()`: backed by the target's `NatHomomorphism` instance, typed `Hom[SemiringSig, N, R]`."
+msgstr "`Hom::from_nat()`：由目标的 `NatHomomorphism` 实例给出，类型为 `Hom[SemiringSig, N, R]`。"
+
+#: manual/api/hom.md:60
+msgid "`Hom::from_integral()`: backed by the target's `IntegralHomomorphism` instance, typed `Hom[SemiringSig, Z, R]`. Upgrade with `to_ring` when both sides are rings."
+msgstr "`Hom::from_integral()`：由目标的 `IntegralHomomorphism` 实例给出，类型为 `Hom[SemiringSig, Z, R]`。两侧都是环时用 `to_ring` 升级。"
+
+#: manual/api/hom.md:64
+msgid "Use:"
+msgstr "使用："
+
+#: manual/api/hom.md:68
+msgid "Reduct witnesses"
+msgstr "约化见证"
+
+#: manual/api/hom.md:75
+msgid "Only this package constructs `Reduct` values."
+msgstr "`Reduct` 只能由本包构造。"
+
+#: manual/api/hom.md:77
+msgid "Law checks"
+msgstr "定律检查"
+
+#: manual/api/hom.md:79
+msgid "`h.check(src, dst, samples)`: checks the law with exact equality; requires `B : Eq`."
+msgstr "`h.check(src, dst, samples)`：以精确相等检查同态律，要求 `B : Eq`。"
+
+#: manual/api/hom.md:80
+msgid "`h.check_by(src, dst, samples, rel)`: checks `rel(f(op_A(xs)), op_B(f(xs)))`. `rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets."
+msgstr "`h.check_by(src, dst, samples, rel)`：以关系 `rel(f(op_A(xs)), op_B(f(xs)))` 检查。`rel` 决定保持的强度：相等对应严格同态，`<=` 对应 lax 同态（如次可加映射），带容差的比较对应浮点目标上的近似同态。"
+
+#: manual/api/hom.md:85
+msgid "An operation of arity `n` is tested on `samples.length()^n` tuples."
+msgstr "元数为 `n` 的运算会在 `samples.length()^n` 个元组上测试。"
+
+#: manual/api/hom.md:89
+msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) stop being the integers once arithmetic wraps, so `Hom::from_integral` only holds on samples whose source arithmetic does not overflow."
+msgstr "定宽整数源类型（`Int`、`Int64`、`UInt` 等）在溢出后不再是整数环，因此 `Hom::from_integral` 只在源侧运算不回绕的样本上成立。"
+
+#: manual/api/hom.md:92
+msgid "`Float` and `Double` targets satisfy the laws only up to rounding; use `check_by` with a tolerance. See the embedding notes in the [core API](core.md)."
+msgstr "`Float` 与 `Double` 目标只在舍入误差内满足同态律，应使用 `check_by` 加容差。参见 [core API](core.md) 的嵌入说明。"
+
 #: manual/design/core.md:1
 msgid "core design"
 msgstr "core 设计"
@@ -144,6 +286,7 @@ msgid "Unsigned types stop before additive inverse, so the abstraction stays mat
 msgstr "无符号类型不提供加法逆元，保证抽象在数学上保持诚实。"
 
 #: manual/design/core.md:24
+#: manual/design/hom.md:32
 msgid "Boundaries"
 msgstr "边界"
 
@@ -154,6 +297,66 @@ msgstr "本包不定义矩阵、复数、多项式、解析函数或数值算法
 #: manual/design/core.md:28
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr "它不会刻意抹平精确数值系统与近似数值系统之间的语义差异。"
+
+#: manual/design/hom.md:1
+msgid "hom design"
+msgstr "hom 设计"
+
+#: manual/design/hom.md:3
+msgid "Goals"
+msgstr "设计目标"
+
+#: manual/design/hom.md:5
+msgid "Express structure-preserving maps within MoonBit's current type system, hand the laws the type system cannot prove to the developer, and keep those obligations auditable and testable."
+msgstr "在 MoonBit 现有类型系统里表达\"保持结构的映射\"，并把无法由类型系统证明的同态律交给开发者，同时让这些义务可审计、可测试。"
+
+#: manual/design/hom.md:9
+msgid "Constraints"
+msgstr "约束"
+
+#: manual/design/hom.md:11
+msgid "MoonBit traits only have the `Self` parameter: there are no multi-parameter traits and no associated types, so a homomorphism `A -> B` cannot be a trait."
+msgstr "MoonBit 的 trait 只有 `Self` 一个参数，没有多参 trait 和关联类型，因此 `A -> B` 的同态不能写成 trait。"
+
+#: manual/design/hom.md:13
+msgid "Homomorphisms out of ℕ and ℤ are unique (initial objects), which is why `NatHomomorphism` and `IntegralHomomorphism` can live as target-side traits. Other homomorphisms are generally not unique and must be values."
+msgstr "从 ℕ、ℤ 出发的同态是唯一的（初始对象），所以 `NatHomomorphism`、`IntegralHomomorphism` 能以目标侧 trait 的形式存在。其他同态一般不唯一，必须是值。"
+
+#: manual/design/hom.md:17
+msgid "Core decisions"
+msgstr "核心设计决策"
+
+#: manual/design/hom.md:19
+msgid "LCF-style certificates: `Hom[S, A, B]` has private fields and is only constructed inside this package."
+msgstr "LCF 风格的证书：`Hom[S, A, B]` 字段私有，只能由本包构造。"
+
+#: manual/design/hom.md:21
+msgid "The only public trust entry is `Hom::postulate`. Kernel rules use the package-private `trust`, so searching for `postulate` lists exactly the user-level obligations. (`assume` is a reserved word in MoonBit, hence the name.)"
+msgstr "唯一的公开信任入口是 `Hom::postulate`。内核规则使用包内私有的 `trust`，所以搜索 `postulate` 得到的正好是全部用户层义务。（`assume` 是 MoonBit 的保留字，因此不用这个名字。）"
+
+#: manual/design/hom.md:25
+msgid "The signature is a phantom type `S` on the certificate, while the algebra is passed as a dictionary value `Algebra[S, A]`: the certificate says what is preserved, the dictionary is used for checking."
+msgstr "签名以幽灵类型 `S` 出现在类型上，代数以字典 `Algebra[S, A]` 的形式作为值传递，两者分离：证书说明\"保持什么\"，字典用于检查。"
+
+#: manual/design/hom.md:28
+msgid "Signature inclusions are `Reduct[S, T]` witnesses only this package can build."
+msgstr "签名之间的包含关系用只有本包能构造的 `Reduct[S, T]` 见证表示。"
+
+#: manual/design/hom.md:29
+msgid "The strength of preservation is the relation `rel` chosen at check time, so strict, lax and approximate homomorphisms share one API."
+msgstr "保持强度由检查时的关系 `rel` 决定，严格、lax 与近似同态共用一套 API。"
+
+#: manual/design/hom.md:34
+msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
+msgstr "只覆盖单类别签名。模这类多类别结构（标量加向量）不在本子系统内。"
+
+#: manual/design/hom.md:36
+msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
+msgstr "没有 HKT，因此函子提升（多项式、矩阵等）由各自的包提供，不在本包内泛化。"
+
+#: manual/design/hom.md:38
+msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
+msgstr "同态律不被证明，只被测试。证书保证的是\"来源可追溯\"，不是\"定律成立\"。"
 
 #: manual/index.md:1
 msgid "luna-generic"
@@ -252,18 +455,42 @@ msgid "`Float` and `Double` embeddings are approximate and may round large value
 msgstr "到 `Float` 和 `Double` 的嵌入是近似的，大数值可能发生舍入"
 
 #: manual/index.md:45
+msgid "Generalized homomorphisms"
+msgstr "广义同态"
+
+#: manual/index.md:47
+msgid "`Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation) or inference rules"
+msgstr "`Hom[S, A, B]`：保持签名 `S` 的映射证书，只能经由 `Hom::postulate`（产生证明义务）或推理规则构造"
+
+#: manual/index.md:48
+msgid "Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`"
+msgstr "签名标签：`AddMonoidSig`、`MulMonoidSig`、`AddGroupSig`、`SemiringSig`、`RingSig`"
+
+#: manual/index.md:49
+msgid "Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`"
+msgstr "代数字典 `Algebra[S, A]`、运算 `Op[A]`、积类型 `Prod[A, B]`、约化见证 `Reduct[S, T]`"
+
+#: manual/index.md:50
+msgid "`Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength"
+msgstr "`Hom::check` / `Hom::check_by` 以样本测试同态律，支持严格、lax 与近似三种强度"
+
+#: manual/index.md:51
+msgid "See the [hom API](api/hom.md), [tutorial](tutorial/hom.md) and [design](design/hom.md)"
+msgstr "详见 [hom API](api/hom.md)、[教程](tutorial/hom.md)、[设计](design/hom.md)"
+
+#: manual/index.md:53
 msgid "Where to read next"
 msgstr "接下来读什么"
 
-#: manual/index.md:47
+#: manual/index.md:55
 msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way."
 msgstr "[core 教程](tutorial/core.md)基于这些 trait 编写小型泛型算法。[core API](api/core.md) 列出所有导出的 trait 与实例，[core 设计](design/core.md)则解释层级结构与嵌入为何如此设计。"
 
-#: manual/index.md:49
+#: manual/index.md:57
 msgid "Validation"
 msgstr "校验"
 
-#: manual/index.md:51
+#: manual/index.md:59
 msgid "Recommended release checks:"
 msgstr "建议的发布前检查："
 
@@ -300,6 +527,7 @@ msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the
 msgstr "`NatHomomorphism` 和 `IntegralHomomorphism` 的实现方式应当统一为：先用 `Integral::normalize` 把源值规约到 `BigInt`，再做目标类型自己的转换。"
 
 #: manual/tutorial/core.md:39
+#: manual/tutorial/hom.md:63
 msgid "Practical guidance"
 msgstr "实践建议"
 
@@ -314,6 +542,54 @@ msgstr "只有确实需要倒数或除法时再要求 `Field`。"
 #: manual/tutorial/core.md:43
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
 msgstr "即使共享同一抽象表面，也要把 `Float` 和 `Double` 当作近似后端来看。"
+
+#: manual/tutorial/hom.md:1
+msgid "hom tutorial"
+msgstr "hom 教程"
+
+#: manual/tutorial/hom.md:3
+msgid "Leaf homomorphisms: one `postulate`, one check"
+msgstr "叶子同态：写一次 `postulate`，配一个检查"
+
+#: manual/tutorial/hom.md:16
+msgid "Every `Hom::postulate` is a proof obligation. Searching the repository for `postulate` lists every unproven homomorphism, and each one should have a matching `check` test."
+msgstr "每一处 `Hom::postulate` 都是一个证明义务。在仓库里搜索 `postulate` 就能列出全部未经证明的同态，每一处都应有对应的 `check` 测试。"
+
+#: manual/tutorial/hom.md:20
+msgid "Lifting from smaller homomorphisms"
+msgstr "从小同态提升"
+
+#: manual/tutorial/hom.md:30
+msgid "Composition, forgetting, pairing, projection and upgrades are inference rules and create no new obligations."
+msgstr "组合、遗忘、配对、投影、升级都是推理规则，不会产生新的义务。"
+
+#: manual/tutorial/hom.md:33
+msgid "Choosing the strength of preservation"
+msgstr "选择保持的强度"
+
+#: manual/tutorial/hom.md:41
+msgid "Use a tolerance for floating-point targets:"
+msgstr "浮点目标用容差："
+
+#: manual/tutorial/hom.md:50
+msgid "Custom signatures"
+msgstr "自定义签名"
+
+#: manual/tutorial/hom.md:60
+msgid "`Hom` and `check` work for any single-sorted signature as long as both dictionaries list the same operations in the same order."
+msgstr "只要两侧字典按相同顺序列出相同的运算，就可以对任意单类别签名使用 `Hom` 和 `check`。"
+
+#: manual/tutorial/hom.md:65
+msgid "Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as traits and bring them into `Hom` through `Hom::from_nat` / `Hom::from_integral`."
+msgstr "唯一的同态（从 ℕ、ℤ 出发的典范嵌入）用 trait 表达，再经 `Hom::from_nat` / `Hom::from_integral` 进入 `Hom` 世界。"
+
+#: manual/tutorial/hom.md:68
+msgid "Write non-unique homomorphisms (such as two conjugate embeddings) as explicit `Hom` values, never as trait instances."
+msgstr "不唯一的同态（例如两个共轭嵌入）一律写成显式的 `Hom` 值，不要做成 trait 实例。"
+
+#: manual/tutorial/hom.md:70
+msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
+msgstr "`check` 的样本要包含边界值，例如 0、1、负数，以及定宽类型接近溢出的值。"
 
 #~ msgid "Documentation Standard"
 #~ msgstr "文档标准"

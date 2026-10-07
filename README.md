@@ -24,6 +24,7 @@ This documentation tracks the intended `v0.3.3` release content.
 
 - Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Integral`, `Nat`, `NatHomomorphism`, `IntegralHomomorphism`, `Num`
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
+- Generalized homomorphisms: `Hom`, `Algebra`, `Op`, `Prod`, `Reduct`, and the signature tags `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
 - Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`
 
 ### Integer Families
