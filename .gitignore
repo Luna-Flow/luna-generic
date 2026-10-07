@@ -3,3 +3,13 @@ target/
 .DS_Store
 _build/
 .codex-tmp/
+
+# AI agent / assistant local state (never track)
+.claude/
+.codex/
+.cursor/
+.gemini/
+.kiro/
+.windsurf/
+.aider*
+CLAUDE.local.md
