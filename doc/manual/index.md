@@ -1,6 +1,6 @@
-# Luna-Generic
+# luna-generic
 
-English documentation for the intended `v0.3.3` release of `Luna-Flow/luna-generic`.
+This manual documents the intended `v0.3.3` release of `Luna-Flow/luna-generic`.
 
 ## Overview
 
@@ -12,7 +12,7 @@ The current release candidate centers on three changes:
 - Integral-to-target conversions are expressed through explicit homomorphism traits.
 - `Integral::normalize` now provides a canonical `BigInt` form for all integral source types.
 
-## Exported Traits
+## Exported traits
 
 - `AddMonoid`, `MulMonoid`
 - `AddGroup`, `MulGroup`
@@ -21,12 +21,12 @@ The current release candidate centers on three changes:
 - `NatHomomorphism`, `IntegralHomomorphism`
 - `Num`
 
-## Exported Operations and Default Types
+## Exported operations and default types
 
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
 - Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`
 
-## Integer Model
+## Integer model
 
 - `Nat` covers `UInt`, `UInt16`, and `UInt64`
 - `Integral` covers signed integers, unsigned integers, and `BigInt`
@@ -41,6 +41,10 @@ The current release candidate centers on three changes:
 - The default implementation strategy is `Integral::normalize` followed by target-specific `BigInt` conversion
 - `BigInt` embeddings are exact
 - `Float` and `Double` embeddings are approximate and may round large values
+
+## Where to read next
+
+The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way.
 
 ## Validation
 

@@ -46,11 +46,7 @@ This documentation tracks the intended `v0.3.3` release content.
 
 Comprehensive API documentation is available at [mooncakes.io](https://mooncakes.io/docs/Luna-Flow/luna-generic).
 
-We provide README-level documentation in multiple languages:
-
-- English: [doc/en_US/README.md](./doc/en_US/README.md)
-- Simplified Chinese: [doc/zh_CN/README.md](./doc/zh_CN/README.md)
-- Japanese: [doc/ja_JP/README.md](./doc/ja_JP/README.md)
+The manual is published at [luna-flow.github.io/en/luna-generic](https://luna-flow.github.io/en/luna-generic/), with Simplified Chinese and Japanese translations. Its English source lives in [doc/manual](./doc/manual/index.md); translations are maintained as gettext catalogs in `doc/locale`.
 
 ## Version History
 
@@ -75,6 +71,6 @@ moon test
 Before triggering the publish workflow:
 
 1. Confirm `moon.mod` contains the intended version.
-2. Confirm the README files match the exported package surface.
+2. Confirm the README and `doc/manual` match the exported package surface.
 3. Run `moon check` and `moon test`.
 4. Trigger `publish-package` after the release commit is pushed.

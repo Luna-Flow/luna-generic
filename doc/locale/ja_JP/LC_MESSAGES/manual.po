@@ -1,0 +1,337 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "Algebraic traits and default numeric instances that define the generic foundation for LunaFlow math packages."
+msgstr "LunaFlow の数学パッケージの汎用的な基盤となる代数 trait と既定の数値インスタンス。"
+
+#: manual/api/core.md:1
+msgid "core API"
+msgstr "core API"
+
+#: manual/api/core.md:3
+msgid "Purpose"
+msgstr "役割"
+
+#: manual/api/core.md:5
+msgid "`luna-generic` is the algebraic trait layer of LunaFlow. It does not provide numerical algorithms or containers by itself; it defines the reusable capability surface that higher-level packages depend on."
+msgstr "`luna-generic` は LunaFlow の代数 trait 基盤レイヤです。数値アルゴリズムやコンテナを直接提供するのではなく、上位パッケージが共有する能力境界を定義します。"
+
+#: manual/api/core.md:9
+msgid "Structural traits"
+msgstr "構造 traits"
+
+#: manual/api/core.md:20
+msgid "These traits live in `src/structure.mbt`."
+msgstr "これらは `src/structure.mbt` にあります。"
+
+#: manual/api/core.md:22
+msgid "Operational traits"
+msgstr "操作 traits"
+
+#: manual/api/core.md:29
+msgid "These traits live in `src/operation.mbt`."
+msgstr "これらは `src/operation.mbt` にあります。"
+
+#: manual/api/core.md:31
+msgid "Shipped instances"
+msgstr "同梱インスタンス"
+
+#: manual/api/core.md:33
+msgid "Signed integers: `Int`, `Int16`, `Int64`"
+msgstr "符号付き整数：`Int`、`Int16`、`Int64`"
+
+#: manual/api/core.md:34
+msgid "Unsigned integers: `UInt`, `UInt16`, `UInt64`"
+msgstr "符号なし整数：`UInt`、`UInt16`、`UInt64`"
+
+#: manual/api/core.md:35
+msgid "Exact big integer: `BigInt`"
+msgstr "正確な大整数：`BigInt`"
+
+#: manual/api/core.md:36
+msgid "Floating instances: `Float`, `Double`"
+msgstr "浮動小数点：`Float`、`Double`"
+
+#: manual/api/core.md:38
+msgid "Semantic notes"
+msgstr "意味論メモ"
+
+#: manual/api/core.md:40
+msgid "`Integral::normalize(Self) -> BigInt` is the canonical exact bridge from any integral instance into `BigInt`."
+msgstr "`Integral::normalize(Self) -> BigInt` は任意の整数値を `BigInt` へ正規化する標準入口です。"
+
+#: manual/api/core.md:42
+msgid "`Nat` reuses the same `normalize(Self) -> BigInt` bridge via trait inheritance."
+msgstr "`Nat` も trait 継承により同じ `normalize(Self) -> BigInt` 経路を使います。"
+
+#: manual/api/core.md:43
+msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are polymorphic embedding entry points over source traits instead of width-specific constructors."
+msgstr "`NatHomomorphism::from_nat` と `IntegralHomomorphism::from_integral` は、幅ごとの専用コンストラクタではなく、ソース trait に対する多相的な埋め込み入口です。"
+
+#: manual/api/core.md:46
+msgid "The default embedding strategy is `Integral::normalize` followed by target-specific conversion from `BigInt`."
+msgstr "既定の埋め込み経路は `Integral::normalize` の後に対象型ごとの `BigInt` 変換を呼ぶ形です。"
+
+#: manual/api/core.md:48
+msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
+msgstr "符号なし整数は `Semiring` までで止まり、加法逆元を持つ構造のふりをしません。"
+
+#: manual/api/core.md:50
+msgid "`Float` and `Double` implement homomorphism traits as approximate embeddings, so very large integral values may round."
+msgstr "`Float` と `Double` の埋め込みは近似であり、大きな整数は丸められ得ます。"
+
+#: manual/api/core.md:53
+msgid "Source map"
+msgstr "ソース入口"
+
+#: manual/api/core.md:55
+msgid "`src/structure.mbt`: trait definitions"
+msgstr "`src/structure.mbt`：trait 定義"
+
+#: manual/api/core.md:56
+msgid "`src/operation.mbt`: operational traits"
+msgstr "`src/operation.mbt`：基礎操作 traits"
+
+#: manual/api/core.md:57
+msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
+msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：既定インスタンス"
+
+#: manual/design/core.md:1
+msgid "core design"
+msgstr "core 設計"
+
+#: manual/design/core.md:3
+msgid "Design goal"
+msgstr "設計目標"
+
+#: manual/design/core.md:5
+msgid "`luna-generic` gives LunaFlow a shared algebraic vocabulary. Packages such as `arithmetic`, `luna-complex`, `linear-algebra`, and `luna-poly` should be able to describe their requirements in terms of reusable traits instead of inventing their own incompatible capability layers."
+msgstr "`luna-generic` は LunaFlow 全体に共有される代数語彙を与え、 `arithmetic`、`luna-complex`、`linear-algebra`、`luna-poly` などが同じ能力境界を再利用できるようにします。"
+
+#: manual/design/core.md:10
+msgid "Main design decisions"
+msgstr "主な設計判断"
+
+#: manual/design/core.md:12
+msgid "The trait graph is layered and intentionally small."
+msgstr "trait グラフを層化し、小さく保つ。"
+
+#: manual/design/core.md:13
+msgid "Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` are kept separate from operational traits such as `Zero`, `One`, `Inverse`, and `Conjugate`."
+msgstr "`Ring`、`Field`、`Integral`、`Nat` のような構造 traits と、 `Zero`、`One`、`Inverse`、`Conjugate` のような操作 traits を分離する。"
+
+#: manual/design/core.md:16
+msgid "Embeddings are explicit through `NatHomomorphism` and `IntegralHomomorphism`."
+msgstr "埋め込みは `NatHomomorphism` と `IntegralHomomorphism` で明示する。"
+
+#: manual/design/core.md:18
+msgid "`Integral::normalize` is the canonical exact bridge into `BigInt`."
+msgstr "`Integral::normalize` を `BigInt` への標準的な厳密ブリッジにする。"
+
+#: manual/design/core.md:19
+msgid "Target-side default homomorphism implementations are expected to route through normalized `BigInt` values."
+msgstr "対象側の既定実装は、正規化済み `BigInt` を経由する。"
+
+#: manual/design/core.md:21
+msgid "Unsigned types stop before additive inverse, so the abstraction stays mathematically honest."
+msgstr "符号なし型に加法逆元を主張させず、数学的整合性を保つ。"
+
+#: manual/design/core.md:24
+msgid "Boundaries"
+msgstr "境界"
+
+#: manual/design/core.md:26
+msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
+msgstr "このパッケージは行列、複素数、多項式、解析関数、数値アルゴリズムを定義しません。"
+
+#: manual/design/core.md:28
+msgid "It does not erase the semantic difference between exact and approximate number systems."
+msgstr "正確系と近似系の意味論差を無理に隠しません。"
+
+#: manual/index.md:1
+msgid "luna-generic"
+msgstr "luna-generic"
+
+#: manual/index.md:3
+msgid "This manual documents the intended `v0.3.3` release of `Luna-Flow/luna-generic`."
+msgstr "このマニュアルは `Luna-Flow/luna-generic` の想定 `v0.3.3` リリースを説明します。"
+
+#: manual/index.md:5
+msgid "Overview"
+msgstr "概要"
+
+#: manual/index.md:7
+msgid "`luna-generic` provides general algebraic traits and default numeric instances for Luna projects."
+msgstr "`luna-generic` は Luna プロジェクト向けに、一般的な代数 trait と標準数値型の既定インスタンスを提供します。"
+
+#: manual/index.md:9
+msgid "The current release candidate centers on three changes:"
+msgstr "このリリース候補の中心は次の 3 点です。"
+
+#: manual/index.md:11
+msgid "`BigInt` is now part of the default exported numeric surface."
+msgstr "`BigInt` が既定で公開される数値型に追加されました。"
+
+#: manual/index.md:12
+msgid "Integral-to-target conversions are expressed through explicit homomorphism traits."
+msgstr "整数から対象型への埋め込みは、明示的な準同型 trait として整理されました。"
+
+#: manual/index.md:13
+msgid "`Integral::normalize` now provides a canonical `BigInt` form for all integral source types."
+msgstr "`Integral::normalize` により、すべての整数ソース型に対して正規化済みの `BigInt` 入口が追加されました。"
+
+#: manual/index.md:15
+msgid "Exported traits"
+msgstr "公開 Trait"
+
+#: manual/index.md:24
+msgid "Exported operations and default types"
+msgstr "公開演算と既定型"
+
+#: manual/index.md:26
+msgid "Operations: `One`, `Zero`, `Inverse`, `Conjugate`"
+msgstr "演算 trait: `One`, `Zero`, `Inverse`, `Conjugate`"
+
+#: manual/index.md:27
+msgid "Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
+msgstr "既定数値型: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
+
+#: manual/index.md:29
+msgid "Integer model"
+msgstr "整数モデル"
+
+#: manual/index.md:31
+msgid "`Nat` covers `UInt`, `UInt16`, and `UInt64`"
+msgstr "`Nat` は `UInt`、`UInt16`、`UInt64` を対象とします"
+
+#: manual/index.md:32
+msgid "`Integral` covers signed integers, unsigned integers, and `BigInt`"
+msgstr "`Integral` は符号付き整数、符号なし整数、および `BigInt` を対象とします"
+
+#: manual/index.md:33
+msgid "Unsigned integer instances stop at `Semiring`"
+msgstr "符号なし整数インスタンスは `Semiring` までです"
+
+#: manual/index.md:34
+msgid "`Integral::normalize` canonicalizes any integral value into `BigInt`"
+msgstr "`Integral::normalize` は任意の整数値を `BigInt` へ正規化します"
+
+#: manual/index.md:35
+msgid "`Nat` reuses `Integral::normalize` for its exact embedding into `BigInt`"
+msgstr "`Nat` は `Integral::normalize` を通じて `BigInt` への正確な埋め込みを共有します"
+
+#: manual/index.md:37
+msgid "Embeddings"
+msgstr "埋め込み API"
+
+#: manual/index.md:39
+msgid "`NatHomomorphism::from_nat` provides polymorphic target-side embeddings from any `Nat` source type"
+msgstr "`NatHomomorphism::from_nat` は任意の `Nat` ソース型からの多相的な対象側埋め込みを提供します"
+
+#: manual/index.md:40
+msgid "`IntegralHomomorphism::from_integral` provides polymorphic target-side embeddings from any `Integral` source type"
+msgstr "`IntegralHomomorphism::from_integral` は任意の `Integral` ソース型からの多相的な対象側埋め込みを提供します"
+
+#: manual/index.md:41
+msgid "The default implementation strategy is `Integral::normalize` followed by target-specific `BigInt` conversion"
+msgstr "既定の実装経路は `Integral::normalize` の後に対象型ごとの `BigInt` 変換を呼ぶ形です"
+
+#: manual/index.md:42
+msgid "`BigInt` embeddings are exact"
+msgstr "`BigInt` への埋め込みは正確です"
+
+#: manual/index.md:43
+msgid "`Float` and `Double` embeddings are approximate and may round large values"
+msgstr "`Float` と `Double` への埋め込みは近似であり、大きな値は丸められる可能性があります"
+
+#: manual/index.md:45
+msgid "Where to read next"
+msgstr "次に読むもの"
+
+#: manual/index.md:47
+msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way."
+msgstr "[core チュートリアル](tutorial/core.md)では、これらの trait に対して小さな汎用アルゴリズムを書きます。[core API](api/core.md) はエクスポートされたすべての trait とインスタンスを列挙し、[core 設計](design/core.md)は階層と埋め込みがこの形になっている理由を説明します。"
+
+#: manual/index.md:49
+msgid "Validation"
+msgstr "検証"
+
+#: manual/index.md:51
+msgid "Recommended release checks:"
+msgstr "推奨するリリース前チェック:"
+
+#: manual/tutorial/core.md:1
+msgid "core tutorial"
+msgstr "core チュートリアル"
+
+#: manual/tutorial/core.md:3
+msgid "Write algorithms against structure, not concrete numbers"
+msgstr "具体型ではなく構造に対してアルゴリズムを書く"
+
+#: manual/tutorial/core.md:11
+msgid "This function can work over signed integers, `BigInt`, `Float`, `Double`, and future external types that implement the same traits."
+msgstr "この関数は符号付き整数、`BigInt`、`Float`、`Double`、そして同じ traits を実装した外部型に再利用できます。"
+
+#: manual/tutorial/core.md:14
+msgid "Normalize integral inputs through `BigInt`"
+msgstr "`BigInt` へ正規化する"
+
+#: manual/tutorial/core.md:22
+msgid "Use `Integral::normalize` when you need one exact representation across multiple integral source types."
+msgstr "複数の整数ソース型をまたいで 1 つの正確な表現を使いたいときは、 `Integral::normalize` を使います。"
+
+#: manual/tutorial/core.md:25
+msgid "Use explicit target-side embeddings"
+msgstr "対象側埋め込みを明示する"
+
+#: manual/tutorial/core.md:33
+msgid "This keeps conversions explicit and avoids hidden assumptions in higher-level packages."
+msgstr "これにより、上位パッケージが暗黙変換を勝手に前提化するのを防げます。"
+
+#: manual/tutorial/core.md:36
+msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the source into `BigInt` first, then performing the target-specific conversion."
+msgstr "`NatHomomorphism` と `IntegralHomomorphism` は、まずソース値を `Integral::normalize` で `BigInt` に正規化し、その後に対象型ごとの変換を行うよう実装します。"
+
+#: manual/tutorial/core.md:39
+msgid "Practical guidance"
+msgstr "実践ガイド"
+
+#: manual/tutorial/core.md:41
+msgid "Choose the smallest trait set that expresses the algorithm you need."
+msgstr "アルゴリズムが本当に必要とする最小の trait 集合を選ぶ。"
+
+#: manual/tutorial/core.md:42
+msgid "Require `Field` only when reciprocal or division semantics are really needed."
+msgstr "逆元や除法が必要なときだけ `Field` を要求する。"
+
+#: manual/tutorial/core.md:43
+msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
+msgstr "`Float` と `Double` は同じ抽象面を持っていても近似バックエンドとして扱う。"
+
+#~ msgid "Documentation Standard"
+#~ msgstr "ドキュメント標準"
+
+#~ msgid "This repository's documentation must describe the real implementation on the current branch for Luna-Flow/luna-generic. It should stay aligned with the exported surface, repository layout, and release narrative."
+#~ msgstr "Luna-Flow/luna-generic のドキュメントは、現在のブランチに存在する実装だけを記述し、公開面・リポジトリ構成・リリース叙述と常に整合していなければなりません。"
+
+#~ msgid "Provide `README.md`, `doc_standard.md`, and structured module or subsystem documents for every supported locale."
+#~ msgstr "各対応言語で `README.md`、`doc_standard.md`、モジュールまたはサブシステム文書をそろえる。"
+
+#~ msgid "Document only APIs, workflows, and design decisions that exist in the current branch."
+#~ msgstr "現在のブランチに存在しない API や運用手順は書かない。"
+
+#~ msgid "Keep the directory layout aligned with real package or subsystem boundaries."
+#~ msgstr "ディレクトリ構成は実際のパッケージ境界またはサブシステム境界に合わせる。"
+
+#~ msgid "Each module or subsystem directory must contain `api.md`, `tutorial.md`, and `design.md`."
+#~ msgstr "各モジュールまたはサブシステム配下に `api.md`、`tutorial.md`、`design.md` を置く。"
+
+#~ msgid "Use cross-links between related mutable/immutable, runtime/frontend, or spec/implementation areas when semantics differ."
+#~ msgstr "可観測な差異がある場合は、関連ページを相互参照しつつ明示する。"

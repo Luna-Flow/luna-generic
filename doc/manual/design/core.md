@@ -1,4 +1,4 @@
-# core Design
+# core design
 
 ## Design goal
 

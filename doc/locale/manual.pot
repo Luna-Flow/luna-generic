@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "Algebraic traits and default numeric instances that define the generic foundation for LunaFlow math packages."
+msgstr ""
+
+#: manual/api/core.md:1
+msgid "core API"
+msgstr ""
+
+#: manual/api/core.md:3
+msgid "Purpose"
+msgstr ""
+
+#: manual/api/core.md:5
+msgid "`luna-generic` is the algebraic trait layer of LunaFlow. It does not provide numerical algorithms or containers by itself; it defines the reusable capability surface that higher-level packages depend on."
+msgstr ""
+
+#: manual/api/core.md:9
+msgid "Structural traits"
+msgstr ""
+
+#: manual/api/core.md:20
+msgid "These traits live in `src/structure.mbt`."
+msgstr ""
+
+#: manual/api/core.md:22
+msgid "Operational traits"
+msgstr ""
+
+#: manual/api/core.md:29
+msgid "These traits live in `src/operation.mbt`."
+msgstr ""
+
+#: manual/api/core.md:31
+msgid "Shipped instances"
+msgstr ""
+
+#: manual/api/core.md:33
+msgid "Signed integers: `Int`, `Int16`, `Int64`"
+msgstr ""
+
+#: manual/api/core.md:34
+msgid "Unsigned integers: `UInt`, `UInt16`, `UInt64`"
+msgstr ""
+
+#: manual/api/core.md:35
+msgid "Exact big integer: `BigInt`"
+msgstr ""
+
+#: manual/api/core.md:36
+msgid "Floating instances: `Float`, `Double`"
+msgstr ""
+
+#: manual/api/core.md:38
+msgid "Semantic notes"
+msgstr ""
+
+#: manual/api/core.md:40
+msgid "`Integral::normalize(Self) -> BigInt` is the canonical exact bridge from any integral instance into `BigInt`."
+msgstr ""
+
+#: manual/api/core.md:42
+msgid "`Nat` reuses the same `normalize(Self) -> BigInt` bridge via trait inheritance."
+msgstr ""
+
+#: manual/api/core.md:43
+msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are polymorphic embedding entry points over source traits instead of width-specific constructors."
+msgstr ""
+
+#: manual/api/core.md:46
+msgid "The default embedding strategy is `Integral::normalize` followed by target-specific conversion from `BigInt`."
+msgstr ""
+
+#: manual/api/core.md:48
+msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
+msgstr ""
+
+#: manual/api/core.md:50
+msgid "`Float` and `Double` implement homomorphism traits as approximate embeddings, so very large integral values may round."
+msgstr ""
+
+#: manual/api/core.md:53
+msgid "Source map"
+msgstr ""
+
+#: manual/api/core.md:55
+msgid "`src/structure.mbt`: trait definitions"
+msgstr ""
+
+#: manual/api/core.md:56
+msgid "`src/operation.mbt`: operational traits"
+msgstr ""
+
+#: manual/api/core.md:57
+msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
+msgstr ""
+
+#: manual/design/core.md:1
+msgid "core design"
+msgstr ""
+
+#: manual/design/core.md:3
+msgid "Design goal"
+msgstr ""
+
+#: manual/design/core.md:5
+msgid "`luna-generic` gives LunaFlow a shared algebraic vocabulary. Packages such as `arithmetic`, `luna-complex`, `linear-algebra`, and `luna-poly` should be able to describe their requirements in terms of reusable traits instead of inventing their own incompatible capability layers."
+msgstr ""
+
+#: manual/design/core.md:10
+msgid "Main design decisions"
+msgstr ""
+
+#: manual/design/core.md:12
+msgid "The trait graph is layered and intentionally small."
+msgstr ""
+
+#: manual/design/core.md:13
+msgid "Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` are kept separate from operational traits such as `Zero`, `One`, `Inverse`, and `Conjugate`."
+msgstr ""
+
+#: manual/design/core.md:16
+msgid "Embeddings are explicit through `NatHomomorphism` and `IntegralHomomorphism`."
+msgstr ""
+
+#: manual/design/core.md:18
+msgid "`Integral::normalize` is the canonical exact bridge into `BigInt`."
+msgstr ""
+
+#: manual/design/core.md:19
+msgid "Target-side default homomorphism implementations are expected to route through normalized `BigInt` values."
+msgstr ""
+
+#: manual/design/core.md:21
+msgid "Unsigned types stop before additive inverse, so the abstraction stays mathematically honest."
+msgstr ""
+
+#: manual/design/core.md:24
+msgid "Boundaries"
+msgstr ""
+
+#: manual/design/core.md:26
+msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
+msgstr ""
+
+#: manual/design/core.md:28
+msgid "It does not erase the semantic difference between exact and approximate number systems."
+msgstr ""
+
+#: manual/index.md:1
+msgid "luna-generic"
+msgstr ""
+
+#: manual/index.md:3
+msgid "This manual documents the intended `v0.3.3` release of `Luna-Flow/luna-generic`."
+msgstr ""
+
+#: manual/index.md:5
+msgid "Overview"
+msgstr ""
+
+#: manual/index.md:7
+msgid "`luna-generic` provides general algebraic traits and default numeric instances for Luna projects."
+msgstr ""
+
+#: manual/index.md:9
+msgid "The current release candidate centers on three changes:"
+msgstr ""
+
+#: manual/index.md:11
+msgid "`BigInt` is now part of the default exported numeric surface."
+msgstr ""
+
+#: manual/index.md:12
+msgid "Integral-to-target conversions are expressed through explicit homomorphism traits."
+msgstr ""
+
+#: manual/index.md:13
+msgid "`Integral::normalize` now provides a canonical `BigInt` form for all integral source types."
+msgstr ""
+
+#: manual/index.md:15
+msgid "Exported traits"
+msgstr ""
+
+#: manual/index.md:24
+msgid "Exported operations and default types"
+msgstr ""
+
+#: manual/index.md:26
+msgid "Operations: `One`, `Zero`, `Inverse`, `Conjugate`"
+msgstr ""
+
+#: manual/index.md:27
+msgid "Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
+msgstr ""
+
+#: manual/index.md:29
+msgid "Integer model"
+msgstr ""
+
+#: manual/index.md:31
+msgid "`Nat` covers `UInt`, `UInt16`, and `UInt64`"
+msgstr ""
+
+#: manual/index.md:32
+msgid "`Integral` covers signed integers, unsigned integers, and `BigInt`"
+msgstr ""
+
+#: manual/index.md:33
+msgid "Unsigned integer instances stop at `Semiring`"
+msgstr ""
+
+#: manual/index.md:34
+msgid "`Integral::normalize` canonicalizes any integral value into `BigInt`"
+msgstr ""
+
+#: manual/index.md:35
+msgid "`Nat` reuses `Integral::normalize` for its exact embedding into `BigInt`"
+msgstr ""
+
+#: manual/index.md:37
+msgid "Embeddings"
+msgstr ""
+
+#: manual/index.md:39
+msgid "`NatHomomorphism::from_nat` provides polymorphic target-side embeddings from any `Nat` source type"
+msgstr ""
+
+#: manual/index.md:40
+msgid "`IntegralHomomorphism::from_integral` provides polymorphic target-side embeddings from any `Integral` source type"
+msgstr ""
+
+#: manual/index.md:41
+msgid "The default implementation strategy is `Integral::normalize` followed by target-specific `BigInt` conversion"
+msgstr ""
+
+#: manual/index.md:42
+msgid "`BigInt` embeddings are exact"
+msgstr ""
+
+#: manual/index.md:43
+msgid "`Float` and `Double` embeddings are approximate and may round large values"
+msgstr ""
+
+#: manual/index.md:45
+msgid "Where to read next"
+msgstr ""
+
+#: manual/index.md:47
+msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way."
+msgstr ""
+
+#: manual/index.md:49
+msgid "Validation"
+msgstr ""
+
+#: manual/index.md:51
+msgid "Recommended release checks:"
+msgstr ""
+
+#: manual/tutorial/core.md:1
+msgid "core tutorial"
+msgstr ""
+
+#: manual/tutorial/core.md:3
+msgid "Write algorithms against structure, not concrete numbers"
+msgstr ""
+
+#: manual/tutorial/core.md:11
+msgid "This function can work over signed integers, `BigInt`, `Float`, `Double`, and future external types that implement the same traits."
+msgstr ""
+
+#: manual/tutorial/core.md:14
+msgid "Normalize integral inputs through `BigInt`"
+msgstr ""
+
+#: manual/tutorial/core.md:22
+msgid "Use `Integral::normalize` when you need one exact representation across multiple integral source types."
+msgstr ""
+
+#: manual/tutorial/core.md:25
+msgid "Use explicit target-side embeddings"
+msgstr ""
+
+#: manual/tutorial/core.md:33
+msgid "This keeps conversions explicit and avoids hidden assumptions in higher-level packages."
+msgstr ""
+
+#: manual/tutorial/core.md:36
+msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the source into `BigInt` first, then performing the target-specific conversion."
+msgstr ""
+
+#: manual/tutorial/core.md:39
+msgid "Practical guidance"
+msgstr ""
+
+#: manual/tutorial/core.md:41
+msgid "Choose the smallest trait set that expresses the algorithm you need."
+msgstr ""
+
+#: manual/tutorial/core.md:42
+msgid "Require `Field` only when reciprocal or division semantics are really needed."
+msgstr ""
+
+#: manual/tutorial/core.md:43
+msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
+msgstr ""

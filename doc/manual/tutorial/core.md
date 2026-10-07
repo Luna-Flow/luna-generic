@@ -1,4 +1,4 @@
-# core Tutorial
+# core tutorial
 
 ## Write algorithms against structure, not concrete numbers
 
