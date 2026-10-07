@@ -2,46 +2,46 @@
 
 General algebraic traits and default numeric instances for Luna projects.
 
-## v0.3.3 - Normalize-Driven Homomorphism Cleanup
+## v0.4.0 - Canonical Maps and Representative Lifts
 
-This documentation tracks the intended `v0.3.3` release content.
+This documentation tracks the intended `v0.4.0` release content.
 
 ### Package Positioning
 
 - `luna-generic` provides lightweight algebraic traits for additive, multiplicative, ring-like, field-like, and numeric behavior.
 - The package ships default instances for signed integers, unsigned integers, `BigInt`, `Float`, and `Double`.
-- Integral-to-target embeddings are now modeled explicitly through homomorphism traits instead of being mixed into `Integral`.
+- Conversions between number types separate the canonical homomorphism out of ℤ from the choice of a representative for a machine integer.
 
-### What Defines v0.3.3
+### What Defines v0.4.0
 
-- `BigInt` is now part of the default exported numeric surface.
-- `Integral` now provides `normalize`, which canonicalizes any integral value into `BigInt`.
-- `NatHomomorphism` and `IntegralHomomorphism` provide polymorphic target-side embeddings for natural and integral source types.
-- `Integral::normalize` is the canonical source-side entry point for both `Integral` and `Nat`.
-- Floating-point embeddings remain approximate and follow target floating-point precision limits.
+- `FromNat` and `FromInteger` are target-side traits for the unique homomorphisms ℕ -> `Self` and ℤ -> `Self`, taking a `BigInt` argument.
+- `Integral` now extends `Semiring + FromInteger`: an integral type is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of the canonical map, `from_integer(normalize(x)) == x`. This is a breaking change for external `Integral` instances.
+- `lift_to` lifts an integral value to its representative and maps it into any `FromInteger` target. It is a function, not a homomorphism.
+- `Section[S, Q, A]` certifies representative lifts of quotient algebras; `Section::of_integral` is the canonical one for every integral type.
+- `Hom::from_integer` certifies the canonical map out of ℤ.
+- `NatHomomorphism`, `IntegralHomomorphism`, `Hom::from_nat` and `Hom::from_integral` are deprecated: they compose a lift with a canonical map, which is not a homomorphism for fixed-width sources.
 
 ### Public Surface
 
-- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Integral`, `Nat`, `NatHomomorphism`, `IntegralHomomorphism`, `Num`
+- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `FromNat`, `FromInteger`, `Integral`, `Nat`, `Num`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
-- Generalized homomorphisms: `Hom`, `Algebra`, `Op`, `Prod`, `Reduct`, and the signature tags `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
+- Functions: `lift_to`
+- Generalized homomorphisms: `Hom`, `Section`, `Algebra`, `Op`, `Prod`, `Reduct`, and the signature tags `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
 - Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`
 
 ### Integer Families
 
-- `Nat` covers pure unsigned integer types: `UInt`, `UInt16`, `UInt64`
 - `Integral` covers signed and unsigned integers plus `BigInt`: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`
+- `Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, `UInt64`
+- Fixed-width integers are ℤ/2^k: their canonical map from ℤ reduces modulo 2^k, and `normalize` picks the representative in the type's range
 - `Byte` is intentionally excluded from both traits
 - Unsigned integer instances stop at `Semiring` and do not implement `AddGroup`, `Ring`, or `Num`
 
-### Embedding Guidance
+### Conversion Guidance
 
-- `Integral::normalize` provides a canonical `BigInt` representation for any integral value
-- `Nat` sources reuse the same `normalize(Self) -> BigInt` path through trait inheritance
-- `NatHomomorphism::from_nat` embeds any `Nat` source via `normalize`
-- `IntegralHomomorphism::from_integral` embeds any `Integral` source via `normalize`
-- `BigInt` embeddings are exact
-- `Float` and `Double` embeddings are approximate and may round large values
+- `FromInteger::from_integer` is exact for `BigInt`, reduces modulo 2^k for fixed-width integers, and rounds for `Float` and `Double`
+- `lift_to(x)` turns a machine integer into another number type without promising to preserve operations; it is a homomorphism only when the target modulus divides the source modulus, as for `Int64 -> Int`
+- Use `Section::of_integral` and `Hom::from_integer` when the laws need to be certified and checked
 
 ### Documentation
 
@@ -53,6 +53,7 @@ The manual is published at [luna-flow.github.io/en/luna-generic](https://luna-fl
 
 | Version | Date | Status | Notes |
 | --- | --- | --- | --- |
+| `0.4.0` | 2026-10-07 | release candidate | Adds `FromNat`, `FromInteger`, `lift_to` and `Section`; `Integral` extends `FromInteger` with the section law; deprecates `NatHomomorphism` and `IntegralHomomorphism` |
 | `0.3.3` | 2026-06-12 | release candidate | Refactors homomorphism traits around polymorphic methods and unifies natural/integral embeddings through `normalize` |
 | `0.3.2` | 2026-06-06 | published on mooncakes | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
 | `0.3.1` | 2026-06-06 | published on mooncakes | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |

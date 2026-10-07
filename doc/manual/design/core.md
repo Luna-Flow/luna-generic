@@ -13,11 +13,18 @@ their own incompatible capability layers.
 - Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` are kept
   separate from operational traits such as `Zero`, `One`, `Inverse`, and
   `Conjugate`.
-- Embeddings are explicit through `NatHomomorphism` and
-  `IntegralHomomorphism`.
-- `Integral::normalize` is the canonical exact bridge into `BigInt`.
-- Target-side default homomorphism implementations are expected to route
-  through normalized `BigInt` values.
+- Conversions are split into two halves that meet at ℤ, represented by
+  `BigInt`. The target side is the canonical map ℤ -> `R` (`FromInteger`),
+  which is unique and always a homomorphism. The source side is
+  `Integral::normalize`, which picks a representative and is a homomorphism
+  only for ℤ itself. `lift_to` composes them and promises nothing about
+  operations.
+- The halves are single-parameter traits because every conversion factors
+  through ℤ, the initial ring: no trait has to relate two types.
+- `Integral` extends `FromInteger` with the law
+  `from_integer(normalize(x)) == x`, which makes an integral type a quotient
+  of ℤ with chosen representatives. `FromInteger` takes a `BigInt` rather than
+  a generic integral source, so the traits do not refer to each other.
 - Unsigned types stop before additive inverse, so the abstraction stays
   mathematically honest.
 

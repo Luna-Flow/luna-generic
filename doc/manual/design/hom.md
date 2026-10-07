@@ -11,8 +11,8 @@ obligations auditable and testable.
 - MoonBit traits only have the `Self` parameter: there are no multi-parameter
   traits and no associated types, so a homomorphism `A -> B` cannot be a trait.
 - Homomorphisms out of ℕ and ℤ are unique (initial objects), which is why
-  `NatHomomorphism` and `IntegralHomomorphism` can live as target-side traits.
-  Other homomorphisms are generally not unique and must be values.
+  `FromNat` and `FromInteger` can live as target-side traits. Other
+  homomorphisms are generally not unique and must be values.
 
 ## Core decisions
 
@@ -21,8 +21,14 @@ obligations auditable and testable.
 - The only public trust entry is `Hom::postulate`. Kernel rules use the
   package-private `trust`, so searching for `postulate` lists exactly the
   user-level obligations. (`assume` is a reserved word in MoonBit, hence the
-  name.) The canonical embeddings `Hom::from_nat` and `Hom::from_integral`
-  are the other leaves: their obligation sits on the trait instances.
+  name.) `Section::postulate` is the trust entry for sections, and the
+  canonical `Hom::from_integer` and `Section::of_integral` are the other
+  leaves: their obligation sits on the trait instances.
+- A lift from a quotient back to its cover is a `Section`, not a `Hom`. It
+  carries the projection as a `Hom` and only promises `proj(lift(q)) == q`;
+  agreement with the operations on representatives follows from that law.
+  Keeping the two apart stops a representative lift, such as `Int -> BigInt`,
+  from being composed as if it were a homomorphism.
 - The signature is a phantom type `S` on the certificate, while the algebra is
   passed as a dictionary value `Algebra[S, A]`: the certificate says what is
   preserved, the dictionary is used for checking.
@@ -43,5 +49,8 @@ obligations auditable and testable.
   convention.
 - The certificate does not record the relation used by `check_by`, so lax and
   approximate maps compose as if they were strict.
-- Fixed-width integers are ℤ/2^k, not ℤ or ℕ, so canonical embeddings out of
-  them hold only while source arithmetic does not wrap.
+- Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are
+  sections, so they agree with the operations only while arithmetic does not
+  wrap.
+- The section law does not fix which representatives are chosen, so
+  properties such as order preservation need their own checks.

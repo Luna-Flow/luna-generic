@@ -28,6 +28,11 @@ msgstr "`luna-generic` 是 LunaFlow 的代数 trait 基础层。它本身不提�
 msgid "Structural traits"
 msgstr "结构 traits"
 
+#: manual/api/core.md:18
+#: manual/index.md:23
+msgid "Deprecated: `NatHomomorphism`, `IntegralHomomorphism`"
+msgstr "已废弃：`NatHomomorphism`、`IntegralHomomorphism`"
+
 #: manual/api/core.md:20
 msgid "These traits live in `src/structure.mbt`."
 msgstr "这些定义在 `src/structure.mbt` 中。"
@@ -61,47 +66,72 @@ msgid "Floating instances: `Float`, `Double`"
 msgstr "浮点实例：`Float`、`Double`"
 
 #: manual/api/core.md:38
-#: manual/api/hom.md:96
+#: manual/index.md:38
+msgid "Conversions"
+msgstr "转换"
+
+#: manual/api/core.md:40
+msgid "`FromNat::from_natural(BigInt) -> Self`: the unique semiring homomorphism ℕ -> `Self`. The argument must be non-negative."
+msgstr "`FromNat::from_natural(BigInt) -> Self`：唯一的半环同态 ℕ -> `Self`。参数必须非负。"
+
+#: manual/api/core.md:42
+msgid "`FromInteger::from_integer(BigInt) -> Self`: the unique ring homomorphism ℤ -> `Self`; it agrees with `from_natural` on non-negative arguments."
+msgstr "`FromInteger::from_integer(BigInt) -> Self`：唯一的环同态 ℤ -> `Self`；在非负参数上与 `from_natural` 一致。"
+
+#: manual/api/core.md:44
+msgid "`Integral::normalize(Self) -> BigInt`: the representative of a value. `Integral` extends `Semiring + FromInteger`, and the law is `Self::from_integer(normalize(x)) == x`."
+msgstr "`Integral::normalize(Self) -> BigInt`：一个值的代表元。`Integral` 扩展 `Semiring + FromInteger`，定律为 `Self::from_integer(normalize(x)) == x`。"
+
+#: manual/api/core.md:47
+msgid "`lift_to(x) -> R` for `x : S` with `S : Integral` and `R : FromInteger`: `R::from_integer(x.normalize())`. It is a function, not a homomorphism."
+msgstr "`lift_to(x) -> R`，其中 `x : S`，`S : Integral`，`R : FromInteger`：即 `R::from_integer(x.normalize())`。它是一个函数，不是同态。"
+
+#: manual/api/core.md:49
+msgid "Deprecated: `NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` compose `normalize` with a target conversion. Implement `FromNat` / `FromInteger` and call `lift_to` instead."
+msgstr "已废弃：`NatHomomorphism::from_nat` 与 `IntegralHomomorphism::from_integral` 把 `normalize` 与目标侧转换复合在一起。请改为实现 `FromNat` / `FromInteger` 并调用 `lift_to`。"
+
+#: manual/api/core.md:53
+#: manual/api/hom.md:129
 msgid "Semantic notes"
 msgstr "语义说明"
 
-#: manual/api/core.md:40
-msgid "`Integral::normalize(Self) -> BigInt` is the canonical exact bridge from any integral instance into `BigInt`."
-msgstr "`Integral::normalize(Self) -> BigInt` 是把任意整型值规范化到 `BigInt` 的标准入口。"
+#: manual/api/core.md:55
+msgid "Fixed-width integers are ℤ/2^k. Their `from_integer` reduces modulo 2^k, and `normalize` picks the representative in the type's range: `[-2^(k-1), 2^(k-1))` for signed types, `[0, 2^k)` for unsigned ones."
+msgstr "定宽整数是 ℤ/2^k。它们的 `from_integer` 按模 2^k 约化，`normalize` 选取类型范围内的代表元：有符号类型为 `[-2^(k-1), 2^(k-1))`，无符号类型为 `[0, 2^k)`。"
 
-#: manual/api/core.md:42
-msgid "`Nat` reuses the same `normalize(Self) -> BigInt` bridge via trait inheritance."
-msgstr "`Nat` 也通过 trait 继承复用同一条 `normalize(Self) -> BigInt` 路径。"
+#: manual/api/core.md:58
+msgid "`BigInt` is ℤ itself: `from_integer` and `normalize` are the identity."
+msgstr "`BigInt` 就是 ℤ 本身：`from_integer` 与 `normalize` 都是恒等映射。"
 
-#: manual/api/core.md:43
-msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are polymorphic embedding entry points over source traits instead of width-specific constructors."
-msgstr "`NatHomomorphism::from_nat` 与 `IntegralHomomorphism::from_integral` 不再按位宽拆方法，而是对源 trait 做多态嵌入。"
+#: manual/api/core.md:59
+msgid "`lift_to` is a homomorphism exactly when the target modulus divides the source modulus, as for `Int64 -> Int`. Into `BigInt`, `Float` or `Double` it is not one for fixed-width sources, because their arithmetic wraps."
+msgstr "`lift_to` 当且仅当目标模数整除源模数时是同态，例如 `Int64 -> Int`。对定宽源而言，映到 `BigInt`、`Float` 或 `Double` 都不是同态，因为源侧运算会回绕。"
 
-#: manual/api/core.md:46
-msgid "The default embedding strategy is `Integral::normalize` followed by target-specific conversion from `BigInt`."
-msgstr "默认嵌入路径是先做 `Integral::normalize`，再做目标类型自己的 `BigInt` 转换。"
+#: manual/api/core.md:62
+msgid "`Nat` covers the integral types whose representatives are non-negative. A true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope."
+msgstr "`Nat` 涵盖代表元非负的整数类型。真正的任意精度 ℕ 不是 ℤ 的商，不在本包范围内。"
 
-#: manual/api/core.md:48
+#: manual/api/core.md:64
 msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
 msgstr "无符号整数实例止步于 `Semiring`，不会伪装成带加法逆元的结构。"
 
-#: manual/api/core.md:50
-msgid "`Float` and `Double` implement homomorphism traits as approximate embeddings, so very large integral values may round."
-msgstr "`Float` 与 `Double` 的同态嵌入是近似的，大整数可能发生舍入。"
+#: manual/api/core.md:66
+msgid "`Float` and `Double` round in `from_natural` and `from_integer`, so very large values are approximate."
+msgstr "`Float` 与 `Double` 在 `from_natural` 和 `from_integer` 中会舍入，因此非常大的值是近似的。"
 
-#: manual/api/core.md:53
+#: manual/api/core.md:69
 msgid "Source map"
 msgstr "源码入口"
 
-#: manual/api/core.md:55
+#: manual/api/core.md:71
 msgid "`src/structure.mbt`: trait definitions"
 msgstr "`src/structure.mbt`：trait 定义"
 
-#: manual/api/core.md:56
+#: manual/api/core.md:72
 msgid "`src/operation.mbt`: operational traits"
 msgstr "`src/operation.mbt`：基础操作 traits"
 
-#: manual/api/core.md:57
+#: manual/api/core.md:73
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：默认实例"
 
@@ -110,146 +140,190 @@ msgid "hom API"
 msgstr "hom API"
 
 #: manual/api/hom.md:5
-msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a map `A -> B` that carries a certificate stating it preserves every operation of the signature `S`. The certificate cannot be forged outside this package. Its unproven leaves are `Hom::postulate` and the canonical embeddings `Hom::from_nat` and `Hom::from_integral`, whose obligation sits on trait instances."
-msgstr "`hom` 子系统提供广义同态：一个 `Hom[S, A, B]` 是一个映射 `A -> B`，并带有\"保持签名 `S` 中所有运算\"的证书。证书在本包外无法伪造。未经证明的叶子是 `Hom::postulate`，以及典范嵌入 `Hom::from_nat` 与 `Hom::from_integral`，后两者的义务落在 trait 实例上。"
+msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a map `A -> B` that carries a certificate stating it preserves every operation of the signature `S`. A `Section[S, Q, A]` certifies a lift that picks one representative per class of a quotient. Neither certificate can be forged outside this package. The unproven leaves are `Hom::postulate`, `Section::postulate`, and the canonical `Hom::from_integer` and `Section::of_integral`, whose obligation sits on trait instances."
+msgstr "`hom` 子系统提供广义同态：一个 `Hom[S, A, B]` 是一个映射 `A -> B`，并带有“保持签名 `S` 中所有运算”的证书。`Section[S, Q, A]` 证明一个提升从商的每个类中恰好选出一个代表元。两种证书在本包外都无法伪造。未经证明的叶子是 `Hom::postulate`、`Section::postulate`，以及典范的 `Hom::from_integer` 与 `Section::of_integral`，后两者的义务落在 trait 实例上。"
 
-#: manual/api/hom.md:12
-msgid "Source: `src/hom.mbt`."
-msgstr "源码位于 `src/hom.mbt`。"
+#: manual/api/hom.md:13
+msgid "Source: `src/hom.mbt`, `src/section.mbt`."
+msgstr "源码：`src/hom.mbt`、`src/section.mbt`。"
 
-#: manual/api/hom.md:14
+#: manual/api/hom.md:15
 msgid "Signature tags"
 msgstr "签名标签"
 
-#: manual/api/hom.md:22
+#: manual/api/hom.md:23
 msgid "Signature tags are empty enums that only appear at the type level. Users may define their own."
 msgstr "签名标签是空枚举，只在类型层出现。用户可以定义自己的标签。"
 
-#: manual/api/hom.md:25
+#: manual/api/hom.md:26
 msgid "Algebra dictionaries"
 msgstr "代数字典"
 
-#: manual/api/hom.md:27
+#: manual/api/hom.md:28
 msgid "`Op[A]`: one operation with `name`, `arity` and `eval`. `arity == 0` is a constant."
 msgstr "`Op[A]`：一个运算，包含 `name`、`arity`、`eval`。`arity == 0` 表示常量。"
 
-#: manual/api/hom.md:28
+#: manual/api/hom.md:29
 msgid "`Algebra[S, A]`: an interpretation of the signature `S` on the carrier `A`."
 msgstr "`Algebra[S, A]`：签名 `S` 在载体 `A` 上的一种解释。"
 
-#: manual/api/hom.md:29
+#: manual/api/hom.md:30
 msgid "`Algebra::add_monoid`, `mul_monoid`, `add_group`, `semiring`, `ring`: derived from the existing structure trait instances."
 msgstr "`Algebra::add_monoid`、`mul_monoid`、`add_group`、`semiring`、`ring`：从现有结构 trait 实例派生。"
 
-#: manual/api/hom.md:31
+#: manual/api/hom.md:32
 msgid "`Algebra::make(ops)`: builds a dictionary for a custom signature tag."
 msgstr "`Algebra::make(ops)`：为自定义签名标签构造字典。"
 
-#: manual/api/hom.md:32
+#: manual/api/hom.md:33
 msgid "`Algebra::prod(a, b)`: the componentwise product algebra on `Prod[A, B]`."
 msgstr "`Algebra::prod(a, b)`：逐分量的积代数，载体为 `Prod[A, B]`。"
 
-#: manual/api/hom.md:34
+#: manual/api/hom.md:35
 msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort."
 msgstr "同一个 `S` 的两个字典必须按相同顺序列出相同的运算（名字与元数一致），否则 `Algebra::prod` 与 `Hom::check_by` 会 abort。"
 
-#: manual/api/hom.md:37
+#: manual/api/hom.md:38
 msgid "Certificates assume one `S`-algebra per carrier: every dictionary of the same `S` on the same carrier must interpret the operations the same way. `then` composes through the middle carrier, so two different `Algebra::make` dictionaries on it would compose into a map that preserves neither."
 msgstr "证书假定每个载体上只有一个 `S`-代数：同一载体上、同一 `S` 的所有字典必须以相同方式解释运算。`then` 经由中间载体复合，因此若中间载体上有两个不同的 `Algebra::make` 字典，复合得到的映射对哪一个都不保持。"
 
-#: manual/api/hom.md:42
+#: manual/api/hom.md:43
 msgid "Product type"
 msgstr "积类型"
 
-#: manual/api/hom.md:44
+#: manual/api/hom.md:45
 msgid "`Prod[A, B]`: fields `fst` and `snd`. Implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
 msgstr "`Prod[A, B]`：字段 `fst`、`snd`。实现了 `Add`、`Mul`、`Neg`、`Sub`、`Zero`、`One`，并在分量满足时实现 `AddMonoid`、`MulMonoid`、`AddGroup`、`Semiring`、`Ring`。"
 
-#: manual/api/hom.md:48
+#: manual/api/hom.md:49
 msgid "Homomorphisms"
 msgstr "同态"
 
-#: manual/api/hom.md:50
+#: manual/api/hom.md:51
 msgid "Trust entry (creates a proof obligation):"
 msgstr "信任入口（产生证明义务）："
 
-#: manual/api/hom.md:52
+#: manual/api/hom.md:53
 msgid "`Hom::postulate(f)`: the caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation."
 msgstr "`Hom::postulate(f)`：调用者承诺，对 `S` 的每个运算 `op` 和所有参数 `xs`，`f(op_A(xs)) == op_B(xs.map(f))`。即使该映射只用松弛关系或容差关系检验，这一承诺也始终是严格相等。"
 
-#: manual/api/hom.md:57
+#: manual/api/hom.md:58
 msgid "Inference rules (no new obligation):"
 msgstr "推理规则（不产生新义务）："
 
-#: manual/api/hom.md:59
+#: manual/api/hom.md:60
 msgid "`Hom::id()`, `h.then(g)`: identity and composition."
 msgstr "`Hom::id()`、`h.then(g)`：恒等与复合。"
 
-#: manual/api/hom.md:60
+#: manual/api/hom.md:61
 msgid "`h.forget(r)`: forgets structure along a `Reduct[S, T]` witness."
 msgstr "`h.forget(r)`：沿约化见证 `Reduct[S, T]` 遗忘结构。"
 
-#: manual/api/hom.md:61
+#: manual/api/hom.md:62
 msgid "`Hom::pair(f, g)`, `Hom::fst()`, `Hom::snd()`: pairing and projections."
 msgstr "`Hom::pair(f, g)`、`Hom::fst()`、`Hom::snd()`：积的配对与投影。"
 
-#: manual/api/hom.md:62
+#: manual/api/hom.md:63
 msgid "`h.to_add_group()`: an additive monoid hom between groups preserves `neg`."
 msgstr "`h.to_add_group()`：群之间的加法幺半群同态自动保持 `neg`。"
 
-#: manual/api/hom.md:63
+#: manual/api/hom.md:64
 msgid "`h.to_ring()`: a semiring hom between rings preserves `neg`."
 msgstr "`h.to_ring()`：环之间的半环同态自动保持 `neg`。"
 
-#: manual/api/hom.md:65
-msgid "Canonical embeddings (the obligation sits on the trait instance):"
-msgstr "典范嵌入（义务落在对应 trait 实例上）："
+#: manual/api/hom.md:66
+msgid "Canonical map (the obligation sits on the trait instance):"
+msgstr "典范映射（义务落在 trait 实例上）："
 
-#: manual/api/hom.md:67
-msgid "`Hom::from_nat()`: backed by the target's `NatHomomorphism` instance, typed `Hom[SemiringSig, N, R]`."
-msgstr "`Hom::from_nat()`：由目标的 `NatHomomorphism` 实例给出，类型为 `Hom[SemiringSig, N, R]`。"
+#: manual/api/hom.md:68
+msgid "`Hom::from_integer()`: the canonical map ℤ -> `R` of `FromInteger`, typed `Hom[SemiringSig, BigInt, R]`. It holds on every input; upgrade with `to_ring` when `R` is a ring."
+msgstr "`Hom::from_integer()`：`FromInteger` 给出的典范映射 ℤ -> `R`，类型为 `Hom[SemiringSig, BigInt, R]`。它对所有输入成立；`R` 是环时用 `to_ring` 升级。"
 
-#: manual/api/hom.md:69
-msgid "`Hom::from_integral()`: backed by the target's `IntegralHomomorphism` instance, typed `Hom[SemiringSig, Z, R]`. Upgrade with `to_ring` when both sides are rings."
-msgstr "`Hom::from_integral()`：由目标的 `IntegralHomomorphism` 实例给出，类型为 `Hom[SemiringSig, Z, R]`。两侧都是环时用 `to_ring` 升级。"
+#: manual/api/hom.md:71
+msgid "Deprecated: `Hom::from_nat()` and `Hom::from_integral()` certify a lift followed by a canonical map, which is not a homomorphism for fixed-width sources. Use `Hom::from_integer` with `Section::of_integral`."
+msgstr "已废弃：`Hom::from_nat()` 与 `Hom::from_integral()` 为“提升后接典范映射”发放证书，而这对定宽源不是同态。请改用 `Hom::from_integer` 配合 `Section::of_integral`。"
 
-#: manual/api/hom.md:73
+#: manual/api/hom.md:75
 msgid "Use:"
 msgstr "使用："
 
-#: manual/api/hom.md:77
+#: manual/api/hom.md:79
+msgid "Sections"
+msgstr "截面"
+
+#: manual/api/hom.md:81
+msgid "A section lifts a quotient `Q` back into `A` along a homomorphism `proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism, but it preserves every operation up to the kernel of `proj`, and exactly whenever the result is itself a representative."
+msgstr "截面沿同态 `proj : A -> Q` 把商 `Q` 提升回 `A`，满足 `proj(lift(q)) == q`。提升本身不是同态，但它在 `proj` 的核的意义下保持每个运算，并且当结果本身是代表元时严格保持。"
+
+#: manual/api/hom.md:86
+msgid "`Section::postulate(proj, lift)`: the caller promises `proj.apply(lift(q)) == q` for every `q`."
+msgstr "`Section::postulate(proj, lift)`：调用者承诺对每个 `q` 都有 `proj.apply(lift(q)) == q`。"
+
+#: manual/api/hom.md:88
+msgid "`Section::of_integral()`: the canonical section of an integral type, `Section[SemiringSig, Z, BigInt]`, with `proj = FromInteger::from_integer` and `lift = Integral::normalize`."
+msgstr "`Section::of_integral()`：整数类型的典范截面 `Section[SemiringSig, Z, BigInt]`，其中 `proj = FromInteger::from_integer`，`lift = Integral::normalize`。"
+
+#: manual/api/hom.md:92
+msgid "`s.normalize(a)`: `lift(proj(a))`, the normal form of `a`. Two values are congruent exactly when their normal forms are equal."
+msgstr "`s.normalize(a)`：`lift(proj(a))`，即 `a` 的范式。两个值同余当且仅当它们的范式相等。"
+
+#: manual/api/hom.md:94
+msgid "`s.is_representative(a)`: `normalize(a) == a`; on such results the lift agrees with the operations."
+msgstr "`s.is_representative(a)`：`normalize(a) == a`；在这样的结果上，提升与运算一致。"
+
+#: manual/api/hom.md:96
+msgid "`s.then(next)`, `s.forget(r)`, `s.to_add_group()`, `s.to_ring()`: inference rules, no new obligation."
+msgstr "`s.then(next)`、`s.forget(r)`、`s.to_add_group()`、`s.to_ring()`：推理规则，不产生新的义务。"
+
+#: manual/api/hom.md:98
+msgid "`s.check(samples)`: tests the section law."
+msgstr "`s.check(samples)`：检验截面律。"
+
+#: manual/api/hom.md:99
+msgid "`s.check_ops(quotient, cover, samples)`: tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation."
+msgstr "`s.check_ops(quotient, cover, samples)`：对每个运算检验 `proj(op_A(xs.map(lift))) == op_Q(xs)`。"
+
+#: manual/api/hom.md:102
+msgid "The section law rejects lifts that leave the class of their argument. It does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are both sections of `BigInt -> Int`, and only the second preserves the signed order."
+msgstr "截面律会拒绝离开参数所在类的提升，但不规定选哪个代表元：`[0, 2^32)` 与 `[-2^31, 2^31)` 都是 `BigInt -> Int` 的截面，只有后者保持有符号序。"
+
+#: manual/api/hom.md:107
+msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate."
+msgstr "`lift_to(x)` 把整数值提升后映入任意 `FromInteger` 目标，不发放证书。"
+
+#: manual/api/hom.md:110
 msgid "Reduct witnesses"
 msgstr "约化见证"
 
-#: manual/api/hom.md:84
+#: manual/api/hom.md:117
 msgid "Only this package constructs `Reduct` values."
 msgstr "`Reduct` 只能由本包构造。"
 
-#: manual/api/hom.md:86
+#: manual/api/hom.md:119
 msgid "Law checks"
 msgstr "定律检查"
 
-#: manual/api/hom.md:88
+#: manual/api/hom.md:121
 msgid "`h.check(src, dst, samples)`: checks the law with exact equality; requires `B : Eq`."
 msgstr "`h.check(src, dst, samples)`：以精确相等检查同态律，要求 `B : Eq`。"
 
-#: manual/api/hom.md:89
+#: manual/api/hom.md:122
 msgid "`h.check_by(src, dst, samples, rel)`: checks `rel(f(op_A(xs)), op_B(f(xs)))`. `rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets."
 msgstr "`h.check_by(src, dst, samples, rel)`：以关系 `rel(f(op_A(xs)), op_B(f(xs)))` 检查。`rel` 决定保持的强度：相等对应严格同态，`<=` 对应 lax 同态（如次可加映射），带容差的比较对应浮点目标上的近似同态。"
 
-#: manual/api/hom.md:94
+#: manual/api/hom.md:127
 msgid "An operation of arity `n` is tested on `samples.length()^n` tuples."
 msgstr "元数为 `n` 的运算会在 `samples.length()^n` 个元组上测试。"
 
-#: manual/api/hom.md:98
-msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so `Hom::from_nat` and `Hom::from_integral` only hold while source arithmetic does not overflow. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
-msgstr "定宽整数源类型（`Int`、`Int64`、`UInt` 等）是 ℤ/2^k，而不是整数环。从它们到 `BigInt` 不存在半环同态，因此 `Hom::from_nat` 与 `Hom::from_integral` 只在源侧运算不溢出时成立。同样的论证排除了 `Int -> Int64` 这类拓宽，而 `Int64 -> Int` 这类截断是环同态。"
+#: manual/api/hom.md:131
+msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so a lift into ℤ is a section, not a homomorphism. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
+msgstr "定宽整数源类型（`Int`、`Int64`、`UInt` 等）是 ℤ/2^k，而不是整数环。从它们到 `BigInt` 不存在半环同态，因此提升到 ℤ 是截面而不是同态。同样的论证排除了 `Int -> Int64` 这类拓宽，而 `Int64 -> Int` 这类截断是环同态。"
 
-#: manual/api/hom.md:104
+#: manual/api/hom.md:136
 msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
 msgstr "推理规则按严格同态来复合证书。只满足松弛（`<=`）或容差定律的映射，复合之后必须重新检验。"
 
-#: manual/api/hom.md:107
+#: manual/api/hom.md:139
 msgid "`Float` and `Double` targets satisfy the laws only up to rounding; use `check_by` with a tolerance. See the embedding notes in the [core API](core.md)."
 msgstr "`Float` 与 `Double` 目标只在舍入误差内满足同态律，应使用 `check_by` 加容差。参见 [core API](core.md) 的嵌入说明。"
 
@@ -278,31 +352,31 @@ msgid "Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` are kept
 msgstr "`Ring`、`Field`、`Integral`、`Nat` 这类结构 traits 与 `Zero`、`One`、 `Inverse`、`Conjugate` 这类操作 traits 分离。"
 
 #: manual/design/core.md:16
-msgid "Embeddings are explicit through `NatHomomorphism` and `IntegralHomomorphism`."
-msgstr "嵌入通过 `NatHomomorphism` 和 `IntegralHomomorphism` 明确表达。"
+msgid "Conversions are split into two halves that meet at ℤ, represented by `BigInt`. The target side is the canonical map ℤ -> `R` (`FromInteger`), which is unique and always a homomorphism. The source side is `Integral::normalize`, which picks a representative and is a homomorphism only for ℤ itself. `lift_to` composes them and promises nothing about operations."
+msgstr "转换被拆成在 ℤ（以 `BigInt` 表示）处汇合的两半。目标侧是典范映射 ℤ -> `R`（`FromInteger`），它唯一且总是同态。源侧是 `Integral::normalize`，它选取代表元，只有对 ℤ 本身才是同态。`lift_to` 把两者复合，不对运算作任何承诺。"
 
-#: manual/design/core.md:18
-msgid "`Integral::normalize` is the canonical exact bridge into `BigInt`."
-msgstr "`Integral::normalize` 作为到 `BigInt` 的统一精确桥接。"
+#: manual/design/core.md:22
+msgid "The halves are single-parameter traits because every conversion factors through ℤ, the initial ring: no trait has to relate two types."
+msgstr "两半都是单参数 trait，因为每个转换都经由初始环 ℤ 分解：没有哪个 trait 需要关联两个类型。"
 
-#: manual/design/core.md:19
-msgid "Target-side default homomorphism implementations are expected to route through normalized `BigInt` values."
-msgstr "目标侧的默认同态实现统一经由规范化后的 `BigInt`。"
+#: manual/design/core.md:24
+msgid "`Integral` extends `FromInteger` with the law `from_integer(normalize(x)) == x`, which makes an integral type a quotient of ℤ with chosen representatives. `FromInteger` takes a `BigInt` rather than a generic integral source, so the traits do not refer to each other."
+msgstr "`Integral` 以定律 `from_integer(normalize(x)) == x` 扩展 `FromInteger`，这使整数类型成为带有选定代表元的 ℤ 的商。`FromInteger` 接收 `BigInt` 而不是泛型的整数源，因此这些 trait 不会互相引用。"
 
-#: manual/design/core.md:21
+#: manual/design/core.md:28
 msgid "Unsigned types stop before additive inverse, so the abstraction stays mathematically honest."
 msgstr "无符号类型不提供加法逆元，保证抽象在数学上保持诚实。"
 
-#: manual/design/core.md:24
-#: manual/design/hom.md:33
+#: manual/design/core.md:31
+#: manual/design/hom.md:39
 msgid "Boundaries"
 msgstr "边界"
 
-#: manual/design/core.md:26
+#: manual/design/core.md:33
 msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
 msgstr "本包不定义矩阵、复数、多项式、解析函数或数值算法。"
 
-#: manual/design/core.md:28
+#: manual/design/core.md:35
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr "它不会刻意抹平精确数值系统与近似数值系统之间的语义差异。"
 
@@ -327,8 +401,8 @@ msgid "MoonBit traits only have the `Self` parameter: there are no multi-paramet
 msgstr "MoonBit 的 trait 只有 `Self` 一个参数，没有多参 trait 和关联类型，因此 `A -> B` 的同态不能写成 trait。"
 
 #: manual/design/hom.md:13
-msgid "Homomorphisms out of ℕ and ℤ are unique (initial objects), which is why `NatHomomorphism` and `IntegralHomomorphism` can live as target-side traits. Other homomorphisms are generally not unique and must be values."
-msgstr "从 ℕ、ℤ 出发的同态是唯一的（初始对象），所以 `NatHomomorphism`、`IntegralHomomorphism` 能以目标侧 trait 的形式存在。其他同态一般不唯一，必须是值。"
+msgid "Homomorphisms out of ℕ and ℤ are unique (initial objects), which is why `FromNat` and `FromInteger` can live as target-side traits. Other homomorphisms are generally not unique and must be values."
+msgstr "从 ℕ、ℤ 出发的同态是唯一的（始对象），所以 `FromNat` 与 `FromInteger` 可以作为目标侧 trait 存在。其他同态一般不唯一，必须作为值存在。"
 
 #: manual/design/hom.md:17
 msgid "Core decisions"
@@ -339,52 +413,60 @@ msgid "LCF-style certificates: `Hom[S, A, B]` has private fields and is only con
 msgstr "LCF 风格的证书：`Hom[S, A, B]` 字段私有，只能由本包构造。"
 
 #: manual/design/hom.md:21
-msgid "The only public trust entry is `Hom::postulate`. Kernel rules use the package-private `trust`, so searching for `postulate` lists exactly the user-level obligations. (`assume` is a reserved word in MoonBit, hence the name.) The canonical embeddings `Hom::from_nat` and `Hom::from_integral` are the other leaves: their obligation sits on the trait instances."
-msgstr "唯一的公开信任入口是 `Hom::postulate`。内核规则使用包内私有的 `trust`，所以搜索 `postulate` 得到的正好是全部用户层义务。（`assume` 是 MoonBit 的保留字，因此不用这个名字。）典范嵌入 `Hom::from_nat` 与 `Hom::from_integral` 是另外的叶子：它们的义务落在 trait 实例上。"
+msgid "The only public trust entry is `Hom::postulate`. Kernel rules use the package-private `trust`, so searching for `postulate` lists exactly the user-level obligations. (`assume` is a reserved word in MoonBit, hence the name.) `Section::postulate` is the trust entry for sections, and the canonical `Hom::from_integer` and `Section::of_integral` are the other leaves: their obligation sits on the trait instances."
+msgstr "唯一的公开信任入口是 `Hom::postulate`。内核规则使用包内私有的 `trust`，所以搜索 `postulate` 得到的正好是全部用户层义务。（`assume` 是 MoonBit 的保留字，因此不用这个名字。）`Section::postulate` 是截面的信任入口，典范的 `Hom::from_integer` 与 `Section::of_integral` 是另外的叶子：它们的义务落在 trait 实例上。"
 
-#: manual/design/hom.md:26
+#: manual/design/hom.md:27
+msgid "A lift from a quotient back to its cover is a `Section`, not a `Hom`. It carries the projection as a `Hom` and only promises `proj(lift(q)) == q`; agreement with the operations on representatives follows from that law. Keeping the two apart stops a representative lift, such as `Int -> BigInt`, from being composed as if it were a homomorphism."
+msgstr "从商提升回覆盖代数的映射是 `Section` 而不是 `Hom`。它把投影作为 `Hom` 携带，只承诺 `proj(lift(q)) == q`；在代表元上与运算一致这一点由该定律推出。把两者分开，可以防止 `Int -> BigInt` 这类代表元提升被当作同态来复合。"
+
+#: manual/design/hom.md:32
 msgid "The signature is a phantom type `S` on the certificate, while the algebra is passed as a dictionary value `Algebra[S, A]`: the certificate says what is preserved, the dictionary is used for checking."
 msgstr "签名以幽灵类型 `S` 出现在类型上，代数以字典 `Algebra[S, A]` 的形式作为值传递，两者分离：证书说明\"保持什么\"，字典用于检查。"
 
-#: manual/design/hom.md:29
+#: manual/design/hom.md:35
 msgid "Signature inclusions are `Reduct[S, T]` witnesses only this package can build."
 msgstr "签名之间的包含关系用只有本包能构造的 `Reduct[S, T]` 见证表示。"
 
-#: manual/design/hom.md:30
+#: manual/design/hom.md:36
 msgid "The strength of preservation is the relation `rel` chosen at check time, so strict, lax and approximate homomorphisms share one API."
 msgstr "保持强度由检查时的关系 `rel` 决定，严格、lax 与近似同态共用一套 API。"
 
-#: manual/design/hom.md:35
+#: manual/design/hom.md:41
 msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
 msgstr "只覆盖单类别签名。模这类多类别结构（标量加向量）不在本子系统内。"
 
-#: manual/design/hom.md:37
+#: manual/design/hom.md:43
 msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
 msgstr "没有 HKT，因此函子提升（多项式、矩阵等）由各自的包提供，不在本包内泛化。"
 
-#: manual/design/hom.md:39
+#: manual/design/hom.md:45
 msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
 msgstr "同态律不被证明，只被测试。证书保证的是\"来源可追溯\"，不是\"定律成立\"。"
 
-#: manual/design/hom.md:41
+#: manual/design/hom.md:47
 msgid "Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get this from trait coherence; dictionaries from `Algebra::make` only by convention."
 msgstr "`then` 的可靠性依赖于每个载体上只有一个 `S`-代数。内置标签由 trait 的一致性保证这一点；`Algebra::make` 构造的字典只能靠约定。"
 
-#: manual/design/hom.md:44
+#: manual/design/hom.md:50
 msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
 msgstr "证书不记录 `check_by` 所用的关系，因此松弛映射与近似映射会被当作严格同态来复合。"
 
-#: manual/design/hom.md:46
-msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ, so canonical embeddings out of them hold only while source arithmetic does not wrap."
-msgstr "定宽整数是 ℤ/2^k，而不是 ℤ 或 ℕ，因此从它们出发的典范嵌入只在源侧运算不回绕时成立。"
+#: manual/design/hom.md:52
+msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are sections, so they agree with the operations only while arithmetic does not wrap."
+msgstr "定宽整数是 ℤ/2^k，不是 ℤ 或 ℕ。从它们到 ℤ 的映射是截面，所以只在运算不回绕时与运算一致。"
+
+#: manual/design/hom.md:55
+msgid "The section law does not fix which representatives are chosen, so properties such as order preservation need their own checks."
+msgstr "截面律不规定选哪些代表元，因此保序之类的性质需要单独检验。"
 
 #: manual/index.md:1
 msgid "luna-generic"
 msgstr "luna-generic"
 
 #: manual/index.md:3
-msgid "This manual documents the intended `v0.3.3` release of `Luna-Flow/luna-generic`."
-msgstr "本手册记录 `Luna-Flow/luna-generic` 预期的 `v0.3.3` 发布版本。"
+msgid "This manual documents the intended `v0.4.0` release of `Luna-Flow/luna-generic`."
+msgstr "本手册记录 `Luna-Flow/luna-generic` 计划中的 `v0.4.0` 版本。"
 
 #: manual/index.md:5
 msgid "Overview"
@@ -399,88 +481,80 @@ msgid "The current release candidate centers on three changes:"
 msgstr "当前版本的重点有三项："
 
 #: manual/index.md:11
-msgid "`BigInt` is now part of the default exported numeric surface."
-msgstr "`BigInt` 已纳入默认导出的数值类型集合。"
+msgid "`FromNat` and `FromInteger` describe the unique homomorphisms out of ℕ and ℤ as target-side traits."
+msgstr "`FromNat` 与 `FromInteger` 以目标侧 trait 的形式描述从 ℕ、ℤ 出发的唯一同态。"
 
 #: manual/index.md:12
-msgid "Integral-to-target conversions are expressed through explicit homomorphism traits."
-msgstr "整数到目标类型的嵌入被重构为显式的同态 trait。"
+msgid "`Integral` is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of its canonical map."
+msgstr "`Integral` 是 ℤ 或其商 ℤ/2^k，`normalize` 必须是其典范映射的截面。"
 
 #: manual/index.md:13
-msgid "`Integral::normalize` now provides a canonical `BigInt` form for all integral source types."
-msgstr "`Integral::normalize` 为所有整数源类型提供统一的 `BigInt` 规范化入口。"
+msgid "`lift_to` and `Section` keep the choice of a representative apart from homomorphisms."
+msgstr "`lift_to` 与 `Section` 把“选取代表元”与同态区分开。"
 
 #: manual/index.md:15
 msgid "Exported traits"
 msgstr "导出 Trait"
 
-#: manual/index.md:24
+#: manual/index.md:25
 msgid "Exported operations and default types"
 msgstr "导出操作与默认类型"
 
-#: manual/index.md:26
+#: manual/index.md:27
 msgid "Operations: `One`, `Zero`, `Inverse`, `Conjugate`"
 msgstr "操作 trait: `One`, `Zero`, `Inverse`, `Conjugate`"
 
-#: manual/index.md:27
+#: manual/index.md:28
 msgid "Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
 msgstr "默认数值类型: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
 
-#: manual/index.md:29
+#: manual/index.md:30
 msgid "Integer model"
 msgstr "整数模型"
-
-#: manual/index.md:31
-msgid "`Nat` covers `UInt`, `UInt16`, and `UInt64`"
-msgstr "`Nat` 覆盖 `UInt`、`UInt16`、`UInt64`"
 
 #: manual/index.md:32
 msgid "`Integral` covers signed integers, unsigned integers, and `BigInt`"
 msgstr "`Integral` 覆盖有符号整数、无符号整数以及 `BigInt`"
 
 #: manual/index.md:33
+msgid "`Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, and `UInt64`"
+msgstr "`Nat` 涵盖代表元非负的整数类型：`UInt`、`UInt16` 与 `UInt64`"
+
+#: manual/index.md:34
+msgid "Fixed-width integers are ℤ/2^k; `FromInteger::from_integer` reduces modulo 2^k"
+msgstr "定宽整数是 ℤ/2^k；`FromInteger::from_integer` 按模 2^k 约化"
+
+#: manual/index.md:35
+msgid "`Integral::normalize` picks the representative of a value as a `BigInt`, and `from_integer(normalize(x)) == x`"
+msgstr "`Integral::normalize` 以 `BigInt` 形式选出一个值的代表元，且 `from_integer(normalize(x)) == x`"
+
+#: manual/index.md:36
 msgid "Unsigned integer instances stop at `Semiring`"
 msgstr "无符号整数实例只到 `Semiring`"
 
-#: manual/index.md:34
-msgid "`Integral::normalize` canonicalizes any integral value into `BigInt`"
-msgstr "`Integral::normalize` 会把任意整数值规范化为 `BigInt`"
-
-#: manual/index.md:35
-msgid "`Nat` reuses `Integral::normalize` for its exact embedding into `BigInt`"
-msgstr "`Nat` 通过继承复用 `Integral::normalize`，以精确嵌入到 `BigInt`"
-
-#: manual/index.md:37
-msgid "Embeddings"
-msgstr "嵌入接口"
-
-#: manual/index.md:39
-msgid "`NatHomomorphism::from_nat` provides polymorphic target-side embeddings from any `Nat` source type"
-msgstr "`NatHomomorphism::from_nat` 提供从任意 `Nat` 源类型到目标类型的多态嵌入"
-
 #: manual/index.md:40
-msgid "`IntegralHomomorphism::from_integral` provides polymorphic target-side embeddings from any `Integral` source type"
-msgstr "`IntegralHomomorphism::from_integral` 提供从任意 `Integral` 源类型到目标类型的多态嵌入"
+msgid "`FromInteger::from_integer` is the canonical map out of ℤ: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`"
+msgstr "`FromInteger::from_integer` 是从 ℤ 出发的典范映射：对 `BigInt` 精确，对定宽整数取模，对 `Float` 与 `Double` 舍入"
 
 #: manual/index.md:41
-msgid "The default implementation strategy is `Integral::normalize` followed by target-specific `BigInt` conversion"
-msgstr "默认实现路径是先走 `Integral::normalize`，再做目标类型自己的 `BigInt` 转换"
+msgid "`lift_to(x)` lifts to the representative and maps it into the target; it is a function, not a homomorphism"
+msgstr "`lift_to(x)` 提升到代表元后映入目标；它是函数，不是同态"
 
 #: manual/index.md:42
-msgid "`BigInt` embeddings are exact"
-msgstr "到 `BigInt` 的嵌入是精确的"
+msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are deprecated in favour of `FromNat`, `FromInteger` and `lift_to`"
+msgstr "`NatHomomorphism::from_nat` 与 `IntegralHomomorphism::from_integral` 已废弃，请改用 `FromNat`、`FromInteger` 与 `lift_to`"
 
-#: manual/index.md:43
-msgid "`Float` and `Double` embeddings are approximate and may round large values"
-msgstr "到 `Float` 和 `Double` 的嵌入是近似的，大数值可能发生舍入"
-
-#: manual/index.md:45
+#: manual/index.md:44
 msgid "Generalized homomorphisms"
 msgstr "广义同态"
 
+#: manual/index.md:46
+msgid "`Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation), the canonical map `Hom::from_integer`, or inference rules"
+msgstr "`Hom[S, A, B]`：保持签名 `S` 的映射证书，只能经由 `Hom::postulate`（产生证明义务）、典范映射 `Hom::from_integer` 或推理规则构造"
+
 #: manual/index.md:47
-msgid "`Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation) or inference rules"
-msgstr "`Hom[S, A, B]`：保持签名 `S` 的映射证书，只能经由 `Hom::postulate`（产生证明义务）或推理规则构造"
+msgid "`Section[S, Q, A]`: a certificate that a lift picks one representative per class of a quotient; `Section::of_integral` is the canonical one for integral types"
+msgstr "`Section[S, Q, A]`：证明一个提升从商的每个类中恰好选出一个代表元的证书；`Section::of_integral` 是整数类型的典范截面"
 
 #: manual/index.md:48
 msgid "Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`"
@@ -503,8 +577,8 @@ msgid "Where to read next"
 msgstr "接下来读什么"
 
 #: manual/index.md:55
-msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way."
-msgstr "[core 教程](tutorial/core.md)基于这些 trait 编写小型泛型算法。[core API](api/core.md) 列出所有导出的 trait 与实例，[core 设计](design/core.md)则解释层级结构与嵌入为何如此设计。"
+msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the conversions are shaped this way."
+msgstr "[core 教程](tutorial/core.md)基于这些 trait 编写小型泛型算法；[core API](api/core.md)列出所有导出的 trait 与实例；[core 设计](design/core.md)说明层级与转换为何如此设计。"
 
 #: manual/index.md:57
 msgid "Validation"
@@ -535,31 +609,35 @@ msgid "Use `Integral::normalize` when you need one exact representation across m
 msgstr "当你需要跨多种整型源类型共享一个精确表示时，应优先使用 `Integral::normalize`。"
 
 #: manual/tutorial/core.md:25
-msgid "Use explicit target-side embeddings"
-msgstr "显式做目标侧嵌入"
+msgid "Convert integers with `lift_to`"
+msgstr "用 `lift_to` 转换整数"
 
 #: manual/tutorial/core.md:33
-msgid "This keeps conversions explicit and avoids hidden assumptions in higher-level packages."
-msgstr "这样可以避免上层包偷偷依赖隐式转换规则。"
+msgid "`lift_to` takes the representative of `i` in ℤ and maps it into `F` along the canonical map. Use it for constants and indices that are not mapped back. It does not preserve operations once fixed-width arithmetic wraps."
+msgstr "`lift_to` 取 `i` 在 ℤ 中的代表元，再沿典范映射映入 `F`。它适用于不再映回的常数与下标。一旦定宽运算回绕，它就不保持运算。"
 
-#: manual/tutorial/core.md:36
-msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the source into `BigInt` first, then performing the target-specific conversion."
-msgstr "`NatHomomorphism` 和 `IntegralHomomorphism` 的实现方式应当统一为：先用 `Integral::normalize` 把源值规约到 `BigInt`，再做目标类型自己的转换。"
+#: manual/tutorial/core.md:37
+msgid "A new number type only needs the canonical maps out of ℕ and ℤ:"
+msgstr "新的数值类型只需提供从 ℕ、ℤ 出发的典范映射："
 
-#: manual/tutorial/core.md:39
-#: manual/tutorial/hom.md:73
+#: manual/tutorial/core.md:44
+msgid "An integer type additionally implements `Integral::normalize` so that `from_integer(normalize(x)) == x`, and checks the law with `Section::of_integral().check(samples)`."
+msgstr "整数类型还要实现 `Integral::normalize`，使 `from_integer(normalize(x)) == x`，并用 `Section::of_integral().check(samples)` 检验该定律。"
+
+#: manual/tutorial/core.md:48
+#: manual/tutorial/hom.md:97
 msgid "Practical guidance"
 msgstr "实践建议"
 
-#: manual/tutorial/core.md:41
+#: manual/tutorial/core.md:50
 msgid "Choose the smallest trait set that expresses the algorithm you need."
 msgstr "只要求算法真正需要的最小 trait 集合。"
 
-#: manual/tutorial/core.md:42
+#: manual/tutorial/core.md:51
 msgid "Require `Field` only when reciprocal or division semantics are really needed."
 msgstr "只有确实需要倒数或除法时再要求 `Field`。"
 
-#: manual/tutorial/core.md:43
+#: manual/tutorial/core.md:52
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
 msgstr "即使共享同一抽象表面，也要把 `Float` 和 `Double` 当作近似后端来看。"
 
@@ -588,32 +666,124 @@ msgid "Composition, forgetting, pairing, projection and upgrades are inference r
 msgstr "复合、遗忘、配对、投影与升级都是推理规则，不产生新的义务。它们把每个证书都当作严格同态，所以下文中只通过松弛检验或容差检验的映射，在复合之后必须重新检验。"
 
 #: manual/tutorial/hom.md:39
+msgid "Lifting quotients back"
+msgstr "把商提升回去"
+
+#: manual/tutorial/hom.md:41
+msgid "`Int` is ℤ/2^32. Mapping it into `BigInt` picks a representative of each class, which is a section of the reduction `BigInt -> Int`, not a homomorphism:"
+msgstr "`Int` 是 ℤ/2^32。把它映入 `BigInt` 就是为每个类选一个代表元，这是约化 `BigInt -> Int` 的截面，而不是同态："
+
+#: manual/tutorial/hom.md:52
+msgid "The lift agrees with the operations exactly on representatives; elsewhere it differs by a multiple of 2^32, the carry. A lift that leaves the class, such as one that drops the sign or rounds through `Float`, fails `check`."
+msgstr "提升恰好在代表元上与运算一致；在其他地方相差 2^32 的倍数，即进位。离开原类的提升（例如丢掉符号，或经 `Float` 舍入）会让 `check` 失败。"
+
+#: manual/tutorial/hom.md:56
+msgid "When no certificate is needed, `lift_to` lifts and maps into any `FromInteger` target:"
+msgstr "不需要证书时，`lift_to` 可提升并映入任意 `FromInteger` 目标："
+
+#: manual/tutorial/hom.md:63
 msgid "Choosing the strength of preservation"
 msgstr "选择保持的强度"
 
-#: manual/tutorial/hom.md:47
+#: manual/tutorial/hom.md:71
 msgid "Use a tolerance for floating-point targets. A tolerance relative to the result suits non-negative sources; with signed sources `x + y` can cancel to a small value while the rounding error stays proportional to `|x| + |y|`:"
 msgstr "浮点目标请使用容差。相对于结果的容差适用于非负源；对有符号源，`x + y` 可能因相消而很小，而舍入误差仍与 `|x| + |y|` 成正比："
 
-#: manual/tutorial/hom.md:58
+#: manual/tutorial/hom.md:82
 msgid "Custom signatures"
 msgstr "自定义签名"
 
-#: manual/tutorial/hom.md:68
+#: manual/tutorial/hom.md:92
 msgid "`Hom` and `check` work for any single-sorted signature as long as both dictionaries list the same operations in the same order. Keep one dictionary per tag and carrier: certificates checked against different interpretations of the same tag do not compose."
 msgstr "只要两侧字典按相同顺序列出相同的运算，就可以对任意单类别签名使用 `Hom` 和 `check`。每个标签与载体只保留一个字典：针对同一标签的不同解释检验过的证书不能复合。"
 
-#: manual/tutorial/hom.md:75
-msgid "Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as traits and bring them into `Hom` through `Hom::from_nat` / `Hom::from_integral`. With fixed-width sources they hold only while source arithmetic does not wrap."
-msgstr "唯一的同态（从 ℕ、ℤ 出发的典范嵌入）用 trait 表达，再经 `Hom::from_nat` / `Hom::from_integral` 进入 `Hom` 世界。对定宽源类型，它们只在源侧运算不回绕时成立。"
+#: manual/tutorial/hom.md:99
+msgid "Express unique homomorphisms (the canonical maps out of ℕ and ℤ) as traits and bring the one out of ℤ into `Hom` through `Hom::from_integer`."
+msgstr "唯一的同态（从 ℕ、ℤ 出发的典范映射）用 trait 表达，从 ℤ 出发的那一个经 `Hom::from_integer` 进入 `Hom`。"
 
-#: manual/tutorial/hom.md:79
+#: manual/tutorial/hom.md:101
+msgid "Describe machine integers as quotients with `Section::of_integral`, and use `lift_to` for conversions that are not mapped back."
+msgstr "用 `Section::of_integral` 把机器整数描述为商，对不再映回的转换使用 `lift_to`。"
+
+#: manual/tutorial/hom.md:103
 msgid "Write non-unique homomorphisms (such as two conjugate embeddings) as explicit `Hom` values, never as trait instances."
 msgstr "不唯一的同态（例如两个共轭嵌入）一律写成显式的 `Hom` 值，不要做成 trait 实例。"
 
-#: manual/tutorial/hom.md:81
+#: manual/tutorial/hom.md:105
 msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
 msgstr "`check` 的样本要包含边界值，例如 0、1、负数，以及定宽类型接近溢出的值。"
+
+#~ msgid "`Integral::normalize(Self) -> BigInt` is the canonical exact bridge from any integral instance into `BigInt`."
+#~ msgstr "`Integral::normalize(Self) -> BigInt` 是把任意整型值规范化到 `BigInt` 的标准入口。"
+
+#~ msgid "`Nat` reuses the same `normalize(Self) -> BigInt` bridge via trait inheritance."
+#~ msgstr "`Nat` 也通过 trait 继承复用同一条 `normalize(Self) -> BigInt` 路径。"
+
+#~ msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are polymorphic embedding entry points over source traits instead of width-specific constructors."
+#~ msgstr "`NatHomomorphism::from_nat` 与 `IntegralHomomorphism::from_integral` 不再按位宽拆方法，而是对源 trait 做多态嵌入。"
+
+#~ msgid "The default embedding strategy is `Integral::normalize` followed by target-specific conversion from `BigInt`."
+#~ msgstr "默认嵌入路径是先做 `Integral::normalize`，再做目标类型自己的 `BigInt` 转换。"
+
+#~ msgid "`Float` and `Double` implement homomorphism traits as approximate embeddings, so very large integral values may round."
+#~ msgstr "`Float` 与 `Double` 的同态嵌入是近似的，大整数可能发生舍入。"
+
+#~ msgid "`Hom::from_nat()`: backed by the target's `NatHomomorphism` instance, typed `Hom[SemiringSig, N, R]`."
+#~ msgstr "`Hom::from_nat()`：由目标的 `NatHomomorphism` 实例给出，类型为 `Hom[SemiringSig, N, R]`。"
+
+#~ msgid "`Hom::from_integral()`: backed by the target's `IntegralHomomorphism` instance, typed `Hom[SemiringSig, Z, R]`. Upgrade with `to_ring` when both sides are rings."
+#~ msgstr "`Hom::from_integral()`：由目标的 `IntegralHomomorphism` 实例给出，类型为 `Hom[SemiringSig, Z, R]`。两侧都是环时用 `to_ring` 升级。"
+
+#~ msgid "Embeddings are explicit through `NatHomomorphism` and `IntegralHomomorphism`."
+#~ msgstr "嵌入通过 `NatHomomorphism` 和 `IntegralHomomorphism` 明确表达。"
+
+#~ msgid "`Integral::normalize` is the canonical exact bridge into `BigInt`."
+#~ msgstr "`Integral::normalize` 作为到 `BigInt` 的统一精确桥接。"
+
+#~ msgid "Target-side default homomorphism implementations are expected to route through normalized `BigInt` values."
+#~ msgstr "目标侧的默认同态实现统一经由规范化后的 `BigInt`。"
+
+#~ msgid "`BigInt` is now part of the default exported numeric surface."
+#~ msgstr "`BigInt` 已纳入默认导出的数值类型集合。"
+
+#~ msgid "Integral-to-target conversions are expressed through explicit homomorphism traits."
+#~ msgstr "整数到目标类型的嵌入被重构为显式的同态 trait。"
+
+#~ msgid "`Integral::normalize` now provides a canonical `BigInt` form for all integral source types."
+#~ msgstr "`Integral::normalize` 为所有整数源类型提供统一的 `BigInt` 规范化入口。"
+
+#~ msgid "`Integral::normalize` canonicalizes any integral value into `BigInt`"
+#~ msgstr "`Integral::normalize` 会把任意整数值规范化为 `BigInt`"
+
+#~ msgid "`Nat` reuses `Integral::normalize` for its exact embedding into `BigInt`"
+#~ msgstr "`Nat` 通过继承复用 `Integral::normalize`，以精确嵌入到 `BigInt`"
+
+#~ msgid "Embeddings"
+#~ msgstr "嵌入接口"
+
+#~ msgid "`NatHomomorphism::from_nat` provides polymorphic target-side embeddings from any `Nat` source type"
+#~ msgstr "`NatHomomorphism::from_nat` 提供从任意 `Nat` 源类型到目标类型的多态嵌入"
+
+#~ msgid "`IntegralHomomorphism::from_integral` provides polymorphic target-side embeddings from any `Integral` source type"
+#~ msgstr "`IntegralHomomorphism::from_integral` 提供从任意 `Integral` 源类型到目标类型的多态嵌入"
+
+#~ msgid "The default implementation strategy is `Integral::normalize` followed by target-specific `BigInt` conversion"
+#~ msgstr "默认实现路径是先走 `Integral::normalize`，再做目标类型自己的 `BigInt` 转换"
+
+#~ msgid "`BigInt` embeddings are exact"
+#~ msgstr "到 `BigInt` 的嵌入是精确的"
+
+#~ msgid "Use explicit target-side embeddings"
+#~ msgstr "显式做目标侧嵌入"
+
+#~ msgid "This keeps conversions explicit and avoids hidden assumptions in higher-level packages."
+#~ msgstr "这样可以避免上层包偷偷依赖隐式转换规则。"
+
+#~ msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the source into `BigInt` first, then performing the target-specific conversion."
+#~ msgstr "`NatHomomorphism` 和 `IntegralHomomorphism` 的实现方式应当统一为：先用 `Integral::normalize` 把源值规约到 `BigInt`，再做目标类型自己的转换。"
+
+#~ msgid "Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as traits and bring them into `Hom` through `Hom::from_nat` / `Hom::from_integral`. With fixed-width sources they hold only while source arithmetic does not wrap."
+#~ msgstr "唯一的同态（从 ℕ、ℤ 出发的典范嵌入）用 trait 表达，再经 `Hom::from_nat` / `Hom::from_integral` 进入 `Hom` 世界。对定宽源类型，它们只在源侧运算不回绕时成立。"
 
 #~ msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) stop being the integers once arithmetic wraps, so `Hom::from_integral` only holds on samples whose source arithmetic does not overflow."
 #~ msgstr "定宽整数源类型（`Int`、`Int64`、`UInt` 等）在溢出后不再是整数环，因此 `Hom::from_integral` 只在源侧运算不回绕的样本上成立。"

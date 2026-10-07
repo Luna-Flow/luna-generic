@@ -4,12 +4,13 @@
 
 The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a
 map `A -> B` that carries a certificate stating it preserves every operation
-of the signature `S`. The certificate cannot be forged outside this package.
-Its unproven leaves are `Hom::postulate` and the canonical embeddings
-`Hom::from_nat` and `Hom::from_integral`, whose obligation sits on trait
-instances.
+of the signature `S`. A `Section[S, Q, A]` certifies a lift that picks one
+representative per class of a quotient. Neither certificate can be forged
+outside this package. The unproven leaves are `Hom::postulate`,
+`Section::postulate`, and the canonical `Hom::from_integer` and
+`Section::of_integral`, whose obligation sits on trait instances.
 
-Source: `src/hom.mbt`.
+Source: `src/hom.mbt`, `src/section.mbt`.
 
 ## Signature tags
 
@@ -62,17 +63,49 @@ Inference rules (no new obligation):
 - `h.to_add_group()`: an additive monoid hom between groups preserves `neg`.
 - `h.to_ring()`: a semiring hom between rings preserves `neg`.
 
-Canonical embeddings (the obligation sits on the trait instance):
+Canonical map (the obligation sits on the trait instance):
 
-- `Hom::from_nat()`: backed by the target's `NatHomomorphism` instance, typed
-  `Hom[SemiringSig, N, R]`.
-- `Hom::from_integral()`: backed by the target's `IntegralHomomorphism`
-  instance, typed `Hom[SemiringSig, Z, R]`. Upgrade with `to_ring` when both
-  sides are rings.
+- `Hom::from_integer()`: the canonical map ℤ -> `R` of `FromInteger`, typed
+  `Hom[SemiringSig, BigInt, R]`. It holds on every input; upgrade with
+  `to_ring` when `R` is a ring.
+- Deprecated: `Hom::from_nat()` and `Hom::from_integral()` certify a lift
+  followed by a canonical map, which is not a homomorphism for fixed-width
+  sources. Use `Hom::from_integer` with `Section::of_integral`.
 
 Use:
 
 - `h.apply(x)`
+
+## Sections
+
+A section lifts a quotient `Q` back into `A` along a homomorphism
+`proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism,
+but it preserves every operation up to the kernel of `proj`, and exactly
+whenever the result is itself a representative.
+
+- `Section::postulate(proj, lift)`: the caller promises
+  `proj.apply(lift(q)) == q` for every `q`.
+- `Section::of_integral()`: the canonical section of an integral type,
+  `Section[SemiringSig, Z, BigInt]`, with `proj = FromInteger::from_integer`
+  and `lift = Integral::normalize`.
+- `s.lift(q)`, `s.proj()`.
+- `s.normalize(a)`: `lift(proj(a))`, the normal form of `a`. Two values are
+  congruent exactly when their normal forms are equal.
+- `s.is_representative(a)`: `normalize(a) == a`; on such results the lift
+  agrees with the operations.
+- `s.then(next)`, `s.forget(r)`, `s.to_add_group()`, `s.to_ring()`: inference
+  rules, no new obligation.
+- `s.check(samples)`: tests the section law.
+- `s.check_ops(quotient, cover, samples)`: tests
+  `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation.
+
+The section law rejects lifts that leave the class of their argument. It
+does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are
+both sections of `BigInt -> Int`, and only the second preserves the signed
+order.
+
+`lift_to(x)` lifts an integral value and maps it into any `FromInteger`
+target without a certificate.
 
 ## Reduct witnesses
 
@@ -96,11 +129,10 @@ An operation of arity `n` is tested on `samples.length()^n` tuples.
 ## Semantic notes
 
 - Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather
-  than the integers. There is no semiring map from them into `BigInt`, so
-  `Hom::from_nat` and `Hom::from_integral` only hold while source arithmetic
-  does not overflow. The same argument rules out widening such as
-  `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring
-  homomorphism.
+  than the integers. There is no semiring map from them into `BigInt`, so a
+  lift into ℤ is a section, not a homomorphism. The same argument rules out
+  widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is
+  a ring homomorphism.
 - The inference rules compose certificates as strict homomorphisms. A map that
   only satisfies a lax (`<=`) or tolerance law must be checked again after
   composition.

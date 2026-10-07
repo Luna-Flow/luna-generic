@@ -1,6 +1,6 @@
 # luna-generic
 
-This manual documents the intended `v0.3.3` release of `Luna-Flow/luna-generic`.
+This manual documents the intended `v0.4.0` release of `Luna-Flow/luna-generic`.
 
 ## Overview
 
@@ -8,18 +8,19 @@ This manual documents the intended `v0.3.3` release of `Luna-Flow/luna-generic`.
 
 The current release candidate centers on three changes:
 
-- `BigInt` is now part of the default exported numeric surface.
-- Integral-to-target conversions are expressed through explicit homomorphism traits.
-- `Integral::normalize` now provides a canonical `BigInt` form for all integral source types.
+- `FromNat` and `FromInteger` describe the unique homomorphisms out of ℕ and ℤ as target-side traits.
+- `Integral` is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of its canonical map.
+- `lift_to` and `Section` keep the choice of a representative apart from homomorphisms.
 
 ## Exported traits
 
 - `AddMonoid`, `MulMonoid`
 - `AddGroup`, `MulGroup`
 - `Semiring`, `Ring`, `Field`
+- `FromNat`, `FromInteger`
 - `Integral`, `Nat`
-- `NatHomomorphism`, `IntegralHomomorphism`
 - `Num`
+- Deprecated: `NatHomomorphism`, `IntegralHomomorphism`
 
 ## Exported operations and default types
 
@@ -28,23 +29,22 @@ The current release candidate centers on three changes:
 
 ## Integer model
 
-- `Nat` covers `UInt`, `UInt16`, and `UInt64`
 - `Integral` covers signed integers, unsigned integers, and `BigInt`
+- `Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, and `UInt64`
+- Fixed-width integers are ℤ/2^k; `FromInteger::from_integer` reduces modulo 2^k
+- `Integral::normalize` picks the representative of a value as a `BigInt`, and `from_integer(normalize(x)) == x`
 - Unsigned integer instances stop at `Semiring`
-- `Integral::normalize` canonicalizes any integral value into `BigInt`
-- `Nat` reuses `Integral::normalize` for its exact embedding into `BigInt`
 
-## Embeddings
+## Conversions
 
-- `NatHomomorphism::from_nat` provides polymorphic target-side embeddings from any `Nat` source type
-- `IntegralHomomorphism::from_integral` provides polymorphic target-side embeddings from any `Integral` source type
-- The default implementation strategy is `Integral::normalize` followed by target-specific `BigInt` conversion
-- `BigInt` embeddings are exact
-- `Float` and `Double` embeddings are approximate and may round large values
+- `FromInteger::from_integer` is the canonical map out of ℤ: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`
+- `lift_to(x)` lifts to the representative and maps it into the target; it is a function, not a homomorphism
+- `NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are deprecated in favour of `FromNat`, `FromInteger` and `lift_to`
 
 ## Generalized homomorphisms
 
-- `Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation) or inference rules
+- `Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation), the canonical map `Hom::from_integer`, or inference rules
+- `Section[S, Q, A]`: a certificate that a lift picks one representative per class of a quotient; `Section::of_integral` is the canonical one for integral types
 - Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
 - Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`
 - `Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength
@@ -52,7 +52,7 @@ The current release candidate centers on three changes:
 
 ## Where to read next
 
-The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the embeddings are shaped this way.
+The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the conversions are shaped this way.
 
 ## Validation
 

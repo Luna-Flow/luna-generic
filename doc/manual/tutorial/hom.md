@@ -36,6 +36,30 @@ and create no new obligations. They treat every certificate as strict, so a
 map that only passes a lax or tolerance check below must be checked again
 after it is composed.
 
+## Lifting quotients back
+
+`Int` is ℤ/2^32. Mapping it into `BigInt` picks a representative of each
+class, which is a section of the reduction `BigInt -> Int`, not a
+homomorphism:
+
+```moonbit
+let s : Section[RingSig, Int, BigInt] = Section::of_integral().to_ring()
+assert_true(s.check([0, 1, -1, 2147483647, -2147483648]))
+assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), samples))
+s.is_representative(s.lift(2147483647) + s.lift(1))  // false: the sum wrapped
+```
+
+The lift agrees with the operations exactly on representatives; elsewhere it
+differs by a multiple of 2^32, the carry. A lift that leaves the class, such
+as one that drops the sign or rounds through `Float`, fails `check`.
+
+When no certificate is needed, `lift_to` lifts and maps into any
+`FromInteger` target:
+
+```moonbit
+let x : Double = @luna-generic.lift_to(-7)
+```
+
 ## Choosing the strength of preservation
 
 ```moonbit
@@ -72,10 +96,10 @@ of the same tag do not compose.
 
 ## Practical guidance
 
-- Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as
-  traits and bring them into `Hom` through `Hom::from_nat` /
-  `Hom::from_integral`. With fixed-width sources they hold only while source
-  arithmetic does not wrap.
+- Express unique homomorphisms (the canonical maps out of ℕ and ℤ) as traits
+  and bring the one out of ℤ into `Hom` through `Hom::from_integer`.
+- Describe machine integers as quotients with `Section::of_integral`, and
+  use `lift_to` for conversions that are not mapped back.
 - Write non-unique homomorphisms (such as two conjugate embeddings) as
   explicit `Hom` values, never as trait instances.
 - Include edge values in `check` samples: 0, 1, negatives, and values close to

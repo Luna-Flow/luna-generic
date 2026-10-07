@@ -22,19 +22,28 @@ fn[T : Integral] canonical_text(x : T) -> String {
 Use `Integral::normalize` when you need one exact representation across
 multiple integral source types.
 
-## Use explicit target-side embeddings
+## Convert integers with `lift_to`
 
 ```moonbit
-fn[F : NatHomomorphism] embed_nat(x : UInt) -> F {
-  NatHomomorphism::from_nat(x)
+fn[F : FromInteger] scale_by_index(i : Int) -> F {
+  @luna-generic.lift_to(i)
 }
 ```
 
-This keeps conversions explicit and avoids hidden assumptions in higher-level
-packages.
+`lift_to` takes the representative of `i` in ℤ and maps it into `F` along
+the canonical map. Use it for constants and indices that are not mapped back.
+It does not preserve operations once fixed-width arithmetic wraps.
 
-Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the
-source into `BigInt` first, then performing the target-specific conversion.
+A new number type only needs the canonical maps out of ℕ and ℤ:
+
+```moonbit
+impl FromNat for MyNumber with fn from_natural(n) { MyNumber::from_bigint(n) }
+impl FromInteger for MyNumber with fn from_integer(n) { MyNumber::from_bigint(n) }
+```
+
+An integer type additionally implements `Integral::normalize` so that
+`from_integer(normalize(x)) == x`, and checks the law with
+`Section::of_integral().check(samples)`.
 
 ## Practical guidance
 
