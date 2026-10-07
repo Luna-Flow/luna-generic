@@ -21,7 +21,8 @@ obligations auditable and testable.
 - The only public trust entry is `Hom::postulate`. Kernel rules use the
   package-private `trust`, so searching for `postulate` lists exactly the
   user-level obligations. (`assume` is a reserved word in MoonBit, hence the
-  name.)
+  name.) The canonical embeddings `Hom::from_nat` and `Hom::from_integral`
+  are the other leaves: their obligation sits on the trait instances.
 - The signature is a phantom type `S` on the certificate, while the algebra is
   passed as a dictionary value `Algebra[S, A]`: the certificate says what is
   preserved, the dictionary is used for checking.
@@ -37,3 +38,10 @@ obligations auditable and testable.
   belong to their own packages and are not generalized here.
 - Laws are tested, not proven. The certificate guarantees traceable origin,
   not that the laws hold.
+- Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get
+  this from trait coherence; dictionaries from `Algebra::make` only by
+  convention.
+- The certificate does not record the relation used by `check_by`, so lax and
+  approximate maps compose as if they were strict.
+- Fixed-width integers are ℤ/2^k, not ℤ or ℕ, so canonical embeddings out of
+  them hold only while source arithmetic does not wrap.

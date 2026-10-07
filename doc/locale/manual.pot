@@ -61,7 +61,7 @@ msgid "Floating instances: `Float`, `Double`"
 msgstr ""
 
 #: manual/api/core.md:38
-#: manual/api/hom.md:87
+#: manual/api/hom.md:96
 msgid "Semantic notes"
 msgstr ""
 
@@ -110,138 +110,146 @@ msgid "hom API"
 msgstr ""
 
 #: manual/api/hom.md:5
-msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a map `A -> B` that carries a certificate stating it preserves every operation of the signature `S`. The certificate cannot be forged outside this package, and the only unproven entry point is `Hom::postulate`."
-msgstr ""
-
-#: manual/api/hom.md:10
-msgid "Source: `src/hom.mbt`."
+msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a map `A -> B` that carries a certificate stating it preserves every operation of the signature `S`. The certificate cannot be forged outside this package. Its unproven leaves are `Hom::postulate` and the canonical embeddings `Hom::from_nat` and `Hom::from_integral`, whose obligation sits on trait instances."
 msgstr ""
 
 #: manual/api/hom.md:12
+msgid "Source: `src/hom.mbt`."
+msgstr ""
+
+#: manual/api/hom.md:14
 msgid "Signature tags"
 msgstr ""
 
-#: manual/api/hom.md:20
+#: manual/api/hom.md:22
 msgid "Signature tags are empty enums that only appear at the type level. Users may define their own."
 msgstr ""
 
-#: manual/api/hom.md:23
+#: manual/api/hom.md:25
 msgid "Algebra dictionaries"
 msgstr ""
 
-#: manual/api/hom.md:25
+#: manual/api/hom.md:27
 msgid "`Op[A]`: one operation with `name`, `arity` and `eval`. `arity == 0` is a constant."
 msgstr ""
 
-#: manual/api/hom.md:26
+#: manual/api/hom.md:28
 msgid "`Algebra[S, A]`: an interpretation of the signature `S` on the carrier `A`."
 msgstr ""
 
-#: manual/api/hom.md:27
+#: manual/api/hom.md:29
 msgid "`Algebra::add_monoid`, `mul_monoid`, `add_group`, `semiring`, `ring`: derived from the existing structure trait instances."
 msgstr ""
 
-#: manual/api/hom.md:29
+#: manual/api/hom.md:31
 msgid "`Algebra::make(ops)`: builds a dictionary for a custom signature tag."
 msgstr ""
 
-#: manual/api/hom.md:30
+#: manual/api/hom.md:32
 msgid "`Algebra::prod(a, b)`: the componentwise product algebra on `Prod[A, B]`."
 msgstr ""
 
-#: manual/api/hom.md:32
+#: manual/api/hom.md:34
 msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort."
 msgstr ""
 
-#: manual/api/hom.md:35
+#: manual/api/hom.md:37
+msgid "Certificates assume one `S`-algebra per carrier: every dictionary of the same `S` on the same carrier must interpret the operations the same way. `then` composes through the middle carrier, so two different `Algebra::make` dictionaries on it would compose into a map that preserves neither."
+msgstr ""
+
+#: manual/api/hom.md:42
 msgid "Product type"
 msgstr ""
 
-#: manual/api/hom.md:37
+#: manual/api/hom.md:44
 msgid "`Prod[A, B]`: fields `fst` and `snd`. Implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
 msgstr ""
 
-#: manual/api/hom.md:41
+#: manual/api/hom.md:48
 msgid "Homomorphisms"
 msgstr ""
 
-#: manual/api/hom.md:43
+#: manual/api/hom.md:50
 msgid "Trust entry (creates a proof obligation):"
 msgstr ""
 
-#: manual/api/hom.md:45
-msgid "`Hom::postulate(f)`: the caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`."
+#: manual/api/hom.md:52
+msgid "`Hom::postulate(f)`: the caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation."
 msgstr ""
 
-#: manual/api/hom.md:48
+#: manual/api/hom.md:57
 msgid "Inference rules (no new obligation):"
 msgstr ""
 
-#: manual/api/hom.md:50
+#: manual/api/hom.md:59
 msgid "`Hom::id()`, `h.then(g)`: identity and composition."
 msgstr ""
 
-#: manual/api/hom.md:51
+#: manual/api/hom.md:60
 msgid "`h.forget(r)`: forgets structure along a `Reduct[S, T]` witness."
 msgstr ""
 
-#: manual/api/hom.md:52
+#: manual/api/hom.md:61
 msgid "`Hom::pair(f, g)`, `Hom::fst()`, `Hom::snd()`: pairing and projections."
 msgstr ""
 
-#: manual/api/hom.md:53
+#: manual/api/hom.md:62
 msgid "`h.to_add_group()`: an additive monoid hom between groups preserves `neg`."
 msgstr ""
 
-#: manual/api/hom.md:54
+#: manual/api/hom.md:63
 msgid "`h.to_ring()`: a semiring hom between rings preserves `neg`."
 msgstr ""
 
-#: manual/api/hom.md:56
+#: manual/api/hom.md:65
 msgid "Canonical embeddings (the obligation sits on the trait instance):"
 msgstr ""
 
-#: manual/api/hom.md:58
+#: manual/api/hom.md:67
 msgid "`Hom::from_nat()`: backed by the target's `NatHomomorphism` instance, typed `Hom[SemiringSig, N, R]`."
 msgstr ""
 
-#: manual/api/hom.md:60
+#: manual/api/hom.md:69
 msgid "`Hom::from_integral()`: backed by the target's `IntegralHomomorphism` instance, typed `Hom[SemiringSig, Z, R]`. Upgrade with `to_ring` when both sides are rings."
 msgstr ""
 
-#: manual/api/hom.md:64
+#: manual/api/hom.md:73
 msgid "Use:"
 msgstr ""
 
-#: manual/api/hom.md:68
+#: manual/api/hom.md:77
 msgid "Reduct witnesses"
 msgstr ""
 
-#: manual/api/hom.md:75
+#: manual/api/hom.md:84
 msgid "Only this package constructs `Reduct` values."
 msgstr ""
 
-#: manual/api/hom.md:77
+#: manual/api/hom.md:86
 msgid "Law checks"
 msgstr ""
 
-#: manual/api/hom.md:79
+#: manual/api/hom.md:88
 msgid "`h.check(src, dst, samples)`: checks the law with exact equality; requires `B : Eq`."
 msgstr ""
 
-#: manual/api/hom.md:80
+#: manual/api/hom.md:89
 msgid "`h.check_by(src, dst, samples, rel)`: checks `rel(f(op_A(xs)), op_B(f(xs)))`. `rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets."
 msgstr ""
 
-#: manual/api/hom.md:85
+#: manual/api/hom.md:94
 msgid "An operation of arity `n` is tested on `samples.length()^n` tuples."
 msgstr ""
 
-#: manual/api/hom.md:89
-msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) stop being the integers once arithmetic wraps, so `Hom::from_integral` only holds on samples whose source arithmetic does not overflow."
+#: manual/api/hom.md:98
+msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so `Hom::from_nat` and `Hom::from_integral` only hold while source arithmetic does not overflow. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
 msgstr ""
 
-#: manual/api/hom.md:92
+#: manual/api/hom.md:104
+msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
+msgstr ""
+
+#: manual/api/hom.md:107
 msgid "`Float` and `Double` targets satisfy the laws only up to rounding; use `check_by` with a tolerance. See the embedding notes in the [core API](core.md)."
 msgstr ""
 
@@ -286,7 +294,7 @@ msgid "Unsigned types stop before additive inverse, so the abstraction stays mat
 msgstr ""
 
 #: manual/design/core.md:24
-#: manual/design/hom.md:32
+#: manual/design/hom.md:33
 msgid "Boundaries"
 msgstr ""
 
@@ -331,31 +339,43 @@ msgid "LCF-style certificates: `Hom[S, A, B]` has private fields and is only con
 msgstr ""
 
 #: manual/design/hom.md:21
-msgid "The only public trust entry is `Hom::postulate`. Kernel rules use the package-private `trust`, so searching for `postulate` lists exactly the user-level obligations. (`assume` is a reserved word in MoonBit, hence the name.)"
+msgid "The only public trust entry is `Hom::postulate`. Kernel rules use the package-private `trust`, so searching for `postulate` lists exactly the user-level obligations. (`assume` is a reserved word in MoonBit, hence the name.) The canonical embeddings `Hom::from_nat` and `Hom::from_integral` are the other leaves: their obligation sits on the trait instances."
 msgstr ""
 
-#: manual/design/hom.md:25
+#: manual/design/hom.md:26
 msgid "The signature is a phantom type `S` on the certificate, while the algebra is passed as a dictionary value `Algebra[S, A]`: the certificate says what is preserved, the dictionary is used for checking."
 msgstr ""
 
-#: manual/design/hom.md:28
+#: manual/design/hom.md:29
 msgid "Signature inclusions are `Reduct[S, T]` witnesses only this package can build."
 msgstr ""
 
-#: manual/design/hom.md:29
+#: manual/design/hom.md:30
 msgid "The strength of preservation is the relation `rel` chosen at check time, so strict, lax and approximate homomorphisms share one API."
 msgstr ""
 
-#: manual/design/hom.md:34
+#: manual/design/hom.md:35
 msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
 msgstr ""
 
-#: manual/design/hom.md:36
+#: manual/design/hom.md:37
 msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
 msgstr ""
 
-#: manual/design/hom.md:38
+#: manual/design/hom.md:39
 msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
+msgstr ""
+
+#: manual/design/hom.md:41
+msgid "Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get this from trait coherence; dictionaries from `Algebra::make` only by convention."
+msgstr ""
+
+#: manual/design/hom.md:44
+msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
+msgstr ""
+
+#: manual/design/hom.md:46
+msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ, so canonical embeddings out of them hold only while source arithmetic does not wrap."
 msgstr ""
 
 #: manual/index.md:1
@@ -527,7 +547,7 @@ msgid "Implement `NatHomomorphism` and `IntegralHomomorphism` by normalizing the
 msgstr ""
 
 #: manual/tutorial/core.md:39
-#: manual/tutorial/hom.md:63
+#: manual/tutorial/hom.md:73
 msgid "Practical guidance"
 msgstr ""
 
@@ -552,41 +572,45 @@ msgid "Leaf homomorphisms: one `postulate`, one check"
 msgstr ""
 
 #: manual/tutorial/hom.md:16
-msgid "Every `Hom::postulate` is a proof obligation. Searching the repository for `postulate` lists every unproven homomorphism, and each one should have a matching `check` test."
+msgid "Truncation is a ring homomorphism even when values wrap. Widening `Int` to `Int64` is not: `Int` is ℤ/2^32, and `2147483647 + 1` wraps in `Int` but not in `Int64`, so its check fails as soon as a sample sum overflows."
 msgstr ""
 
 #: manual/tutorial/hom.md:20
+msgid "Every `Hom::postulate` is a proof obligation. Searching the repository for `postulate` lists every unproven homomorphism, and each one should have a matching `check` test."
+msgstr ""
+
+#: manual/tutorial/hom.md:24
 msgid "Lifting from smaller homomorphisms"
 msgstr ""
 
-#: manual/tutorial/hom.md:30
-msgid "Composition, forgetting, pairing, projection and upgrades are inference rules and create no new obligations."
+#: manual/tutorial/hom.md:34
+msgid "Composition, forgetting, pairing, projection and upgrades are inference rules and create no new obligations. They treat every certificate as strict, so a map that only passes a lax or tolerance check below must be checked again after it is composed."
 msgstr ""
 
-#: manual/tutorial/hom.md:33
+#: manual/tutorial/hom.md:39
 msgid "Choosing the strength of preservation"
 msgstr ""
 
-#: manual/tutorial/hom.md:41
-msgid "Use a tolerance for floating-point targets:"
+#: manual/tutorial/hom.md:47
+msgid "Use a tolerance for floating-point targets. A tolerance relative to the result suits non-negative sources; with signed sources `x + y` can cancel to a small value while the rounding error stays proportional to `|x| + |y|`:"
 msgstr ""
 
-#: manual/tutorial/hom.md:50
+#: manual/tutorial/hom.md:58
 msgid "Custom signatures"
 msgstr ""
 
-#: manual/tutorial/hom.md:60
-msgid "`Hom` and `check` work for any single-sorted signature as long as both dictionaries list the same operations in the same order."
-msgstr ""
-
-#: manual/tutorial/hom.md:65
-msgid "Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as traits and bring them into `Hom` through `Hom::from_nat` / `Hom::from_integral`."
-msgstr ""
-
 #: manual/tutorial/hom.md:68
+msgid "`Hom` and `check` work for any single-sorted signature as long as both dictionaries list the same operations in the same order. Keep one dictionary per tag and carrier: certificates checked against different interpretations of the same tag do not compose."
+msgstr ""
+
+#: manual/tutorial/hom.md:75
+msgid "Express unique homomorphisms (the canonical embeddings out of ℕ and ℤ) as traits and bring them into `Hom` through `Hom::from_nat` / `Hom::from_integral`. With fixed-width sources they hold only while source arithmetic does not wrap."
+msgstr ""
+
+#: manual/tutorial/hom.md:79
 msgid "Write non-unique homomorphisms (such as two conjugate embeddings) as explicit `Hom` values, never as trait instances."
 msgstr ""
 
-#: manual/tutorial/hom.md:70
+#: manual/tutorial/hom.md:81
 msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
 msgstr ""

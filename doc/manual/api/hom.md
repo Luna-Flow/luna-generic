@@ -4,8 +4,10 @@
 
 The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` is a
 map `A -> B` that carries a certificate stating it preserves every operation
-of the signature `S`. The certificate cannot be forged outside this package,
-and the only unproven entry point is `Hom::postulate`.
+of the signature `S`. The certificate cannot be forged outside this package.
+Its unproven leaves are `Hom::postulate` and the canonical embeddings
+`Hom::from_nat` and `Hom::from_integral`, whose obligation sits on trait
+instances.
 
 Source: `src/hom.mbt`.
 
@@ -32,6 +34,11 @@ define their own.
 Two dictionaries of the same `S` must list the same operations (name and
 arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort.
 
+Certificates assume one `S`-algebra per carrier: every dictionary of the same
+`S` on the same carrier must interpret the operations the same way. `then`
+composes through the middle carrier, so two different `Algebra::make`
+dictionaries on it would compose into a map that preserves neither.
+
 ## Product type
 
 - `Prod[A, B]`: fields `fst` and `snd`. Implements `Add`, `Mul`, `Neg`, `Sub`,
@@ -43,7 +50,9 @@ arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort.
 Trust entry (creates a proof obligation):
 
 - `Hom::postulate(f)`: the caller promises that for every operation `op` of
-  `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`.
+  `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is
+  always strict equality, even when the map is only checked with a lax or
+  tolerance relation.
 
 Inference rules (no new obligation):
 
@@ -86,9 +95,15 @@ An operation of arity `n` is tested on `samples.length()^n` tuples.
 
 ## Semantic notes
 
-- Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) stop being the
-  integers once arithmetic wraps, so `Hom::from_integral` only holds on samples
-  whose source arithmetic does not overflow.
+- Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather
+  than the integers. There is no semiring map from them into `BigInt`, so
+  `Hom::from_nat` and `Hom::from_integral` only hold while source arithmetic
+  does not overflow. The same argument rules out widening such as
+  `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring
+  homomorphism.
+- The inference rules compose certificates as strict homomorphisms. A map that
+  only satisfies a lax (`<=`) or tolerance law must be checked again after
+  composition.
 - `Float` and `Double` targets satisfy the laws only up to rounding; use
   `check_by` with a tolerance. See the embedding notes in the
   [core API](core.md).
