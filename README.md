@@ -54,7 +54,7 @@ The manual is published at [luna-flow.github.io/en/luna-generic](https://luna-fl
 | Version | Date | Status | Notes |
 | --- | --- | --- | --- |
 | `0.4.0` | 2026-10-07 | release candidate | Adds `FromNat`, `FromInteger`, `lift_to` and `Section`; `Integral` extends `FromInteger` with the section law; deprecates `NatHomomorphism` and `IntegralHomomorphism` |
-| `0.3.3` | 2026-06-12 | release candidate | Refactors homomorphism traits around polymorphic methods and unifies natural/integral embeddings through `normalize` |
+| `0.3.3` | 2026-06-12 | published on mooncakes | Refactors homomorphism traits around polymorphic methods and unifies natural/integral embeddings through `normalize` |
 | `0.3.2` | 2026-06-06 | published on mooncakes | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
 | `0.3.1` | 2026-06-06 | published on mooncakes | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |
 | `0.3.0` | 2026-06-06 | previous release baseline | Earlier generic algebraic trait surface before the current integral embedding redesign |
