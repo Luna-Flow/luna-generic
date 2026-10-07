@@ -3,13 +3,103 @@ package "Luna-Flow/luna-generic"
 
 import {
   "moonbitlang/core/bigint",
+  "moonbitlang/core/debug",
 }
 
 // Values
+pub let add_group_to_add_monoid : Reduct[AddGroupSig, AddMonoidSig]
+
+pub let ring_to_add_group : Reduct[RingSig, AddGroupSig]
+
+pub let ring_to_semiring : Reduct[RingSig, SemiringSig]
+
+pub let semiring_to_add_monoid : Reduct[SemiringSig, AddMonoidSig]
+
+pub let semiring_to_mul_monoid : Reduct[SemiringSig, MulMonoidSig]
 
 // Errors
 
 // Types and methods
+pub enum AddGroupSig {
+}
+
+pub enum AddMonoidSig {
+}
+
+pub struct Algebra[S, A] {
+  // private fields
+}
+pub fn[A : AddGroup] Algebra::add_group() -> Self[AddGroupSig, A]
+pub fn[A : AddMonoid] Algebra::add_monoid() -> Self[AddMonoidSig, A]
+pub fn[S, A] Algebra::make(Array[Op[A]]) -> Self[S, A]
+pub fn[A : MulMonoid] Algebra::mul_monoid() -> Self[MulMonoidSig, A]
+pub fn[S, A, B] Algebra::prod(Self[S, A], Self[S, B]) -> Self[S, Prod[A, B]]
+pub fn[A : Ring] Algebra::ring() -> Self[RingSig, A]
+pub fn[A : Semiring] Algebra::semiring() -> Self[SemiringSig, A]
+
+pub struct Hom[S, A, B] {
+  // private fields
+}
+pub fn[S, A, B] Hom::apply(Self[S, A, B], A) -> B
+pub fn[S, A, B : Eq] Hom::check(Self[S, A, B], Algebra[S, A], Algebra[S, B], Array[A]) -> Bool
+pub fn[S, A, B] Hom::check_by(Self[S, A, B], Algebra[S, A], Algebra[S, B], Array[A], (B, B) -> Bool) -> Bool
+pub fn[S, T, A, B] Hom::forget(Self[S, A, B], Reduct[S, T]) -> Self[T, A, B]
+pub fn[Z : Integral, R : IntegralHomomorphism] Hom::from_integral() -> Self[SemiringSig, Z, R]
+pub fn[N : Nat, R : NatHomomorphism] Hom::from_nat() -> Self[SemiringSig, N, R]
+pub fn[S, A, B] Hom::fst() -> Self[S, Prod[A, B], A]
+pub fn[S, A] Hom::id() -> Self[S, A, A]
+pub fn[S, A, B, C] Hom::pair(Self[S, A, B], Self[S, A, C]) -> Self[S, A, Prod[B, C]]
+pub fn[S, A, B] Hom::postulate((A) -> B) -> Self[S, A, B]
+pub fn[S, A, B] Hom::snd() -> Self[S, Prod[A, B], B]
+pub fn[S, A, B, C] Hom::then(Self[S, A, B], Self[S, B, C]) -> Self[S, A, C]
+pub fn[A : AddGroup, B : AddGroup] Hom::to_add_group(Self[AddMonoidSig, A, B]) -> Self[AddGroupSig, A, B]
+pub fn[A : Ring, B : Ring] Hom::to_ring(Self[SemiringSig, A, B]) -> Self[RingSig, A, B]
+
+pub enum MulMonoidSig {
+}
+
+pub(all) struct Op[A] {
+  name : String
+  arity : Int
+  eval : (Array[A]) -> A
+}
+
+pub(all) struct Prod[A, B] {
+  fst : A
+  snd : B
+} derive(Eq, @debug.Debug)
+pub fn[A : Add, B : Add] Prod::add(Self[A, B], Self[A, B]) -> Self[A, B]
+pub fn[A : Eq, B : Eq] Prod::equal(Self[A, B], Self[A, B]) -> Bool
+pub fn[A : Mul, B : Mul] Prod::mul(Self[A, B], Self[A, B]) -> Self[A, B]
+pub fn[A : Neg, B : Neg] Prod::neg(Self[A, B]) -> Self[A, B]
+pub fn[A : Eq, B : Eq] Prod::not_equal(Self[A, B], Self[A, B]) -> Bool
+pub fn[A : One, B : One] Prod::one() -> Self[A, B]
+pub fn[A : Sub, B : Sub] Prod::sub(Self[A, B], Self[A, B]) -> Self[A, B]
+pub fn[A : @debug.Debug, B : @debug.Debug] Prod::to_repr(Self[A, B]) -> @debug.Repr
+pub fn[A : Zero, B : Zero] Prod::zero() -> Self[A, B]
+pub impl[A : AddGroup, B : AddGroup] AddGroup for Prod[A, B]
+pub impl[A : AddMonoid, B : AddMonoid] AddMonoid for Prod[A, B]
+pub impl[A : MulMonoid, B : MulMonoid] MulMonoid for Prod[A, B]
+pub impl[A : One, B : One] One for Prod[A, B]
+pub impl[A : Ring, B : Ring] Ring for Prod[A, B]
+pub impl[A : Semiring, B : Semiring] Semiring for Prod[A, B]
+pub impl[A : Zero, B : Zero] Zero for Prod[A, B]
+pub impl[A : Add, B : Add] Add for Prod[A, B]
+pub impl[A : Mul, B : Mul] Mul for Prod[A, B]
+pub impl[A : Neg, B : Neg] Neg for Prod[A, B]
+pub impl[A : Sub, B : Sub] Sub for Prod[A, B]
+
+pub struct Reduct[S, T] {
+  // private fields
+}
+pub fn[S] Reduct::refl() -> Self[S, S]
+pub fn[S, T, U] Reduct::then(Self[S, T], Self[T, U]) -> Self[S, U]
+
+pub enum RingSig {
+}
+
+pub enum SemiringSig {
+}
 
 // Type aliases
 
@@ -155,4 +245,3 @@ pub impl Zero for UInt64
 pub impl Zero for Float
 pub impl Zero for Double
 pub impl Zero for @bigint.BigInt
-
