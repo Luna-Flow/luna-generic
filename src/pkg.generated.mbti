@@ -9,6 +9,8 @@ import {
 // Values
 pub let add_group_to_add_monoid : Reduct[AddGroupSig, AddMonoidSig]
 
+pub fn[S : Integral, R : FromInteger] lift_to(S) -> R
+
 pub let ring_to_add_group : Reduct[RingSig, AddGroupSig]
 
 pub let ring_to_semiring : Reduct[RingSig, SemiringSig]
@@ -44,7 +46,10 @@ pub fn[S, A, B] Hom::apply(Self[S, A, B], A) -> B
 pub fn[S, A, B : Eq] Hom::check(Self[S, A, B], Algebra[S, A], Algebra[S, B], Array[A]) -> Bool
 pub fn[S, A, B] Hom::check_by(Self[S, A, B], Algebra[S, A], Algebra[S, B], Array[A], (B, B) -> Bool) -> Bool
 pub fn[S, T, A, B] Hom::forget(Self[S, A, B], Reduct[S, T]) -> Self[T, A, B]
+pub fn[R : FromInteger] Hom::from_integer() -> Self[SemiringSig, @bigint.BigInt, R]
+#deprecated
 pub fn[Z : Integral, R : IntegralHomomorphism] Hom::from_integral() -> Self[SemiringSig, Z, R]
+#deprecated
 pub fn[N : Nat, R : NatHomomorphism] Hom::from_nat() -> Self[SemiringSig, N, R]
 pub fn[S, A, B] Hom::fst() -> Self[S, Prod[A, B], A]
 pub fn[S, A] Hom::id() -> Self[S, A, A]
@@ -98,6 +103,22 @@ pub fn[S, T, U] Reduct::then(Self[S, T], Self[T, U]) -> Self[S, U]
 pub enum RingSig {
 }
 
+pub struct Section[S, Q, A] {
+  // private fields
+}
+pub fn[S, Q : Eq, A] Section::check(Self[S, Q, A], Array[Q]) -> Bool
+pub fn[S, Q : Eq, A] Section::check_ops(Self[S, Q, A], Algebra[S, Q], Algebra[S, A], Array[Q]) -> Bool
+pub fn[S, T, Q, A] Section::forget(Self[S, Q, A], Reduct[S, T]) -> Self[T, Q, A]
+pub fn[S, Q, A : Eq] Section::is_representative(Self[S, Q, A], A) -> Bool
+pub fn[S, Q, A] Section::lift(Self[S, Q, A], Q) -> A
+pub fn[S, Q, A] Section::normalize(Self[S, Q, A], A) -> A
+pub fn[Z : Integral] Section::of_integral() -> Self[SemiringSig, Z, @bigint.BigInt]
+pub fn[S, Q, A] Section::postulate(Hom[S, A, Q], (Q) -> A) -> Self[S, Q, A]
+pub fn[S, Q, A] Section::proj(Self[S, Q, A]) -> Hom[S, A, Q]
+pub fn[S, Q, A, B] Section::then(Self[S, Q, A], Self[S, A, B]) -> Self[S, Q, B]
+pub fn[Q : AddGroup, A : AddGroup] Section::to_add_group(Self[AddMonoidSig, Q, A]) -> Self[AddGroupSig, Q, A]
+pub fn[Q : Ring, A : Ring] Section::to_ring(Self[SemiringSig, Q, A]) -> Self[RingSig, Q, A]
+
 pub enum SemiringSig {
 }
 
@@ -134,7 +155,33 @@ pub(open) trait Field : Ring + Inverse + Div {
 pub impl Field for Float
 pub impl Field for Double
 
-pub(open) trait Integral : Semiring {
+pub(open) trait FromInteger : FromNat {
+  fn from_integer(@bigint.BigInt) -> Self
+}
+pub impl FromInteger for Int
+pub impl FromInteger for Int16
+pub impl FromInteger for Int64
+pub impl FromInteger for UInt
+pub impl FromInteger for UInt16
+pub impl FromInteger for UInt64
+pub impl FromInteger for Float
+pub impl FromInteger for Double
+pub impl FromInteger for @bigint.BigInt
+
+pub(open) trait FromNat {
+  fn from_natural(@bigint.BigInt) -> Self
+}
+pub impl FromNat for Int
+pub impl FromNat for Int16
+pub impl FromNat for Int64
+pub impl FromNat for UInt
+pub impl FromNat for UInt16
+pub impl FromNat for UInt64
+pub impl FromNat for Float
+pub impl FromNat for Double
+pub impl FromNat for @bigint.BigInt
+
+pub(open) trait Integral : Semiring + FromInteger {
   fn normalize(Self) -> @bigint.BigInt
 }
 pub impl Integral for Int

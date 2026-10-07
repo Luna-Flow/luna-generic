@@ -50,6 +50,57 @@ pub impl Integral for UInt64 with fn normalize(a) -> BigInt {
 }
 
 ///|
+pub impl FromNat for UInt
+
+///|
+pub impl FromNat for UInt16
+
+///|
+pub impl FromNat for UInt64
+
+///|
+pub impl FromInteger for UInt
+
+///|
+pub impl FromInteger for UInt16
+
+///|
+pub impl FromInteger for UInt64
+
+// Reduction modulo 2^k: the unique ring hom out of ℤ.
+// `Integral::normalize` is a section of it.
+
+///|
+pub impl FromNat for UInt with fn from_natural(n) -> UInt {
+  n.to_uint()
+}
+
+///|
+pub impl FromNat for UInt16 with fn from_natural(n) -> UInt16 {
+  n.to_int().to_uint16()
+}
+
+///|
+pub impl FromNat for UInt64 with fn from_natural(n) -> UInt64 {
+  n.to_uint64()
+}
+
+///|
+pub impl FromInteger for UInt with fn from_integer(n) -> UInt {
+  n.to_uint()
+}
+
+///|
+pub impl FromInteger for UInt16 with fn from_integer(n) -> UInt16 {
+  n.to_int().to_uint16()
+}
+
+///|
+pub impl FromInteger for UInt64 with fn from_integer(n) -> UInt64 {
+  n.to_uint64()
+}
+
+///|
 pub impl Nat for UInt
 
 ///|

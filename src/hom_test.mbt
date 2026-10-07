@@ -96,8 +96,8 @@ test "monoid and semiring homs upgrade between groups and rings" {
     .to_add_group()
     .check(Algebra::add_group(), Algebra::add_group(), edge_int64s),
   )
-  // `BigInt` really is ℤ, so this canonical embedding holds everywhere.
-  let s : Hom[SemiringSig, BigInt, BigInt] = Hom::from_integral()
+  // The canonical map out of ℤ holds everywhere.
+  let s : Hom[SemiringSig, BigInt, BigInt] = Hom::from_integer()
   let big = BigInt::from_int64(9223372036854775807L) * BigInt::from_int(10)
   let bigs = [
     BigInt::from_int(0),
@@ -128,22 +128,30 @@ test "pairing and projections" {
 }
 
 ///|
-test "canonical embeddings from the homomorphism traits" {
-  // Fixed-width sources are ℤ/2^k, so these samples are chosen so that no
-  // operation wraps: 65535 * 65535 < 2^32.
-  let n : Hom[SemiringSig, UInt, BigInt] = Hom::from_nat()
+test "canonical maps out of the integers" {
+  // ℤ -> ℤ/2^32 holds even on inputs far outside the Int range.
+  let big = BigInt::from_int64(9223372036854775807L) * BigInt::from_int(10)
+  let bigs = [BigInt::from_int(0), BigInt::from_int(-5), big, -big]
+  let to_int : Hom[RingSig, BigInt, Int] = Hom::from_integer().to_ring()
+  assert_true(to_int.check(Algebra::ring(), Algebra::ring(), bigs))
+  let to_uint : Hom[SemiringSig, BigInt, UInt] = Hom::from_integer()
+  assert_true(to_uint.check(Algebra::semiring(), Algebra::semiring(), bigs))
+  let to_double : Hom[SemiringSig, BigInt, Double] = Hom::from_integer()
   assert_true(
-    n.check(Algebra::semiring(), Algebra::semiring(), [0U, 1U, 2U, 10U, 65535U]),
-  )
-  let z : Hom[SemiringSig, Int64, Double] = Hom::from_integral()
-  assert_true(
-    z.check(Algebra::semiring(), Algebra::semiring(), [0L, 1L, -5L, 9L]),
+    to_double.check(Algebra::semiring(), Algebra::semiring(), [
+      BigInt::from_int(0),
+      BigInt::from_int(1),
+      BigInt::from_int(-5),
+      BigInt::from_int(9),
+    ]),
   )
 }
 
 ///|
 test "fixed-width sources are not the integers once arithmetic wraps" {
-  let h : Hom[SemiringSig, Int, BigInt] = Hom::from_integral()
+  let h : Hom[SemiringSig, Int, BigInt] = Hom::postulate(x => {
+    @luna-generic.lift_to(x)
+  })
   assert_true(h.check(Algebra::semiring(), Algebra::semiring(), [1, 1000]))
   assert_false(
     h.check(Algebra::semiring(), Algebra::semiring(), [1, 2147483647]),
@@ -152,8 +160,8 @@ test "fixed-width sources are not the integers once arithmetic wraps" {
 
 ///|
 test "floating-point targets hold only up to rounding" {
-  let h : Hom[SemiringSig, UInt64, Float] = Hom::from_nat()
-  let samples = [1UL, 16777217UL]
+  let h : Hom[SemiringSig, BigInt, Float] = Hom::from_integer()
+  let samples = [BigInt::from_int(1), BigInt::from_int(16777217)]
   assert_false(h.check(Algebra::semiring(), Algebra::semiring(), samples))
   let close = (l : Float, r : Float) => {
     (l - r).abs() <= (1.0e-6 : Float) * ((1.0 : Float) + r.abs())

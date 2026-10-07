@@ -22,6 +22,22 @@ pub impl Integral for BigInt with fn normalize(a) -> BigInt {
 }
 
 ///|
+pub impl FromNat for BigInt
+
+///|
+pub impl FromInteger for BigInt
+
+///|
+pub impl FromNat for BigInt with fn from_natural(n) -> BigInt {
+  n
+}
+
+///|
+pub impl FromInteger for BigInt with fn from_integer(n) -> BigInt {
+  n
+}
+
+///|
 pub impl NatHomomorphism for BigInt
 
 ///|

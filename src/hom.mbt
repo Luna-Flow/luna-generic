@@ -3,9 +3,9 @@
 // A `Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of
 // the signature `S`. The certificate cannot be forged outside this package:
 // the only public trust entry is `Hom::postulate`, which hands the proof
-// obligation to the caller. The canonical embeddings `Hom::from_nat` and
-// `Hom::from_integral` are the other leaves; their obligation sits on the
-// trait instances. Every other constructor here is an inference rule that
+// obligation to the caller. The canonical map `Hom::from_integer` and the
+// canonical sections `Section::of_integral` are the other leaves; their
+// obligation sits on the `FromInteger` and `Integral` instances. Every other constructor here is an inference rule that
 // preserves the certificate, so obligations only appear at the leaves.
 
 ///|
@@ -365,29 +365,32 @@ pub fn[A : Ring, B : Ring] Hom::to_ring(
 }
 
 ///|
-/// The canonical embedding of a `Nat` source, backed by the
-/// `NatHomomorphism` instance of the target. The obligation sits on that
-/// instance: it must be the unique semiring map out of the naturals.
+/// The canonical map ℤ -> `R` given by `FromInteger`, as a certificate. It is
+/// the unique semiring map out of ℤ, so it holds on every input; use
+/// `Hom::to_ring` when `R` is a ring. `Float` and `Double` targets only satisfy
+/// it up to rounding.
 ///
-/// The certificate is not found by searching for `postulate`, and it only
-/// holds where the source really is ℕ. Fixed-width sources such as `UInt`
-/// are ℤ/2^k, which has no semiring map into a target of characteristic 0
-/// such as `BigInt`, so the law holds only while source arithmetic does not
-/// wrap. `Float` and `Double` targets only satisfy it up to rounding.
+/// For a fixed-width source, first lift with `Section::of_integral`: the
+/// composite is not a homomorphism unless the target modulus divides the
+/// source modulus.
+pub fn[R : FromInteger] Hom::from_integer() -> Hom[SemiringSig, BigInt, R] {
+  trust(x => FromInteger::from_integer(x))
+}
+
+///|
+/// Deprecated: certifies `NatHomomorphism::from_nat`, which is not a
+/// homomorphism for fixed-width sources. Use `Hom::from_integer` together
+/// with `Section::of_integral`, or `lift_to` when no certificate is needed.
+#deprecated("Use `Hom::from_integer` with `Section::of_integral`, or `lift_to`.")
 pub fn[N : Nat, R : NatHomomorphism] Hom::from_nat() -> Hom[SemiringSig, N, R] {
   trust(x => NatHomomorphism::from_nat(x))
 }
 
 ///|
-/// The canonical embedding of an `Integral` source, backed by the
-/// `IntegralHomomorphism` instance of the target. Use `Hom::to_ring` when
-/// both sides are rings.
-///
-/// The certificate is not found by searching for `postulate`, and it only
-/// holds where the source really is ℤ. It is exact for `BigInt`; fixed-width
-/// sources such as `Int` and `Int64` are ℤ/2^k, so the law holds only while
-/// source arithmetic does not wrap. `Float` and `Double` targets only satisfy
-/// the obligation up to rounding.
+/// Deprecated: certifies `IntegralHomomorphism::from_integral`, which is not a
+/// homomorphism for fixed-width sources. Use `Hom::from_integer` together
+/// with `Section::of_integral`, or `lift_to` when no certificate is needed.
+#deprecated("Use `Hom::from_integer` with `Section::of_integral`, or `lift_to`.")
 pub fn[Z : Integral, R : IntegralHomomorphism] Hom::from_integral() -> Hom[
   SemiringSig,
   Z,

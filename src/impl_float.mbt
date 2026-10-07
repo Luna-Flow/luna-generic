@@ -20,6 +20,24 @@ pub impl Ring for Float
 pub impl Field for Float
 
 ///|
+pub impl FromNat for Float
+
+///|
+pub impl FromInteger for Float
+
+///|
+/// Rounds to the nearest `Float`: a homomorphism only up to rounding.
+pub impl FromNat for Float with fn from_natural(n) -> Float {
+  float_from_bigint(n)
+}
+
+///|
+/// Rounds to the nearest `Float`: a homomorphism only up to rounding.
+pub impl FromInteger for Float with fn from_integer(n) -> Float {
+  float_from_bigint(n)
+}
+
+///|
 pub impl NatHomomorphism for Float
 
 ///|

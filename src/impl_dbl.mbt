@@ -20,6 +20,24 @@ pub impl Ring for Double
 pub impl Field for Double
 
 ///|
+pub impl FromNat for Double
+
+///|
+pub impl FromInteger for Double
+
+///|
+/// Rounds to the nearest `Double`: a homomorphism only up to rounding.
+pub impl FromNat for Double with fn from_natural(n) -> Double {
+  double_from_bigint(n)
+}
+
+///|
+/// Rounds to the nearest `Double`: a homomorphism only up to rounding.
+pub impl FromInteger for Double with fn from_integer(n) -> Double {
+  double_from_bigint(n)
+}
+
+///|
 pub impl NatHomomorphism for Double
 
 ///|
