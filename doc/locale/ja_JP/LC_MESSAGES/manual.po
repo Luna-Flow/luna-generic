@@ -248,6 +248,7 @@ msgid "Use:"
 msgstr "使用:"
 
 #: manual/api/hom.md:79
+#: manual/design/hom.md:39
 msgid "Sections"
 msgstr "切断"
 
@@ -368,15 +369,99 @@ msgid "Unsigned types stop before additive inverse, so the abstraction stays mat
 msgstr "符号なし型に加法逆元を主張させず、数学的整合性を保つ。"
 
 #: manual/design/core.md:31
-#: manual/design/hom.md:39
+msgid "Integers as quotients of ℤ"
+msgstr "ℤ の商としての整数"
+
+#: manual/design/core.md:33
+msgid "This section gives the mathematics behind `FromNat`, `FromInteger`, `Integral` and `lift_to`. The [core tutorial](../tutorial/core.md) shows how to use them without it."
+msgstr "この節では `FromNat`、`FromInteger`、`Integral`、`lift_to` の背後にある数学を説明します。数学抜きでの使い方は[core チュートリアル](../tutorial/core.md)にあります。"
+
+#: manual/design/core.md:37
+msgid "The canonical map is unique"
+msgstr "標準写像は一意である"
+
+#: manual/design/core.md:39
+msgid "For every ring `R` there is exactly one ring homomorphism `ℤ -> R`. A ring homomorphism `φ` must send `1` to `1`, and additivity then forces `φ(n) = 1 + ... + 1` (`n` times) for `n > 0` and `φ(-n) = -φ(n)`. Conversely, `n ↦ n·1` preserves `+` and `*` by distributivity. The same argument gives exactly one semiring homomorphism `ℕ -> R` for every semiring `R`. In categorical terms ℕ and ℤ are initial objects."
+msgstr "任意の環 `R` に対して、環準同型 `ℤ -> R` はちょうど一つ存在します。環準同型 `φ` は `1` を `1` に送らなければならず、加法性から `n > 0` では `φ(n) = 1 + ... + 1`（`n` 個）、さらに `φ(-n) = -φ(n)` が強制されます。逆に、分配法則により `n ↦ n·1` は `+` と `*` を保存します。同じ議論により、任意の半環 `R` に対して半環準同型 `ℕ -> R` もちょうど一つ存在します。圏論の言葉では、ℕ と ℤ は始対象です。"
+
+#: manual/design/core.md:46
+msgid "Because the map depends only on `R`, it is a property of the target and fits a single-parameter trait: `FromNat::from_natural` and `FromInteger::from_integer`."
+msgstr "この写像は `R` だけで決まるので、対象側の性質として単一パラメータの trait で表せます: `FromNat::from_natural` と `FromInteger::from_integer`。"
+
+#: manual/design/core.md:50
+msgid "Fixed-width integers"
+msgstr "固定幅の整数"
+
+#: manual/design/core.md:52
+msgid "`Int` adds and multiplies modulo 2^32, so as a ring it is ℤ/2^32. Its `from_integer` is the reduction `ℤ -> ℤ/2^32`, which is surjective. `normalize` goes the other way and picks one integer in every residue class, the one in `[-2^31, 2^31)`. The law `from_integer(normalize(x)) == x` says exactly that `normalize` is a section of the reduction:"
+msgstr "`Int` は 2^32 を法として加算・乗算するので、環としては ℤ/2^32 です。その `from_integer` は全射である簡約 `ℤ -> ℤ/2^32` です。`normalize` は逆向きで、各剰余類から整数を一つ、`[-2^31, 2^31)` にあるものを選びます。法則 `from_integer(normalize(x)) == x` は、`normalize` が簡約の切断であることをちょうど表しています:"
+
+#: manual/design/core.md:58
+msgid "`normalize` is injective, because it has a left inverse."
+msgstr "`normalize` は左逆を持つので単射です。"
+
+#: manual/design/core.md:59
+msgid "Its image contains exactly one element of every class: at most one because it is injective, and at least one because of the law."
+msgstr "その像は各類のちょうど一つの元を含みます。単射なので高々一つ、法則により少なくとも一つです。"
+
+#: manual/design/core.md:61
+msgid "It is not a homomorphism: `normalize(2147483647 + 1) = -2^31`, while `normalize(2147483647) + normalize(1) = 2^31`."
+msgstr "準同型ではありません: `normalize(2147483647 + 1) = -2^31` ですが、`normalize(2147483647) + normalize(1) = 2^31` です。"
+
+#: manual/design/core.md:64
+msgid "The [hom design](hom.md) shows what a section does preserve."
+msgstr "切断が何を保存するかは[hom 設計](hom.md)で説明します。"
+
+#: manual/design/core.md:66
+msgid "When a conversion is a homomorphism"
+msgstr "変換が準同型になるとき"
+
+#: manual/design/core.md:68
+msgid "`lift_to : S -> R` is `R::from_integer` composed with `S::normalize`. When `S` is ℤ/m (with `m = 0` for `BigInt`), a ring homomorphism `ℤ/m -> R` exists if and only if `m·1 = 0` in `R`:"
+msgstr "`lift_to : S -> R` は `R::from_integer` と `S::normalize` の合成です。`S` が ℤ/m（`BigInt` では `m = 0`）のとき、環準同型 `ℤ/m -> R` が存在するのは `R` で `m·1 = 0` となるとき、かつそのときに限ります:"
+
+#: manual/design/core.md:72
+msgid "If `ψ` is one, then `0 = ψ(0) = ψ(m·1) = m·1` in `R`."
+msgstr "`ψ` がそのような準同型なら、`R` において `0 = ψ(0) = ψ(m·1) = m·1` です。"
+
+#: manual/design/core.md:73
+msgid "If `m·1 = 0`, the canonical map `ℤ -> R` sends `mℤ` to `0` and so factors through ℤ/m. It is unique because `ℤ -> ℤ/m` is surjective."
+msgstr "`m·1 = 0` なら、標準写像 `ℤ -> R` は `mℤ` を `0` に送るので ℤ/m を経由して分解します。`ℤ -> ℤ/m` は全射なので、この分解は一意です。"
+
+#: manual/design/core.md:76
+msgid "In that case `lift_to` is this homomorphism: write the canonical map `ℤ -> R` as `ψ ∘ π` with `π : ℤ -> ℤ/m`; then `lift_to = ψ ∘ π ∘ normalize = ψ`. So:"
+msgstr "このとき `lift_to` はこの準同型そのものです。標準写像 `ℤ -> R` を `π : ℤ -> ℤ/m` を用いて `ψ ∘ π` と書くと、`lift_to = ψ ∘ π ∘ normalize = ψ` です。したがって:"
+
+#: manual/design/core.md:80
+msgid "`Int64 -> Int` is a homomorphism, because `2^64 ≡ 0 (mod 2^32)`."
+msgstr "`Int64 -> Int` は準同型です。`2^64 ≡ 0 (mod 2^32)` だからです。"
+
+#: manual/design/core.md:81
+msgid "`Int -> Int64` is not, because `2^32 ≢ 0 (mod 2^64)`."
+msgstr "`Int -> Int64` は準同型ではありません。`2^32 ≢ 0 (mod 2^64)` だからです。"
+
+#: manual/design/core.md:82
+msgid "No fixed-width integer maps homomorphically into `BigInt`, `Float` or `Double`, where `m·1 ≠ 0` for every `m > 0`."
+msgstr "固定幅の整数から `BigInt`、`Float`、`Double` への準同型は存在しません。これらではすべての `m > 0` について `m·1 ≠ 0` だからです。"
+
+#: manual/design/core.md:85
+msgid "Why the traits do not refer to each other"
+msgstr "trait が互いを参照しない理由"
+
+#: manual/design/core.md:87
+msgid "Every conversion factors through ℤ: `S -> ℤ -> R`. The first half depends only on `S` (`Integral`), the second only on `R` (`FromInteger`), so neither trait has to relate two types. `FromInteger` takes a `BigInt` rather than a generic integral source, which lets `Integral` extend it without a cycle."
+msgstr "すべての変換は ℤ を経由して分解されます: `S -> ℤ -> R`。前半は `S`（`Integral`）だけに、後半は `R`（`FromInteger`）だけに依存するので、二つの型を関係づける trait は必要ありません。`FromInteger` は総称的な整数ソースではなく `BigInt` を受け取るため、`Integral` は循環なしにそれを拡張できます。"
+
+#: manual/design/core.md:92
+#: manual/design/hom.md:105
 msgid "Boundaries"
 msgstr "境界"
 
-#: manual/design/core.md:33
+#: manual/design/core.md:94
 msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
 msgstr "このパッケージは行列、複素数、多項式、解析関数、数値アルゴリズムを定義しません。"
 
-#: manual/design/core.md:35
+#: manual/design/core.md:96
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr "正確系と近似系の意味論差を無理に隠しません。"
 
@@ -433,30 +518,94 @@ msgid "The strength of preservation is the relation `rel` chosen at check time, 
 msgstr "保存の強さは検査時に選ぶ関係 `rel` で決まり、厳密・lax・近似の準同型が一つの API を共有します。"
 
 #: manual/design/hom.md:41
+msgid "The [hom tutorial](../tutorial/hom.md) uses `Section` without this mathematics."
+msgstr "[hom チュートリアル](../tutorial/hom.md)では、この数学に触れずに `Section` を使います。"
+
+#: manual/design/hom.md:44
+msgid "Definition"
+msgstr "定義"
+
+#: manual/design/hom.md:46
+msgid "Let `π : A -> Q` be a surjective homomorphism, for example the reduction `BigInt -> Int`. A section is a map `s : Q -> A` with `π(s(q)) = q` for every `q`: it picks one element of every class `π⁻¹(q)`. By the first isomorphism theorem `Q` is the quotient `A / ker π`, so a section is a choice of representatives for a quotient algebra."
+msgstr "`π : A -> Q` を全射準同型とします（例: 簡約 `BigInt -> Int`）。切断とは、すべての `q` について `π(s(q)) = q` を満たす写像 `s : Q -> A` で、各類 `π⁻¹(q)` から元を一つ選びます。第一同型定理により `Q` は商 `A / ker π` なので、切断とは商代数の代表元の選び方のことです。"
+
+#: manual/design/hom.md:52
+msgid "What a section preserves"
+msgstr "切断が保存するもの"
+
+#: manual/design/hom.md:54
+msgid "For every operation `ω` and arguments `x`:"
+msgstr "すべての演算 `ω` と引数 `x` について:"
+
+#: manual/design/hom.md:56
+msgid "`s(ω(x))` and `ω(s(x))` are congruent modulo `ker π`. Apply `π` to both: `π(s(ω(x))) = ω(x)` by the section law, and `π(ω(s(x))) = ω(π(s(x))) = ω(x)` because `π` is a homomorphism."
+msgstr "`s(ω(x))` と `ω(s(x))` は `ker π` を法として合同です。両方に `π` を適用すると、切断の法則により `π(s(ω(x))) = ω(x)`、`π` が準同型なので `π(ω(s(x))) = ω(π(s(x))) = ω(x)` です。"
+
+#: manual/design/hom.md:59
+msgid "`s(ω(x)) = ω(s(x))` exactly when `ω(s(x))` lies in the image of `s`. If `ω(s(x)) = s(y)`, then `y = π(s(y)) = π(ω(s(x))) = ω(x)` by the same computation, so `ω(s(x)) = s(ω(x))`. Conversely `s(ω(x))` is always in the image."
+msgstr "`s(ω(x)) = ω(s(x))` となるのは、`ω(s(x))` が `s` の像に含まれるとき、かつそのときに限ります。`ω(s(x)) = s(y)` なら、同じ計算により `y = π(s(y)) = π(ω(s(x))) = ω(x)` なので `ω(s(x)) = s(ω(x))` です。逆に `s(ω(x))` は常に像に含まれます。"
+
+#: manual/design/hom.md:64
+msgid "So `Section::check` only tests the section law; `check_ops` tests that `π` is a homomorphism on lifted arguments, and point 2 follows. For `Int`, the image of `s` is `[-2^31, 2^31)`, and \"the result is in the image\" means \"the result did not wrap around\"."
+msgstr "したがって `Section::check` は切断の法則だけを検査し、`check_ops` は持ち上げた引数の上で `π` が準同型であることを検査します。第 2 点はそこから従います。`Int` では `s` の像は `[-2^31, 2^31)` であり、「結果が像に含まれる」とは「結果が回り込んでいない」ということです。"
+
+#: manual/design/hom.md:69
+msgid "The carry"
+msgstr "桁上がり"
+
+#: manual/design/hom.md:71
+msgid "For addition on `Int` the difference in point 1 is `s(a) + s(b) - s(a + b) = c(a, b)·2^32` with `c(a, b) ∈ {-1, 0, 1}`, the carry. Expanding `s(a) + s(b) + s(e)` in two ways gives"
+msgstr "`Int` の加算では、第 1 点の差は `s(a) + s(b) - s(a + b) = c(a, b)·2^32` で、`c(a, b) ∈ {-1, 0, 1}` は桁上がりです。`s(a) + s(b) + s(e)` を二通りに展開すると次を得ます"
+
+#: manual/design/hom.md:79
+msgid "so `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That extension does not split, because ℤ has no element of finite order, so no choice of representatives makes `s` a homomorphism. For multiplication the difference is the high word of the product."
+msgstr "したがって `c` は 2-コサイクルであり、ℤ を 2^32ℤ による ℤ/2^32 の拡大として記述します。ℤ には有限位数の元がないのでこの拡大は分裂せず、どのように代表元を選んでも `s` は準同型になりません。乗算では、差は積の上位ワードです。"
+
+#: manual/design/hom.md:84
+msgid "Normal forms"
+msgstr "正規形"
+
+#: manual/design/hom.md:86
+msgid "`n = s ∘ π : A -> A` is a normal form: `n(n(a)) = n(a)`, `a` and `n(a)` are congruent, and `a`, `b` are congruent exactly when `n(a) = n(b)`. The quotient operations are computed on representatives as `s(ω_Q(x)) = n(ω_A(s(x)))`: compute in `A`, then normalize. Wrapped `Int` arithmetic is this computation for `A = ℤ`. Because `Section::normalize` is built from `s` and `π`, it cannot give two congruent values different normal forms."
+msgstr "`n = s ∘ π : A -> A` は正規形です: `n(n(a)) = n(a)`、`a` と `n(a)` は合同、そして `a` と `b` が合同であることと `n(a) = n(b)` は同値です。商の演算は代表元の上で `s(ω_Q(x)) = n(ω_A(s(x)))` として計算されます。つまり `A` で計算してから正規化します。回り込む `Int` の演算は `A = ℤ` の場合のこの計算です。`Section::normalize` は `s` と `π` から構成されるので、合同な二つの値に異なる正規形を与えることはありません。"
+
+#: manual/design/hom.md:94
+msgid "Why `Section` is not a `Hom`"
+msgstr "`Section` が `Hom` ではない理由"
+
+#: manual/design/hom.md:96
+msgid "A section is injective and agrees with the operations on its image, so it is easy to mistake for a homomorphism and compose it as one. Keeping it in a separate certificate makes the difference visible in the types: `Section` carries `π` as a `Hom`, and only promises `π(s(q)) = q`."
+msgstr "切断は単射であり、その像の上では演算と一致するため、準同型と取り違えて合成してしまいがちです。別の証明書に分けることで違いが型に現れます: `Section` は `π` を `Hom` として持ち、`π(s(q)) = q` だけを約束します。"
+
+#: manual/design/hom.md:101
+msgid "The law does not fix which representatives are chosen. `[0, 2^32)` and `[-2^31, 2^31)` both give sections of `BigInt -> Int`; only the second preserves the signed order of `Int`. Such properties need their own checks."
+msgstr "法則はどの代表元を選ぶかを決めません。`[0, 2^32)` と `[-2^31, 2^31)` はどちらも `BigInt -> Int` の切断を与えますが、`Int` の符号付きの順序を保つのは後者だけです。このような性質は別途検査が必要です。"
+
+#: manual/design/hom.md:107
 msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
 msgstr "単一ソートのシグネチャのみを扱います。加群（スカラーとベクトル）のような多ソート構造はこのサブシステムの範囲外です。"
 
-#: manual/design/hom.md:43
+#: manual/design/hom.md:109
 msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
 msgstr "高階カインドがないため、関手的な持ち上げ（多項式、行列など）はそれぞれのパッケージが提供し、ここでは一般化しません。"
 
-#: manual/design/hom.md:45
+#: manual/design/hom.md:111
 msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
 msgstr "法則は証明されず、検査されるだけです。証明書が保証するのは由来の追跡可能性であり、法則が成り立つことではありません。"
 
-#: manual/design/hom.md:47
+#: manual/design/hom.md:113
 msgid "Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get this from trait coherence; dictionaries from `Algebra::make` only by convention."
 msgstr "`then` の健全性は、台集合ごとに `S`-代数が一つだけであることに依存します。組み込みのタグは trait の一貫性によってこれを満たしますが、`Algebra::make` の辞書は規約によるだけです。"
 
-#: manual/design/hom.md:50
+#: manual/design/hom.md:116
 msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
 msgstr "証明書は `check_by` で使った関係を記録しないため、lax な写像や近似的な写像も厳密な準同型であるかのように合成されます。"
 
-#: manual/design/hom.md:52
+#: manual/design/hom.md:118
 msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are sections, so they agree with the operations only while arithmetic does not wrap."
 msgstr "固定幅の整数は ℤ や ℕ ではなく ℤ/2^k です。そこから ℤ への写像は切断なので、演算と一致するのは回り込みが起きない間だけです。"
 
-#: manual/design/hom.md:55
+#: manual/design/hom.md:121
 msgid "The section law does not fix which representatives are chosen, so properties such as order preservation need their own checks."
 msgstr "切断の法則はどの代表元を選ぶかを決めないため、順序の保存のような性質は別途検査する必要があります。"
 
@@ -593,125 +742,242 @@ msgid "core tutorial"
 msgstr "core チュートリアル"
 
 #: manual/tutorial/core.md:3
+msgid "Quick start for library authors"
+msgstr "ライブラリ作者向けクイックスタート"
+
+#: manual/tutorial/core.md:5
+msgid "I want to"
+msgstr "やりたいこと"
+
+#: manual/tutorial/core.md:5
+msgid "Use"
+msgstr "使うもの"
+
+#: manual/tutorial/core.md:7
+msgid "write one algorithm for many number types"
+msgstr "多くの数値型に対して一つのアルゴリズムを書く"
+
+#: manual/tutorial/core.md:7
+msgid "trait bounds such as `T : Ring`"
+msgstr "`T : Ring` のような trait 制約"
+
+#: manual/tutorial/core.md:8
+msgid "turn an integer constant or index into a `T`"
+msgstr "整数の定数や添字を `T` に変換する"
+
+#: manual/tutorial/core.md:8
+msgid "`@luna-generic.lift_to(i)` with `T : FromInteger`"
+msgstr "`@luna-generic.lift_to(i)`（`T : FromInteger`）"
+
+#: manual/tutorial/core.md:9
+msgid "let my number type be built from integers"
+msgstr "自分の数値型を整数から構築できるようにする"
+
+#: manual/tutorial/core.md:9
+msgid "implement `FromNat` and `FromInteger`"
+msgstr "`FromNat` と `FromInteger` を実装する"
+
+#: manual/tutorial/core.md:10
+msgid "define a new integer type"
+msgstr "新しい整数型を定義する"
+
+#: manual/tutorial/core.md:10
+msgid "also implement `Integral`, and add one check"
+msgstr "さらに `Integral` を実装し、検査を一つ加える"
+
+#: manual/tutorial/core.md:11
+msgid "get one exact form of any integer"
+msgstr "任意の整数の正確な表現を一つ得る"
+
+#: manual/tutorial/core.md:11
+msgid "`Integral::normalize(x)`, a `BigInt`"
+msgstr "`Integral::normalize(x)`（`BigInt`）"
+
+#: manual/tutorial/core.md:13
+msgid "The rest of this page walks through each row. The reasons behind the design are in the [core design](../design/core.md)."
+msgstr "このページの残りでは各行を順に説明します。設計の理由は[core 設計](../design/core.md)にあります。"
+
+#: manual/tutorial/core.md:16
 msgid "Write algorithms against structure, not concrete numbers"
 msgstr "具体型ではなく構造に対してアルゴリズムを書く"
 
-#: manual/tutorial/core.md:11
+#: manual/tutorial/core.md:24
 msgid "This function can work over signed integers, `BigInt`, `Float`, `Double`, and future external types that implement the same traits."
 msgstr "この関数は符号付き整数、`BigInt`、`Float`、`Double`、そして同じ traits を実装した外部型に再利用できます。"
 
-#: manual/tutorial/core.md:14
-msgid "Normalize integral inputs through `BigInt`"
-msgstr "`BigInt` へ正規化する"
+#: manual/tutorial/core.md:27
+msgid "Turn integers into your number type with `lift_to`"
+msgstr "`lift_to` で整数を自分の数値型に変換する"
 
-#: manual/tutorial/core.md:22
-msgid "Use `Integral::normalize` when you need one exact representation across multiple integral source types."
-msgstr "複数の整数ソース型をまたいで 1 つの正確な表現を使いたいときは、 `Integral::normalize` を使います。"
+#: manual/tutorial/core.md:35
+msgid "`lift_to` converts the value of any integer type (`Int`, `UInt64`, `BigInt`, ...) into any type with `FromInteger`. It sees the value the integer holds now: if an `Int` computation has already wrapped around, `lift_to` converts the wrapped value. Do the arithmetic in `BigInt` or in `T` when you need the full range."
+msgstr "`lift_to` は任意の整数型（`Int`、`UInt64`、`BigInt` など）の値を、`FromInteger` を持つ任意の型に変換します。見るのは整数が現在保持している値です。`Int` の計算がすでに回り込んでいれば、`lift_to` は回り込んだ後の値を変換します。全範囲が必要なら、`BigInt` か `T` で計算してください。"
 
-#: manual/tutorial/core.md:25
-msgid "Convert integers with `lift_to`"
-msgstr "`lift_to` で整数を変換する"
+#: manual/tutorial/core.md:41
+msgid "Make your number type buildable from integers"
+msgstr "自分の数値型を整数から構築できるようにする"
 
-#: manual/tutorial/core.md:33
-msgid "`lift_to` takes the representative of `i` in ℤ and maps it into `F` along the canonical map. Use it for constants and indices that are not mapped back. It does not preserve operations once fixed-width arithmetic wraps."
-msgstr "`lift_to` は `i` の ℤ における代表元を取り、標準写像に沿って `F` へ写します。写し戻さない定数や添字に使います。固定幅の演算が回り込むと、演算を保存しません。"
+#: manual/tutorial/core.md:43
+msgid "Implement the two conversions from `BigInt`:"
+msgstr "`BigInt` からの二つの変換を実装します:"
 
-#: manual/tutorial/core.md:37
-msgid "A new number type only needs the canonical maps out of ℕ and ℤ:"
-msgstr "新しい数値型に必要なのは、ℕ と ℤ からの標準写像だけです:"
+#: manual/tutorial/core.md:55
+msgid "`from_natural` is only called with non-negative values. Both must agree with your arithmetic: converting `a + b` gives the sum of the converted values, the same holds for `*`, and `0` and `1` become your zero and one. Check it on a few values, including large and negative ones:"
+msgstr "`from_natural` は非負の値でのみ呼ばれます。どちらの変換も演算と整合していなければなりません。`a + b` の変換は変換結果の和に等しく、`*` も同様で、`0` と `1` はそれぞれ自分の零と一になります。大きな値や負の値も含めて、いくつかの値で検査します:"
 
-#: manual/tutorial/core.md:44
-msgid "An integer type additionally implements `Integral::normalize` so that `from_integer(normalize(x)) == x`, and checks the law with `Section::of_integral().check(samples)`."
-msgstr "整数型ではさらに `Integral::normalize` を実装して `from_integer(normalize(x)) == x` を満たし、`Section::of_integral().check(samples)` で法則を検査します。"
+#: manual/tutorial/core.md:65
+msgid "Floating-point types only agree up to rounding; the [hom tutorial](hom.md) shows how to check them with a tolerance."
+msgstr "浮動小数点型は丸めの範囲でしか一致しません。許容誤差付きの検査方法は[hom チュートリアル](hom.md)にあります。"
 
-#: manual/tutorial/core.md:48
-#: manual/tutorial/hom.md:97
+#: manual/tutorial/core.md:68
+msgid "Define a new integer type"
+msgstr "新しい整数型を定義する"
+
+#: manual/tutorial/core.md:70
+msgid "This is rare. An integer type implements `Integral` on top of the two conversions above. `normalize` returns the value of `x` as a `BigInt`, exactly as your type shows it, so converting it back gives `x` again. Check that round trip with the smallest and largest values of your type:"
+msgstr "これはまれです。整数型は上の二つの変換に加えて `Integral` を実装します。`normalize` は `x` の値を、その型が表示するとおりに `BigInt` として返すので、変換し直すと元の `x` に戻ります。型の最小値と最大値でこの往復を検査します:"
+
+#: manual/tutorial/core.md:80
+msgid "Get one exact form of any integer"
+msgstr "任意の整数の正確な表現を一つ得る"
+
+#: manual/tutorial/core.md:88
+msgid "Use `Integral::normalize` when you need one exact representation across multiple integer types."
+msgstr "複数の整数型にまたがって正確な表現を一つにしたいときは `Integral::normalize` を使います。"
+
+#: manual/tutorial/core.md:91
+#: manual/tutorial/hom.md:111
 msgid "Practical guidance"
 msgstr "実践ガイド"
 
-#: manual/tutorial/core.md:50
+#: manual/tutorial/core.md:93
 msgid "Choose the smallest trait set that expresses the algorithm you need."
 msgstr "アルゴリズムが本当に必要とする最小の trait 集合を選ぶ。"
 
-#: manual/tutorial/core.md:51
+#: manual/tutorial/core.md:94
 msgid "Require `Field` only when reciprocal or division semantics are really needed."
 msgstr "逆元や除法が必要なときだけ `Field` を要求する。"
 
-#: manual/tutorial/core.md:52
+#: manual/tutorial/core.md:95
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
 msgstr "`Float` と `Double` は同じ抽象面を持っていても近似バックエンドとして扱う。"
+
+#: manual/tutorial/core.md:97
+msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHomomorphism` and `IntegralHomomorphism`."
+msgstr "非推奨の `NatHomomorphism` と `IntegralHomomorphism` よりも、`lift_to`、`FromNat`、`FromInteger` を使ってください。"
 
 #: manual/tutorial/hom.md:1
 msgid "hom tutorial"
 msgstr "hom チュートリアル"
 
 #: manual/tutorial/hom.md:3
+msgid "A `Hom[S, A, B]` is a map `A -> B` that keeps the operations listed by `S` consistent: converting a sum gives the sum of the conversions, and so on. This page shows how to declare, check and combine them. Why they are built this way is in the [hom design](../design/hom.md)."
+msgstr "`Hom[S, A, B]` は、`S` が列挙する演算を整合させる写像 `A -> B` です。和を変換したものは変換したものの和になる、といった具合です。このページでは宣言、検査、組み合わせ方を示します。この設計の理由は[hom 設計](../design/hom.md)にあります。"
+
+#: manual/tutorial/hom.md:8
 msgid "Leaf homomorphisms: one `postulate`, one check"
 msgstr "葉の準同型: `postulate` 一つにつき検査を一つ"
 
-#: manual/tutorial/hom.md:16
-msgid "Truncation is a ring homomorphism even when values wrap. Widening `Int` to `Int64` is not: `Int` is ℤ/2^32, and `2147483647 + 1` wraps in `Int` but not in `Int64`, so its check fails as soon as a sample sum overflows."
-msgstr "切り詰めは値が回り込んでも環準同型です。`Int` から `Int64` への拡幅はそうではありません。`Int` は ℤ/2^32 であり、`2147483647 + 1` は `Int` では回り込みますが `Int64` では回り込まないため、サンプルの和がオーバーフローした時点で検査は失敗します。"
+#: manual/tutorial/hom.md:21
+msgid "Truncating `Int64` to `Int` keeps `+` and `*` consistent even when values wrap around, so the check passes on extreme samples. Widening `Int` to `Int64` does not: `2147483647 + 1` wraps around in `Int` but not in `Int64`, so its check fails as soon as a sample sum overflows."
+msgstr "`Int64` を `Int` に切り詰めると、値が回り込んでも `+` と `*` は整合するので、極端なサンプルでも検査に通ります。`Int` を `Int64` に拡幅するとそうはなりません。`2147483647 + 1` は `Int` では回り込みますが `Int64` では回り込まないため、サンプルの和がオーバーフローした時点で検査は失敗します。"
 
-#: manual/tutorial/hom.md:20
-msgid "Every `Hom::postulate` is a proof obligation. Searching the repository for `postulate` lists every unproven homomorphism, and each one should have a matching `check` test."
-msgstr "`Hom::postulate` はすべて証明義務です。リポジトリで `postulate` を検索すれば未証明の準同型がすべて列挙され、それぞれに対応する `check` テストを置くべきです。"
+#: manual/tutorial/hom.md:26
+msgid "Every `Hom::postulate` is a promise you make. Searching the repository for `postulate` lists all of them, and each one should have a matching `check` test."
+msgstr "`Hom::postulate` はすべてあなたが行う約束です。リポジトリで `postulate` を検索すればすべて列挙され、それぞれに対応する `check` テストを置くべきです。"
 
-#: manual/tutorial/hom.md:24
-msgid "Lifting from smaller homomorphisms"
-msgstr "小さな準同型から持ち上げる"
+#: manual/tutorial/hom.md:30
+msgid "Building from smaller homomorphisms"
+msgstr "小さな準同型から組み立てる"
 
-#: manual/tutorial/hom.md:34
-msgid "Composition, forgetting, pairing, projection and upgrades are inference rules and create no new obligations. They treat every certificate as strict, so a map that only passes a lax or tolerance check below must be checked again after it is composed."
-msgstr "合成、忘却、対の構成、射影、昇格は推論規則であり、新しい義務を生みません。これらはすべての証明書を厳密なものとして扱うため、以下の lax な検査や許容誤差付きの検査しか通らない写像は、合成後に改めて検査する必要があります。"
+#: manual/tutorial/hom.md:40
+msgid "Composition, forgetting, pairing, projection and upgrades create no new promises. They treat every certificate as exact, so a map that only passes a `<=` or tolerance check below must be checked again after it is composed."
+msgstr "合成、忘却、対の構成、射影、昇格は新しい約束を生みません。これらはすべての証明書を正確なものとして扱うため、以下の `<=` や許容誤差付きの検査しか通らない写像は、合成後に改めて検査する必要があります。"
 
-#: manual/tutorial/hom.md:39
-msgid "Lifting quotients back"
-msgstr "商を持ち上げる"
+#: manual/tutorial/hom.md:44
+msgid "Checking a conversion that is not a homomorphism"
+msgstr "準同型ではない変換を検査する"
 
-#: manual/tutorial/hom.md:41
-msgid "`Int` is ℤ/2^32. Mapping it into `BigInt` picks a representative of each class, which is a section of the reduction `BigInt -> Int`, not a homomorphism:"
-msgstr "`Int` は ℤ/2^32 です。これを `BigInt` へ写すことは各類の代表元を選ぶことであり、簡約 `BigInt -> Int` の切断であって、準同型ではありません:"
+#: manual/tutorial/hom.md:46
+msgid "Converting an `Int` to `BigInt` keeps every value, but not the wrapped arithmetic: `2147483647 + 1` is negative in `Int` and positive in `BigInt`. Such a conversion is described by a `Section` instead of a `Hom`. It records the way back as well, and checks that going there and back returns the original value:"
+msgstr "`Int` を `BigInt` に変換すると値はすべて保たれますが、回り込む演算は保たれません。`2147483647 + 1` は `Int` では負、`BigInt` では正です。このような変換は `Hom` ではなく `Section` で記述します。`Section` は戻り道も記録し、行って戻ると元の値になることを検査します:"
 
-#: manual/tutorial/hom.md:52
-msgid "The lift agrees with the operations exactly on representatives; elsewhere it differs by a multiple of 2^32, the carry. A lift that leaves the class, such as one that drops the sign or rounds through `Float`, fails `check`."
-msgstr "持ち上げは代表元の上でちょうど演算と一致し、それ以外では 2^32 の倍数、つまり桁上がりだけずれます。類から外れる持ち上げ（符号を落とすものや `Float` を経由して丸めるものなど）は `check` に失敗します。"
+#: manual/tutorial/hom.md:58
+msgid "A conversion that changes values, for example one that drops the sign or rounds through `Float`, fails `check`."
+msgstr "値を変えてしまう変換（符号を落とすものや `Float` を経由して丸めるものなど）は `check` に失敗します。"
 
-#: manual/tutorial/hom.md:56
-msgid "When no certificate is needed, `lift_to` lifts and maps into any `FromInteger` target:"
-msgstr "証明書が不要なら、`lift_to` で持ち上げて任意の `FromInteger` 対象へ写せます:"
+#: manual/tutorial/hom.md:61
+msgid "`s.is_representative(b)` tells whether a `BigInt` is a value the conversion can produce. Arithmetic on converted values matches the original arithmetic exactly when the result is such a value:"
+msgstr "`s.is_representative(b)` は、ある `BigInt` がこの変換で得られる値かどうかを判定します。結果がそのような値であるとき、変換後の演算は元の演算と正確に一致します:"
 
-#: manual/tutorial/hom.md:63
+#: manual/tutorial/hom.md:70
+msgid "When no certificate is needed, `lift_to` converts into any `FromInteger` target:"
+msgstr "証明書が不要なら、`lift_to` で任意の `FromInteger` 対象に変換できます:"
+
+#: manual/tutorial/hom.md:77
 msgid "Choosing the strength of preservation"
 msgstr "保存の強さを選ぶ"
 
-#: manual/tutorial/hom.md:71
-msgid "Use a tolerance for floating-point targets. A tolerance relative to the result suits non-negative sources; with signed sources `x + y` can cancel to a small value while the rounding error stays proportional to `|x| + |y|`:"
-msgstr "浮動小数点の対象には許容誤差を使います。結果に対する相対誤差は非負のソースに適しています。符号付きのソースでは `x + y` が打ち消し合って小さくなる一方、丸め誤差は `|x| + |y|` に比例したままです。"
+#: manual/tutorial/hom.md:85
+msgid "Use a tolerance for floating-point targets. A tolerance relative to the result suits non-negative inputs; with signed inputs `x + y` can cancel to a small value while the rounding error stays proportional to `|x| + |y|`:"
+msgstr "浮動小数点の対象には許容誤差を使います。結果に対する相対誤差は非負の入力に適しています。符号付きの入力では `x + y` が打ち消し合って小さくなる一方、丸め誤差は `|x| + |y|` に比例したままです:"
 
-#: manual/tutorial/hom.md:82
+#: manual/tutorial/hom.md:96
 msgid "Custom signatures"
 msgstr "独自シグネチャ"
 
-#: manual/tutorial/hom.md:92
-msgid "`Hom` and `check` work for any single-sorted signature as long as both dictionaries list the same operations in the same order. Keep one dictionary per tag and carrier: certificates checked against different interpretations of the same tag do not compose."
-msgstr "両側の辞書が同じ演算を同じ順序で並べていれば、任意の単一ソートのシグネチャで `Hom` と `check` を使えます。タグと台集合ごとに辞書は一つにします。同じタグの異なる解釈に対して検査した証明書は合成できません。"
+#: manual/tutorial/hom.md:106
+msgid "`Hom` and `check` work for any signature with one carrier, as long as both dictionaries list the same operations in the same order. Keep one dictionary per tag and carrier: certificates checked against different meanings of the same tag do not compose."
+msgstr "両側の辞書が同じ演算を同じ順序で並べていれば、`Hom` と `check` は台集合が一つの任意のシグネチャで使えます。タグと台集合ごとに辞書は一つにします。同じタグの異なる意味に対して検査した証明書は合成できません。"
 
-#: manual/tutorial/hom.md:99
-msgid "Express unique homomorphisms (the canonical maps out of ℕ and ℤ) as traits and bring the one out of ℤ into `Hom` through `Hom::from_integer`."
-msgstr "一意な準同型（ℕ と ℤ からの標準写像）は trait として表し、ℤ からのものは `Hom::from_integer` で `Hom` に取り込みます。"
+#: manual/tutorial/hom.md:113
+msgid "Use `Hom::from_integer` for the conversion out of `BigInt` into a number type; it holds for every input."
+msgstr "`BigInt` から数値型への変換には `Hom::from_integer` を使います。すべての入力で成り立ちます。"
 
-#: manual/tutorial/hom.md:101
-msgid "Describe machine integers as quotients with `Section::of_integral`, and use `lift_to` for conversions that are not mapped back."
-msgstr "機械整数は `Section::of_integral` で商として記述し、写し戻さない変換には `lift_to` を使います。"
+#: manual/tutorial/hom.md:115
+msgid "Use `Section::of_integral` to check conversions out of machine integers, and `lift_to` when you only need the value."
+msgstr "機械整数からの変換の検査には `Section::of_integral` を、値だけが必要なときは `lift_to` を使います。"
 
-#: manual/tutorial/hom.md:103
-msgid "Write non-unique homomorphisms (such as two conjugate embeddings) as explicit `Hom` values, never as trait instances."
-msgstr "一意でない準同型（たとえば二つの共役な埋め込み）は明示的な `Hom` 値として書き、trait インスタンスにはしません。"
+#: manual/tutorial/hom.md:117
+msgid "Write maps that are not determined by the types, such as complex conjugation, as explicit `Hom` values, never as trait instances."
+msgstr "型によって決まらない写像（複素共役など）は、trait インスタンスではなく明示的な `Hom` の値として書きます。"
 
-#: manual/tutorial/hom.md:105
+#: manual/tutorial/hom.md:119
 msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
 msgstr "`check` のサンプルには境界値を含めます: 0、1、負数、固定幅型ではオーバーフローに近い値。"
+
+#~ msgid "Normalize integral inputs through `BigInt`"
+#~ msgstr "`BigInt` へ正規化する"
+
+#~ msgid "Convert integers with `lift_to`"
+#~ msgstr "`lift_to` で整数を変換する"
+
+#~ msgid "`lift_to` takes the representative of `i` in ℤ and maps it into `F` along the canonical map. Use it for constants and indices that are not mapped back. It does not preserve operations once fixed-width arithmetic wraps."
+#~ msgstr "`lift_to` は `i` の ℤ における代表元を取り、標準写像に沿って `F` へ写します。写し戻さない定数や添字に使います。固定幅の演算が回り込むと、演算を保存しません。"
+
+#~ msgid "A new number type only needs the canonical maps out of ℕ and ℤ:"
+#~ msgstr "新しい数値型に必要なのは、ℕ と ℤ からの標準写像だけです:"
+
+#~ msgid "An integer type additionally implements `Integral::normalize` so that `from_integer(normalize(x)) == x`, and checks the law with `Section::of_integral().check(samples)`."
+#~ msgstr "整数型ではさらに `Integral::normalize` を実装して `from_integer(normalize(x)) == x` を満たし、`Section::of_integral().check(samples)` で法則を検査します。"
+
+#~ msgid "Lifting quotients back"
+#~ msgstr "商を持ち上げる"
+
+#~ msgid "`Int` is ℤ/2^32. Mapping it into `BigInt` picks a representative of each class, which is a section of the reduction `BigInt -> Int`, not a homomorphism:"
+#~ msgstr "`Int` は ℤ/2^32 です。これを `BigInt` へ写すことは各類の代表元を選ぶことであり、簡約 `BigInt -> Int` の切断であって、準同型ではありません:"
+
+#~ msgid "The lift agrees with the operations exactly on representatives; elsewhere it differs by a multiple of 2^32, the carry. A lift that leaves the class, such as one that drops the sign or rounds through `Float`, fails `check`."
+#~ msgstr "持ち上げは代表元の上でちょうど演算と一致し、それ以外では 2^32 の倍数、つまり桁上がりだけずれます。類から外れる持ち上げ（符号を落とすものや `Float` を経由して丸めるものなど）は `check` に失敗します。"
+
+#~ msgid "Express unique homomorphisms (the canonical maps out of ℕ and ℤ) as traits and bring the one out of ℤ into `Hom` through `Hom::from_integer`."
+#~ msgstr "一意な準同型（ℕ と ℤ からの標準写像）は trait として表し、ℤ からのものは `Hom::from_integer` で `Hom` に取り込みます。"
+
+#~ msgid "Describe machine integers as quotients with `Section::of_integral`, and use `lift_to` for conversions that are not mapped back."
+#~ msgstr "機械整数は `Section::of_integral` で商として記述し、写し戻さない変換には `lift_to` を使います。"
+
+#~ msgid "Write non-unique homomorphisms (such as two conjugate embeddings) as explicit `Hom` values, never as trait instances."
+#~ msgstr "一意でない準同型（たとえば二つの共役な埋め込み）は明示的な `Hom` 値として書き、trait インスタンスにはしません。"
 
 #~ msgid "`Integral::normalize(Self) -> BigInt` is the canonical exact bridge from any integral instance into `BigInt`."
 #~ msgstr "`Integral::normalize(Self) -> BigInt` は任意の整数値を `BigInt` へ正規化する標準入口です。"

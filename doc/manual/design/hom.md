@@ -36,6 +36,72 @@ obligations auditable and testable.
 - The strength of preservation is the relation `rel` chosen at check time, so
   strict, lax and approximate homomorphisms share one API.
 
+## Sections
+
+The [hom tutorial](../tutorial/hom.md) uses `Section` without this
+mathematics.
+
+### Definition
+
+Let `π : A -> Q` be a surjective homomorphism, for example the reduction
+`BigInt -> Int`. A section is a map `s : Q -> A` with `π(s(q)) = q` for every
+`q`: it picks one element of every class `π⁻¹(q)`. By the first isomorphism
+theorem `Q` is the quotient `A / ker π`, so a section is a choice of
+representatives for a quotient algebra.
+
+### What a section preserves
+
+For every operation `ω` and arguments `x`:
+
+1. `s(ω(x))` and `ω(s(x))` are congruent modulo `ker π`. Apply `π` to both:
+   `π(s(ω(x))) = ω(x)` by the section law, and
+   `π(ω(s(x))) = ω(π(s(x))) = ω(x)` because `π` is a homomorphism.
+2. `s(ω(x)) = ω(s(x))` exactly when `ω(s(x))` lies in the image of `s`. If
+   `ω(s(x)) = s(y)`, then `y = π(s(y)) = π(ω(s(x))) = ω(x)` by the same
+   computation, so `ω(s(x)) = s(ω(x))`. Conversely `s(ω(x))` is always in the
+   image.
+
+So `Section::check` only tests the section law; `check_ops` tests that `π` is
+a homomorphism on lifted arguments, and point 2 follows. For `Int`, the image
+of `s` is `[-2^31, 2^31)`, and "the result is in the image" means "the result
+did not wrap around".
+
+### The carry
+
+For addition on `Int` the difference in point 1 is
+`s(a) + s(b) - s(a + b) = c(a, b)·2^32` with `c(a, b) ∈ {-1, 0, 1}`, the
+carry. Expanding `s(a) + s(b) + s(e)` in two ways gives
+
+```text
+c(a, b) + c(a + b, e) = c(b, e) + c(a, b + e)
+```
+
+so `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That
+extension does not split, because ℤ has no element of finite order, so no
+choice of representatives makes `s` a homomorphism. For multiplication the
+difference is the high word of the product.
+
+### Normal forms
+
+`n = s ∘ π : A -> A` is a normal form: `n(n(a)) = n(a)`, `a` and `n(a)` are
+congruent, and `a`, `b` are congruent exactly when `n(a) = n(b)`. The
+quotient operations are computed on representatives as
+`s(ω_Q(x)) = n(ω_A(s(x)))`: compute in `A`, then normalize. Wrapped `Int`
+arithmetic is this computation for `A = ℤ`. Because `Section::normalize` is
+built from `s` and `π`, it cannot give two congruent values different normal
+forms.
+
+### Why `Section` is not a `Hom`
+
+A section is injective and agrees with the operations on its image, so it is
+easy to mistake for a homomorphism and compose it as one. Keeping it in a
+separate certificate makes the difference visible in the types: `Section`
+carries `π` as a `Hom`, and only promises `π(s(q)) = q`.
+
+The law does not fix which representatives are chosen. `[0, 2^32)` and
+`[-2^31, 2^31)` both give sections of `BigInt -> Int`; only the second
+preserves the signed order of `Int`. Such properties need their own checks.
+
 ## Boundaries
 
 - Only single-sorted signatures. Multi-sorted structures such as modules
