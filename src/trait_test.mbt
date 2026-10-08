@@ -22,36 +22,43 @@ fn[T : Integral] integral_normalize(x : T) -> BigInt {
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : NatHomomorphism] nat_hom_from_uint(x : UInt) -> F {
   @luna-generic.NatHomomorphism::from_nat(x)
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : NatHomomorphism] nat_hom_from_uint16(x : UInt16) -> F {
   @luna-generic.NatHomomorphism::from_nat(x)
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : NatHomomorphism] nat_hom_from_uint64(x : UInt64) -> F {
   @luna-generic.NatHomomorphism::from_nat(x)
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : IntegralHomomorphism] integral_hom_from_int(x : Int) -> F {
   @luna-generic.IntegralHomomorphism::from_integral(x)
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : IntegralHomomorphism] integral_hom_from_int16(x : Int16) -> F {
   @luna-generic.IntegralHomomorphism::from_integral(x)
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : IntegralHomomorphism] integral_hom_from_int64(x : Int64) -> F {
   @luna-generic.IntegralHomomorphism::from_integral(x)
 }
 
 ///|
+#warnings("-deprecated")
 fn[F : IntegralHomomorphism] integral_hom_from_bigint(x : BigInt) -> F {
   @luna-generic.IntegralHomomorphism::from_integral(x)
 }

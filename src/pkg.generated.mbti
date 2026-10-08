@@ -192,6 +192,7 @@ pub impl Integral for UInt16
 pub impl Integral for UInt64
 pub impl Integral for @bigint.BigInt
 
+#deprecated
 pub(open) trait IntegralHomomorphism : NatHomomorphism {
   fn[S : Integral] from_integral(S) -> Self
 }
@@ -228,6 +229,7 @@ pub impl Nat for UInt
 pub impl Nat for UInt16
 pub impl Nat for UInt64
 
+#deprecated
 pub(open) trait NatHomomorphism {
   fn[S : Nat] from_nat(S) -> Self
 }

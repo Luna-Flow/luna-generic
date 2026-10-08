@@ -62,6 +62,7 @@ pub(open) trait Nat: Integral {}
 /// Deprecated: lifts a `Nat` source to ℕ and maps it into `Self`, which is not
 /// a homomorphism for fixed-width sources. Implement `FromNat` and use
 /// `lift_to` instead.
+#deprecated("Implement `FromNat` and use `lift_to` instead.", skip_current_package=true)
 pub(open) trait NatHomomorphism {
   fn[S : Nat] from_nat(value : S) -> Self
 }
@@ -70,6 +71,7 @@ pub(open) trait NatHomomorphism {
 /// Deprecated: lifts an `Integral` source to ℤ and maps it into `Self`, which
 /// is not a homomorphism for fixed-width sources. Implement `FromInteger` and
 /// use `lift_to` instead.
+#deprecated("Implement `FromInteger` and use `lift_to` instead.", skip_current_package=true)
 pub(open) trait IntegralHomomorphism: NatHomomorphism {
   fn[S : Integral] from_integral(value : S) -> Self
 }
