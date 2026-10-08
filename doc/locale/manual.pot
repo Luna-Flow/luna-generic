@@ -25,113 +25,304 @@ msgid "`luna-generic` is the algebraic trait layer of LunaFlow. It does not prov
 msgstr ""
 
 #: manual/api/core.md:9
-msgid "Structural traits"
+msgid "This page lists the traits, the conversion functions and the shipped instances. The certificates `Hom` and `Section` are on the [hom API](hom.md) page. The reasons behind the shapes are in the [core design](../design/core.md)."
 msgstr ""
 
-#: manual/api/core.md:18
-#: manual/index.md:23
-msgid "Deprecated: `NatHomomorphism`, `IntegralHomomorphism`"
+#: manual/api/core.md:14
+msgid "Importing"
 msgstr ""
 
-#: manual/api/core.md:20
-msgid "These traits live in `src/structure.mbt`."
+#: manual/api/core.md:16
+msgid "Add the package to your `moon.pkg`:"
 msgstr ""
 
-#: manual/api/core.md:22
-msgid "Operational traits"
-msgstr ""
-
-#: manual/api/core.md:29
-msgid "These traits live in `src/operation.mbt`."
-msgstr ""
-
-#: manual/api/core.md:31
-msgid "Shipped instances"
-msgstr ""
-
-#: manual/api/core.md:33
-msgid "Signed integers: `Int`, `Int16`, `Int64`"
-msgstr ""
-
-#: manual/api/core.md:34
-msgid "Unsigned integers: `UInt`, `UInt16`, `UInt64`"
-msgstr ""
-
-#: manual/api/core.md:35
-msgid "Exact big integer: `BigInt`"
-msgstr ""
-
-#: manual/api/core.md:36
-msgid "Floating instances: `Float`, `Double`"
-msgstr ""
-
-#: manual/api/core.md:38
-#: manual/index.md:38
-msgid "Conversions"
-msgstr ""
-
-#: manual/api/core.md:40
-msgid "`FromNat::from_natural(BigInt) -> Self`: the unique semiring homomorphism ℕ -> `Self`. The argument must be non-negative."
-msgstr ""
-
-#: manual/api/core.md:42
-msgid "`FromInteger::from_integer(BigInt) -> Self`: the unique ring homomorphism ℤ -> `Self`; it agrees with `from_natural` on non-negative arguments."
-msgstr ""
-
-#: manual/api/core.md:44
-msgid "`Integral::normalize(Self) -> BigInt`: the representative of a value. `Integral` extends `Semiring + FromInteger`, and the law is `Self::from_integer(normalize(x)) == x`."
-msgstr ""
-
-#: manual/api/core.md:47
-msgid "`lift_to(x) -> R` for `x : S` with `S : Integral` and `R : FromInteger`: `R::from_integer(x.normalize())`. It is a function, not a homomorphism."
+#: manual/api/core.md:24
+msgid "The examples on this page bring the names into scope with one `using` declaration, so they can be written without the `@luna-generic.` prefix:"
 msgstr ""
 
 #: manual/api/core.md:49
-msgid "Deprecated: `NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` compose `normalize` with a target conversion. Implement `FromNat` / `FromInteger` and call `lift_to` instead."
+msgid "Laws are contracts"
 msgstr ""
 
-#: manual/api/core.md:53
-#: manual/api/hom.md:129
-msgid "Semantic notes"
+#: manual/api/core.md:51
+msgid "Every structural trait below is an empty trait whose methods come from its supertraits: MoonBit's `Add`, `Mul`, `Neg`, `Sub` and `Div`, and this package's `Zero`, `One` and `Inverse`. The compiler checks that the methods exist. It does not check the equations that give a trait its meaning. Those equations are listed under each trait; an implementation that breaks them compiles, but generic code written against the trait may then compute wrong results. Test them on edge values, for example with `Hom::check` from the [hom API](hom.md)."
 msgstr ""
 
-#: manual/api/core.md:55
-msgid "Fixed-width integers are ℤ/2^k. Their `from_integer` reduces modulo 2^k, and `normalize` picks the representative in the type's range: `[-2^(k-1), 2^(k-1))` for signed types, `[0, 2^k)` for unsigned ones."
-msgstr ""
-
-#: manual/api/core.md:58
-msgid "`BigInt` is ℤ itself: `from_integer` and `normalize` are the identity."
-msgstr ""
-
-#: manual/api/core.md:59
-msgid "`lift_to` is a homomorphism exactly when the target modulus divides the source modulus, as for `Int64 -> Int`. Into `BigInt`, `Float` or `Double` it is not one for fixed-width sources, because their arithmetic wraps."
-msgstr ""
-
-#: manual/api/core.md:62
-msgid "`Nat` covers the integral types whose representatives are non-negative. A true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope."
+#: manual/api/core.md:60
+msgid "`Float` and `Double` satisfy the laws only up to rounding: floating-point addition is not associative, so they are approximate instances of the same traits."
 msgstr ""
 
 #: manual/api/core.md:64
-msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
+msgid "Operation traits"
 msgstr ""
 
 #: manual/api/core.md:66
-msgid "`Float` and `Double` round in `from_natural` and `from_integer`, so very large values are approximate."
-msgstr ""
-
-#: manual/api/core.md:69
-msgid "Source map"
+msgid "These traits live in `src/operation.mbt`. They name single operations and state no laws on their own; the structural traits give them their meaning."
 msgstr ""
 
 #: manual/api/core.md:71
+msgid "`Zero::zero()` returns the additive identity of `Self`."
+msgstr ""
+
+#: manual/api/core.md:79
+msgid "In an `AddMonoid` it must satisfy $0 + x = x + 0 = x$. Shipped for every default numeric type."
+msgstr ""
+
+#: manual/api/core.md:84
+msgid "`One::one()` returns the multiplicative identity of `Self`."
+msgstr ""
+
+#: manual/api/core.md:92
+msgid "In a `MulMonoid` it must satisfy $1 \\cdot x = x \\cdot 1 = x$. Shipped for every default numeric type."
+msgstr ""
+
+#: manual/api/core.md:106
+msgid "`Inverse::inv(x)` returns the multiplicative inverse $x^{-1}$."
+msgstr ""
+
+#: manual/api/core.md:114
+msgid "In a `MulGroup` or `Field` it must satisfy $x \\cdot x^{-1} = x^{-1} \\cdot x = 1$ for every $x$ that has an inverse. The shipped `Float` and `Double` instances abort with a message on `0`, rather than returning an infinity as `1.0 / 0.0` does."
+msgstr ""
+
+#: manual/api/core.md:127
+msgid "`Conjugate::conjugate(x)` returns the conjugate $\\overline{x}$."
+msgstr ""
+
+#: manual/api/core.md:135
+msgid "No instance is shipped. Implementors usually make it an involution that respects the arithmetic: $\\overline{\\overline{x}} = x$, $\\overline{x + y} = \\overline{x} + \\overline{y}$ and $\\overline{xy} = \\overline{y}\\,\\overline{x}$, which is $\\overline{x}\\,\\overline{y}$ when multiplication commutes. The trait does not enforce these laws."
+msgstr ""
+
+#: manual/api/core.md:158
+msgid "Structural traits"
+msgstr ""
+
+#: manual/api/core.md:160
+msgid "These traits live in `src/structure.mbt`. Each one adds laws to the traits it extends; the laws are written for all $x, y, z$ of the type."
+msgstr ""
+
+#: manual/api/core.md:165
+msgid "`AddMonoid` is a type with an associative `+` and the identity `0`."
+msgstr ""
+
+#: manual/api/core.md:176
+msgid "`+` is not required to commute here; every structure that builds on `AddMonoid` in this package (`Semiring`, `Ring`) requires it to."
+msgstr ""
+
+#: manual/api/core.md:192
+msgid "`MulMonoid` is a type with an associative `*` and the identity `1`."
+msgstr ""
+
+#: manual/api/core.md:220
+msgid "`AddGroup` is an `AddMonoid` where every element has a negative."
+msgstr ""
+
+#: manual/api/core.md:231
+msgid "Unsigned types do not implement it; see the semantic notes below."
+msgstr ""
+
+#: manual/api/core.md:245
+msgid "`MulGroup` is a `MulMonoid` with inverses and division."
+msgstr ""
+
+#: manual/api/core.md:256
+msgid "Only `Float` and `Double` implement it, and for them the laws hold for non-zero elements only: `0` has no inverse."
+msgstr ""
+
+#: manual/api/core.md:261
+msgid "`Semiring` combines an additive and a multiplicative monoid that interact through distributivity."
+msgstr ""
+
+#: manual/api/core.md:274
+msgid "Every default numeric type implements `Semiring`, including the unsigned integers."
+msgstr ""
+
+#: manual/api/core.md:293
+msgid "`Ring` is a `Semiring` whose addition is a group."
+msgstr ""
+
+#: manual/api/core.md:300
+msgid "It satisfies the `Semiring` laws and the `AddGroup` laws. Multiplication need not commute. Implemented by the signed integers, `BigInt`, `Float` and `Double`."
+msgstr ""
+
+#: manual/api/core.md:316
+msgid "`Field` is a commutative `Ring` in which every non-zero element has an inverse."
+msgstr ""
+
+#: manual/api/core.md:324
+msgid "An implementor must satisfy the `Ring` laws and, for all $a, b$:"
+msgstr ""
+
+#: manual/api/core.md:331
+msgid "Commutativity is part of the contract, as in the mathematical definition of a field. The compiler does not check it: a type whose multiplication does not commute but has inverses (a division ring) compiles as a `Field`, and generic code that relies on $ab = ba$, such as rewriting $(ab)^{-1}$ as $a^{-1}b^{-1}$, then gives wrong answers for it. Do not implement `Field` for such a type. The [core design](../design/core.md) explains the difference."
+msgstr ""
+
+#: manual/api/core.md:339
+msgid "`Float` and `Double` implement `Field` up to rounding. Their `inv` aborts on `0`, while their `/` follows IEEE 754 and returns an infinity or NaN."
+msgstr ""
+
+#: manual/api/core.md:360
+msgid "`Num` is a `Ring` with an absolute value and a sign."
+msgstr ""
+
+#: manual/api/core.md:369
+msgid "`signum(x)` is $-1$, $0$ or $1$ according to the sign of $x$, and"
+msgstr ""
+
+#: manual/api/core.md:375
+msgid "Implemented by the signed integers, `BigInt`, `Float` and `Double`. On a fixed-width type the law fails at the most negative value, whose absolute value wraps back to itself. On `Float` and `Double`, `signum` returns its argument for `0.0`, `-0.0` and NaN."
+msgstr ""
+
+#: manual/api/core.md:387
+msgid "Canonical maps out of ℕ and ℤ"
+msgstr ""
+
+#: manual/api/core.md:391
+msgid "`FromNat::from_natural(n)` is the unique semiring homomorphism ℕ → `Self`, with the natural number given as a `BigInt`."
+msgstr ""
+
+#: manual/api/core.md:400
+msgid "Precondition: $n \\ge 0$. The result must be $n \\cdot 1 = 1 + \\dots + 1$ ($n$ terms), so:"
+msgstr ""
+
+#: manual/api/core.md:408
+msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value."
+msgstr ""
+
+#: manual/api/core.md:413
+msgid "`FromInteger::from_integer(n)` is the unique ring homomorphism ℤ → `Self`, with the integer given as a `BigInt`."
+msgstr ""
+
+#: manual/api/core.md:422
+msgid "It satisfies the laws of `from_natural` on all of ℤ and must agree with `from_natural` on non-negative arguments. It is defined for every integer, also on types without negation: on an unsigned type, `from_integer(-1)` is $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width integers, rounding for `Float` and `Double`."
+msgstr ""
+
+#: manual/api/core.md:440
+msgid "To give your own number type these conversions, implement both traits; the [core tutorial](../tutorial/core.md) shows how."
+msgstr ""
+
+#: manual/api/core.md:443
+msgid "Integer types"
+msgstr ""
+
+#: manual/api/core.md:447
+msgid "`Integral` is an integer type: ℤ itself, or a quotient ℤ/2^k such as a fixed-width integer."
+msgstr ""
+
+#: manual/api/core.md:456
+msgid "`normalize(x)` returns the representative of `x` as a `BigInt`. The law is that `normalize` is a section of the canonical map:"
+msgstr ""
+
+#: manual/api/core.md:463
+msgid "The shipped instances pick $[-2^{k-1}, 2^{k-1})$ for signed types, $[0, 2^k)$ for unsigned ones, and the identity for `BigInt`. `normalize` is a homomorphism only for `BigInt`; on fixed-width types it is not, because their arithmetic wraps. `Section::of_integral` packages the pair as a certificate that can be checked."
+msgstr ""
+
+#: manual/api/core.md:479
+msgid "`Nat` is an `Integral` type whose representatives are non-negative: $\\operatorname{normalize}(x) \\ge 0$ for every `x`."
+msgstr ""
+
+#: manual/api/core.md:487
+msgid "Implemented by `UInt`, `UInt16` and `UInt64`. An arbitrary-precision ℕ is not a quotient of ℤ and therefore cannot be `Integral`; see the [core design](../design/core.md)."
+msgstr ""
+
+#: manual/api/core.md:503
+msgid "`lift_to(x)` lifts an integral value to its representative and maps it into any `FromInteger` target."
+msgstr ""
+
+#: manual/api/core.md:510
+msgid "It is `R::from_integer(x.normalize())`. It is a function, not a homomorphism: it converts the value `x` holds now, so a sum that has already wrapped in `S` stays wrapped. It preserves the operations exactly when the modulus of `R` divides that of `S`, as for `Int64 -> Int`; the [core design](../design/core.md) derives this condition."
+msgstr ""
+
+#: manual/api/core.md:527
+msgid "Shipped instances"
+msgstr ""
+
+#: manual/api/core.md:529
+msgid "Type"
+msgstr ""
+
+#: manual/api/core.md:529
+msgid "Traits"
+msgstr ""
+
+#: manual/api/core.md:533
+msgid "as the signed integers, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
+msgstr ""
+
+#: manual/api/core.md:534
+msgid "`AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Num`, `Zero`, `One`, `Inverse`, `FromNat`, `FromInteger`, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
+msgstr ""
+
+#: manual/api/core.md:536
+msgid "`Byte` implements none of them."
+msgstr ""
+
+#: manual/api/core.md:538
+#: manual/api/hom.md:646
+msgid "Semantic notes"
+msgstr ""
+
+#: manual/api/core.md:540
+msgid "Fixed-width integers are ℤ/2^k. Their `from_integer` reduces modulo 2^k, and `normalize` picks the representative in the type's range: `[-2^(k-1), 2^(k-1))` for signed types, `[0, 2^k)` for unsigned ones."
+msgstr ""
+
+#: manual/api/core.md:543
+msgid "`BigInt` is ℤ itself: `from_integer` and `normalize` are the identity."
+msgstr ""
+
+#: manual/api/core.md:544
+msgid "`lift_to` is a homomorphism exactly when the target modulus divides the source modulus, as for `Int64 -> Int`. Into `BigInt`, `Float` or `Double` it is not one for fixed-width sources, because their arithmetic wraps."
+msgstr ""
+
+#: manual/api/core.md:547
+msgid "`Nat` covers the integral types whose representatives are non-negative. A true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope."
+msgstr ""
+
+#: manual/api/core.md:549
+msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
+msgstr ""
+
+#: manual/api/core.md:551
+msgid "`Float` and `Double` round in `from_natural` and `from_integer`, so very large values are approximate."
+msgstr ""
+
+#: manual/api/core.md:553
+msgid "`Field` requires commutative multiplication. The compiler cannot check it, so it is the implementor's responsibility."
+msgstr ""
+
+#: manual/api/core.md:556
+#: manual/api/hom.md:660
+msgid "Deprecated"
+msgstr ""
+
+#: manual/api/core.md:560
+msgid "`NatHomomorphism::from_nat(x)` lifts a `Nat` value to its representative and maps it into `Self`."
+msgstr ""
+
+#: manual/api/core.md:569
+msgid "Deprecated because the composite is not a homomorphism for fixed-width sources. Replacement: implement `FromNat` and `FromInteger`, and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
+msgstr ""
+
+#: manual/api/core.md:575
+msgid "`IntegralHomomorphism::from_integral(x)` lifts an `Integral` value to its representative and maps it into `Self`."
+msgstr ""
+
+#: manual/api/core.md:584
+msgid "Deprecated for the same reason. Replacement: implement `FromInteger` and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
+msgstr ""
+
+#: manual/api/core.md:587
+msgid "Source map"
+msgstr ""
+
+#: manual/api/core.md:589
 msgid "`src/structure.mbt`: trait definitions"
 msgstr ""
 
-#: manual/api/core.md:72
+#: manual/api/core.md:590
 msgid "`src/operation.mbt`: operational traits"
 msgstr ""
 
-#: manual/api/core.md:73
+#: manual/api/core.md:592
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr ""
 
@@ -144,188 +335,340 @@ msgid "The `hom` subsystem provides generalized homomorphisms. A `Hom[S, A, B]` 
 msgstr ""
 
 #: manual/api/hom.md:13
-msgid "Source: `src/hom.mbt`, `src/section.mbt`."
+msgid "Source: `src/hom.mbt`, `src/section.mbt`. The mathematics is in the [hom design](../design/hom.md)."
 msgstr ""
 
-#: manual/api/hom.md:15
-msgid "Signature tags"
-msgstr ""
-
-#: manual/api/hom.md:23
-msgid "Signature tags are empty enums that only appear at the type level. Users may define their own."
-msgstr ""
-
-#: manual/api/hom.md:26
-msgid "Algebra dictionaries"
-msgstr ""
-
-#: manual/api/hom.md:28
-msgid "`Op[A]`: one operation with `name`, `arity` and `eval`. `arity == 0` is a constant."
-msgstr ""
-
-#: manual/api/hom.md:29
-msgid "`Algebra[S, A]`: an interpretation of the signature `S` on the carrier `A`."
-msgstr ""
-
-#: manual/api/hom.md:30
-msgid "`Algebra::add_monoid`, `mul_monoid`, `add_group`, `semiring`, `ring`: derived from the existing structure trait instances."
-msgstr ""
-
-#: manual/api/hom.md:32
-msgid "`Algebra::make(ops)`: builds a dictionary for a custom signature tag."
-msgstr ""
-
-#: manual/api/hom.md:33
-msgid "`Algebra::prod(a, b)`: the componentwise product algebra on `Prod[A, B]`."
-msgstr ""
-
-#: manual/api/hom.md:35
-msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort."
-msgstr ""
-
-#: manual/api/hom.md:38
-msgid "Certificates assume one `S`-algebra per carrier: every dictionary of the same `S` on the same carrier must interpret the operations the same way. `then` composes through the middle carrier, so two different `Algebra::make` dictionaries on it would compose into a map that preserves neither."
+#: manual/api/hom.md:16
+msgid "The examples on this page assume this declaration:"
 msgstr ""
 
 #: manual/api/hom.md:43
-msgid "Product type"
+msgid "Signature tags"
 msgstr ""
 
 #: manual/api/hom.md:45
-msgid "`Prod[A, B]`: fields `fst` and `snd`. Implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
-msgstr ""
-
-#: manual/api/hom.md:49
-msgid "Homomorphisms"
+msgid "Signature tags are empty enums that only appear at the type level, as the `S` parameter of `Hom`, `Section`, `Algebra` and `Reduct`. Users may define their own."
 msgstr ""
 
 #: manual/api/hom.md:51
-msgid "Trust entry (creates a proof obligation):"
-msgstr ""
-
-#: manual/api/hom.md:53
-msgid "`Hom::postulate(f)`: the caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation."
-msgstr ""
-
-#: manual/api/hom.md:58
-msgid "Inference rules (no new obligation):"
+msgid "`AddMonoidSig` is the signature `0`, `+`."
 msgstr ""
 
 #: manual/api/hom.md:60
-msgid "`Hom::id()`, `h.then(g)`: identity and composition."
+msgid "`MulMonoidSig` is the signature `1`, `*`."
 msgstr ""
 
-#: manual/api/hom.md:61
-msgid "`h.forget(r)`: forgets structure along a `Reduct[S, T]` witness."
+#: manual/api/hom.md:69
+msgid "`AddGroupSig` is the signature `0`, `+`, `neg`."
 msgstr ""
 
-#: manual/api/hom.md:62
-msgid "`Hom::pair(f, g)`, `Hom::fst()`, `Hom::snd()`: pairing and projections."
+#: manual/api/hom.md:78
+msgid "`SemiringSig` is the signature `0`, `1`, `+`, `*`."
 msgstr ""
 
-#: manual/api/hom.md:63
-msgid "`h.to_add_group()`: an additive monoid hom between groups preserves `neg`."
+#: manual/api/hom.md:87
+msgid "`RingSig` is the signature `0`, `1`, `+`, `*`, `neg`."
 msgstr ""
 
-#: manual/api/hom.md:64
-msgid "`h.to_ring()`: a semiring hom between rings preserves `neg`."
+#: manual/api/hom.md:94
+msgid "Algebra dictionaries"
 msgstr ""
 
-#: manual/api/hom.md:66
-msgid "Canonical map (the obligation sits on the trait instance):"
+#: manual/api/hom.md:96
+msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort."
 msgstr ""
 
-#: manual/api/hom.md:68
-msgid "`Hom::from_integer()`: the canonical map ℤ -> `R` of `FromInteger`, typed `Hom[SemiringSig, BigInt, R]`. It holds on every input; upgrade with `to_ring` when `R` is a ring."
+#: manual/api/hom.md:99
+msgid "Certificates assume one `S`-algebra per carrier: every dictionary of the same `S` on the same carrier must interpret the operations the same way. `then` composes through the middle carrier, so two different `Algebra::make` dictionaries on it would compose into a map that preserves neither."
 msgstr ""
 
-#: manual/api/hom.md:71
-msgid "Deprecated: `Hom::from_nat()` and `Hom::from_integral()` certify a lift followed by a canonical map, which is not a homomorphism for fixed-width sources. Use `Hom::from_integer` with `Section::of_integral`."
+#: manual/api/hom.md:106
+msgid "`Op[A]` is one operation of a single-sorted signature."
 msgstr ""
 
-#: manual/api/hom.md:75
-msgid "Use:"
+#: manual/api/hom.md:116
+msgid "`arity == 0` is a constant. `eval` receives exactly `arity` arguments."
 msgstr ""
 
-#: manual/api/hom.md:79
+#: manual/api/hom.md:120
+msgid "`Algebra[S, A]` is an interpretation of the signature `S` on the carrier `A`: a list of `Op[A]` in the order the signature fixes."
+msgstr ""
+
+#: manual/api/hom.md:131
+msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag."
+msgstr ""
+
+#: manual/api/hom.md:137
+msgid "Keep one dictionary per tag and carrier, as explained above."
+msgstr ""
+
+#: manual/api/hom.md:151
+msgid "These functions derive the dictionary of a built-in tag from the structure trait instance of `A`."
+msgstr ""
+
+#: manual/api/hom.md:162
+msgid "The operations are listed in the order of the tag: for example `0`, `1`, `+`, `*`, `neg` for `RingSig`. Trait coherence gives one dictionary per tag and carrier."
+msgstr ""
+
+#: manual/api/hom.md:176
+msgid "`Algebra::prod(a, b)` is the componentwise product algebra on `Prod[A, B]`."
+msgstr ""
+
+#: manual/api/hom.md:182
+msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. Aborts when `a` and `b` do not list the same operations."
+msgstr ""
+
+#: manual/api/hom.md:185
+msgid "Product type"
+msgstr ""
+
+#: manual/api/hom.md:189
+msgid "`Prod[A, B]` is the binary product carrier with fields `fst` and `snd`."
+msgstr ""
+
+#: manual/api/hom.md:198
+msgid "Operations act componentwise. `Prod` implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
+msgstr ""
+
+#: manual/api/hom.md:204
+msgid "These methods are the componentwise operations, also available as `+`, `-`, `*`, unary `-` and the `Zero` / `One` traits."
+msgstr ""
+
+#: manual/api/hom.md:223
+msgid "These methods compare componentwise and render a `Prod` for debugging; use `==`, `!=` and `inspect` in new code."
+msgstr ""
+
+#: manual/api/hom.md:241
+msgid "Homomorphisms"
+msgstr ""
+
+#: manual/api/hom.md:245
+msgid "`Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of `S`."
+msgstr ""
+
+#: manual/api/hom.md:254
+msgid "The certificate means that for every operation $\\omega$ of `S` with arity $n$ and all $x_1, \\dots, x_n$,"
+msgstr ""
+
+#: manual/api/hom.md:261
+msgid "Only this package constructs `Hom` values. The leaves are `Hom::postulate` and `Hom::from_integer`; every other constructor is an inference rule."
+msgstr ""
+
+#: manual/api/hom.md:267
+msgid "`Hom::postulate(f)` trusts `f` as an `S`-homomorphism without proof and creates a proof obligation."
+msgstr ""
+
+#: manual/api/hom.md:274
+msgid "The caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation. Back every call with a `check` test."
+msgstr ""
+
+#: manual/api/hom.md:291
+msgid "`h.apply(x)` applies the underlying map."
+msgstr ""
+
+#: manual/api/hom.md:305
+msgid "`Hom::id()` is the identity homomorphism."
+msgstr ""
+
+#: manual/api/hom.md:313
+msgid "`h.then(g)` is the composite: first `h`, then `g`."
+msgstr ""
+
+#: manual/api/hom.md:319
+msgid "If $f$ and $g$ preserve $\\omega$, so does $g \\circ f$:"
+msgstr ""
+
+#: manual/api/hom.md:327
+msgid "`h.forget(r)` forgets structure along a `Reduct[S, T]` witness."
+msgstr ""
+
+#: manual/api/hom.md:333
+msgid "A map that preserves every operation of `S` preserves the operations of the smaller signature `T`."
+msgstr ""
+
+#: manual/api/hom.md:338
+msgid "`Hom::pair(f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`; `Hom::fst()` and `Hom::snd()` are the projections out of `Prod`."
+msgstr ""
+
+#: manual/api/hom.md:347
+msgid "They satisfy `pair(f, g).then(fst()) = f` and `pair(f, g).then(snd()) = g`."
+msgstr ""
+
+#: manual/api/hom.md:363
+msgid "`h.to_add_group()` upgrades an additive monoid homomorphism between groups to an additive group homomorphism."
+msgstr ""
+
+#: manual/api/hom.md:370
+msgid "No new obligation: $f(-x) + f(x) = f(-x + x) = f(0) = 0$, so $f(-x) = -f(x)$."
+msgstr ""
+
+#: manual/api/hom.md:374
+msgid "`h.to_ring()` upgrades a semiring homomorphism between rings to a ring homomorphism."
+msgstr ""
+
+#: manual/api/hom.md:381
+msgid "No new obligation, by the same computation as `to_add_group`."
+msgstr ""
+
+#: manual/api/hom.md:385
+msgid "`Hom::from_integer()` is the canonical map ℤ → `R` of `FromInteger`, as a certificate."
+msgstr ""
+
+#: manual/api/hom.md:392
+msgid "It holds on every input; upgrade with `to_ring` when `R` is a ring. `Float` and `Double` targets satisfy it only up to rounding. For a fixed-width source, lift first with `Section::of_integral`."
+msgstr ""
+
+#: manual/api/hom.md:404
 #: manual/design/hom.md:39
 msgid "Sections"
 msgstr ""
 
-#: manual/api/hom.md:81
+#: manual/api/hom.md:406
 msgid "A section lifts a quotient `Q` back into `A` along a homomorphism `proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism, but it preserves every operation up to the kernel of `proj`, and exactly whenever the result is itself a representative."
 msgstr ""
 
-#: manual/api/hom.md:86
-msgid "`Section::postulate(proj, lift)`: the caller promises `proj.apply(lift(q)) == q` for every `q`."
-msgstr ""
-
-#: manual/api/hom.md:88
-msgid "`Section::of_integral()`: the canonical section of an integral type, `Section[SemiringSig, Z, BigInt]`, with `proj = FromInteger::from_integer` and `lift = Integral::normalize`."
-msgstr ""
-
-#: manual/api/hom.md:92
-msgid "`s.normalize(a)`: `lift(proj(a))`, the normal form of `a`. Two values are congruent exactly when their normal forms are equal."
-msgstr ""
-
-#: manual/api/hom.md:94
-msgid "`s.is_representative(a)`: `normalize(a) == a`; on such results the lift agrees with the operations."
-msgstr ""
-
-#: manual/api/hom.md:96
-msgid "`s.then(next)`, `s.forget(r)`, `s.to_add_group()`, `s.to_ring()`: inference rules, no new obligation."
-msgstr ""
-
-#: manual/api/hom.md:98
-msgid "`s.check(samples)`: tests the section law."
-msgstr ""
-
-#: manual/api/hom.md:99
-msgid "`s.check_ops(quotient, cover, samples)`: tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation."
-msgstr ""
-
-#: manual/api/hom.md:102
+#: manual/api/hom.md:411
 msgid "The section law rejects lifts that leave the class of their argument. It does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are both sections of `BigInt -> Int`, and only the second preserves the signed order."
 msgstr ""
 
-#: manual/api/hom.md:107
-msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate."
+#: manual/api/hom.md:418
+msgid "`Section[S, Q, A]` is a lift of the quotient `Q` back into `A` along the projection `proj : A -> Q`."
 msgstr ""
 
-#: manual/api/hom.md:110
+#: manual/api/hom.md:433
+msgid "`Section::postulate(proj, lift)` trusts `lift` as a section of `proj` and creates a proof obligation."
+msgstr ""
+
+#: manual/api/hom.md:440
+msgid "The caller promises `proj.apply(lift(q)) == q` for every `q`; `proj` carries its own `Hom` obligation."
+msgstr ""
+
+#: manual/api/hom.md:453
+msgid "`Section::of_integral()` is the canonical section of an integral type."
+msgstr ""
+
+#: manual/api/hom.md:459
+msgid "`proj` is `FromInteger::from_integer` and `lift` is `Integral::normalize`. The obligation sits on those instances. Use `to_ring` when `Z` is a ring."
+msgstr ""
+
+#: manual/api/hom.md:464
+msgid "`s.lift(q)` is the chosen representative of `q`; `s.proj()` is the projection onto the quotient."
+msgstr ""
+
+#: manual/api/hom.md:474
+msgid "`s.normalize(a)` is `lift(proj(a))`, the normal form of `a`."
+msgstr ""
+
+#: manual/api/hom.md:480
+msgid "Two values are congruent exactly when their normal forms are equal."
+msgstr ""
+
+#: manual/api/hom.md:484
+msgid "`s.is_representative(a)` tells whether `a` is the chosen representative of its class, that is `normalize(a) == a`."
+msgstr ""
+
+#: manual/api/hom.md:491
+msgid "On such results the lift agrees exactly with the operations of `A`."
+msgstr ""
+
+#: manual/api/hom.md:507
+msgid "`s.then(next)` lifts `Q` into `A` with `s`, then `A` into `B` with `next`."
+msgstr ""
+
+#: manual/api/hom.md:513
+msgid "The projection is `next.proj` followed by `s.proj`. No new obligation: with $s, t$ the two lifts and $\\pi_s, \\pi_t$ their projections, $\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$."
+msgstr ""
+
+#: manual/api/hom.md:519
+msgid "These inference rules change the signature of the projection; the lift is unchanged."
+msgstr ""
+
+#: manual/api/hom.md:528
+msgid "They follow `Hom::forget`, `Hom::to_add_group` and `Hom::to_ring`."
+msgstr ""
+
+#: manual/api/hom.md:532
+msgid "`s.check(samples)` tests the section law `proj(lift(q)) == q` on every sample."
+msgstr ""
+
+#: manual/api/hom.md:541
+msgid "`s.check_ops(quotient, cover, samples)` tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation over all tuples drawn from `samples`."
+msgstr ""
+
+#: manual/api/hom.md:549
+msgid "This exercises `proj` as a homomorphism on representatives. Aborts when the two dictionaries do not list the same operations."
+msgstr ""
+
+#: manual/api/hom.md:560
+msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate; it is listed on the [core API](core.md)."
+msgstr ""
+
+#: manual/api/hom.md:563
 msgid "Reduct witnesses"
 msgstr ""
 
-#: manual/api/hom.md:117
+#: manual/api/hom.md:567
+msgid "`Reduct[S, T]` witnesses that every `S`-structure is also a `T`-structure, so an `S`-homomorphism is also a `T`-homomorphism."
+msgstr ""
+
+#: manual/api/hom.md:576
 msgid "Only this package constructs `Reduct` values."
 msgstr ""
 
-#: manual/api/hom.md:119
+#: manual/api/hom.md:580
+msgid "These constants are the inclusions between the built-in signatures."
+msgstr ""
+
+#: manual/api/hom.md:592
+msgid "`Reduct::refl()` is the trivial inclusion of `S` in itself; `r.then(r2)` composes inclusions."
+msgstr ""
+
+#: manual/api/hom.md:608
 msgid "Law checks"
 msgstr ""
 
-#: manual/api/hom.md:121
-msgid "`h.check(src, dst, samples)`: checks the law with exact equality; requires `B : Eq`."
+#: manual/api/hom.md:612
+msgid "`h.check(src, dst, samples)` tests the homomorphism law with exact equality on every operation of `S`."
 msgstr ""
 
-#: manual/api/hom.md:122
-msgid "`h.check_by(src, dst, samples, rel)`: checks `rel(f(op_A(xs)), op_B(f(xs)))`. `rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets."
+#: manual/api/hom.md:619
+msgid "Requires `B : Eq`. It is `check_by` with `==`."
 msgstr ""
 
-#: manual/api/hom.md:127
-msgid "An operation of arity `n` is tested on `samples.length()^n` tuples."
+#: manual/api/hom.md:623
+msgid "`h.check_by(src, dst, samples, rel)` tests `rel(f(op_A(xs)), op_B(f(xs)))` for every operation over all tuples drawn from `samples`."
 msgstr ""
 
-#: manual/api/hom.md:131
+#: manual/api/hom.md:630
+msgid "`rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets. An operation of arity `n` is tested on `samples.length()^n` tuples. Aborts when `src` and `dst` do not list the same operations."
+msgstr ""
+
+#: manual/api/hom.md:648
 msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so a lift into ℤ is a section, not a homomorphism. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
 msgstr ""
 
-#: manual/api/hom.md:136
+#: manual/api/hom.md:653
 msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
 msgstr ""
 
-#: manual/api/hom.md:139
+#: manual/api/hom.md:656
 msgid "`Float` and `Double` targets satisfy the laws only up to rounding; use `check_by` with a tolerance. See the embedding notes in the [core API](core.md)."
+msgstr ""
+
+#: manual/api/hom.md:664
+msgid "`Hom::from_nat()` certifies `NatHomomorphism::from_nat`."
+msgstr ""
+
+#: manual/api/hom.md:671
+msgid "It is not a homomorphism for fixed-width sources. Replacement: `Hom::from_integer` with `Section::of_integral`, or `lift_to` when no certificate is needed."
+msgstr ""
+
+#: manual/api/hom.md:677
+msgid "`Hom::from_integral()` certifies `IntegralHomomorphism::from_integral`."
+msgstr ""
+
+#: manual/api/hom.md:684
+msgid "Deprecated for the same reason, with the same replacement."
 msgstr ""
 
 #: manual/design/core.md:1
@@ -368,101 +711,325 @@ msgstr ""
 msgid "Unsigned types stop before additive inverse, so the abstraction stays mathematically honest."
 msgstr ""
 
-#: manual/design/core.md:31
-msgid "Integers as quotients of ℤ"
+#: manual/design/core.md:30
+msgid "`Field` means a commutative field. Its laws, like those of every structural trait, are a contract on the implementor, not something the compiler checks."
 msgstr ""
 
-#: manual/design/core.md:33
-msgid "This section gives the mathematics behind `FromNat`, `FromInteger`, `Integral` and `lift_to`. The [core tutorial](../tutorial/core.md) shows how to use them without it."
+#: manual/design/core.md:34
+msgid "Mathematical background"
 msgstr ""
 
-#: manual/design/core.md:37
-msgid "The canonical map is unique"
+#: manual/design/core.md:36
+msgid "Each structural trait is the signature of an algebraic structure, and the structure's axioms are the laws an instance promises. With $x, y, z$ ranging over the carrier:"
 msgstr ""
 
-#: manual/design/core.md:39
-msgid "For every ring `R` there is exactly one ring homomorphism `ℤ -> R`. A ring homomorphism `φ` must send `1` to `1`, and additivity then forces `φ(n) = 1 + ... + 1` (`n` times) for `n > 0` and `φ(-n) = -φ(n)`. Conversely, `n ↦ n·1` preserves `+` and `*` by distributivity. The same argument gives exactly one semiring homomorphism `ℕ -> R` for every semiring `R`. In categorical terms ℕ and ℤ are initial objects."
+#: manual/design/core.md:40
+msgid "Trait"
+msgstr ""
+
+#: manual/design/core.md:40
+msgid "Structure"
+msgstr ""
+
+#: manual/design/core.md:40
+msgid "Laws added to its supertraits"
+msgstr ""
+
+#: manual/design/core.md:42
+msgid "monoid $(A, +, 0)$"
+msgstr ""
+
+#: manual/design/core.md:43
+msgid "monoid $(A, \\cdot, 1)$"
+msgstr ""
+
+#: manual/design/core.md:44
+msgid "group $(A, +, 0, -)$"
+msgstr ""
+
+#: manual/design/core.md:45
+msgid "group $(A, \\cdot, 1, {}^{-1})$"
 msgstr ""
 
 #: manual/design/core.md:46
-msgid "Because the map depends only on `R`, it is a property of the target and fits a single-parameter trait: `FromNat::from_natural` and `FromInteger::from_integer`."
+msgid "semiring"
+msgstr ""
+
+#: manual/design/core.md:47
+msgid "ring"
+msgstr ""
+
+#: manual/design/core.md:47
+msgid "the `AddGroup` laws"
+msgstr ""
+
+#: manual/design/core.md:48
+msgid "field"
+msgstr ""
+
+#: manual/design/core.md:48
+msgid ""
+"$xy = yx$, $x x^{-1} = 1$ for $x \\n"
+"eq 0$, $x/y = x y^{-1}$"
 msgstr ""
 
 #: manual/design/core.md:50
-msgid "Fixed-width integers"
+msgid "The supertrait graph mirrors the inclusions between the structures: every ring is a semiring, every semiring is both an additive and a multiplicative monoid, and so on. A function bounded by `T : Ring` may use exactly the consequences of the ring axioms, which is what makes the generic code correct for every instance."
 msgstr ""
 
-#: manual/design/core.md:52
-msgid "`Int` adds and multiplies modulo 2^32, so as a ring it is ℤ/2^32. Its `from_integer` is the reduction `ℤ -> ℤ/2^32`, which is surjective. `normalize` goes the other way and picks one integer in every residue class, the one in `[-2^31, 2^31)`. The law `from_integer(normalize(x)) == x` says exactly that `normalize` is a section of the reduction:"
+#: manual/design/core.md:56
+msgid "A homomorphism $\\varphi : A \\to B$ of such structures preserves every operation of the signature:"
 msgstr ""
 
-#: manual/design/core.md:58
-msgid "`normalize` is injective, because it has a left inverse."
+#: manual/design/core.md:65
+msgid "Integers as quotients of ℤ"
 msgstr ""
 
-#: manual/design/core.md:59
-msgid "Its image contains exactly one element of every class: at most one because it is injective, and at least one because of the law."
+#: manual/design/core.md:67
+msgid "This section gives the mathematics behind `FromNat`, `FromInteger`, `Integral` and `lift_to`. The [core tutorial](../tutorial/core.md) shows how to use them without it."
 msgstr ""
 
-#: manual/design/core.md:61
-msgid "It is not a homomorphism: `normalize(2147483647 + 1) = -2^31`, while `normalize(2147483647) + normalize(1) = 2^31`."
-msgstr ""
-
-#: manual/design/core.md:64
-msgid "The [hom design](hom.md) shows what a section does preserve."
-msgstr ""
-
-#: manual/design/core.md:66
-msgid "When a conversion is a homomorphism"
-msgstr ""
-
-#: manual/design/core.md:68
-msgid "`lift_to : S -> R` is `R::from_integer` composed with `S::normalize`. When `S` is ℤ/m (with `m = 0` for `BigInt`), a ring homomorphism `ℤ/m -> R` exists if and only if `m·1 = 0` in `R`:"
-msgstr ""
-
-#: manual/design/core.md:72
-msgid "If `ψ` is one, then `0 = ψ(0) = ψ(m·1) = m·1` in `R`."
+#: manual/design/core.md:71
+msgid "The canonical map is unique"
 msgstr ""
 
 #: manual/design/core.md:73
-msgid "If `m·1 = 0`, the canonical map `ℤ -> R` sends `mℤ` to `0` and so factors through ℤ/m. It is unique because `ℤ -> ℤ/m` is surjective."
-msgstr ""
-
-#: manual/design/core.md:76
-msgid "In that case `lift_to` is this homomorphism: write the canonical map `ℤ -> R` as `ψ ∘ π` with `π : ℤ -> ℤ/m`; then `lift_to = ψ ∘ π ∘ normalize = ψ`. So:"
+msgid "For every ring `R` there is exactly one ring homomorphism `ℤ -> R`. A ring homomorphism `φ` must send `1` to `1`, and additivity then forces `φ(n) = 1 + ... + 1` (`n` times) for `n > 0` and `φ(-n) = -φ(n)`. Conversely, `n ↦ n·1` preserves `+` and `*` by distributivity. The same argument gives exactly one semiring homomorphism `ℕ -> R` for every semiring `R`. In categorical terms ℕ and ℤ are initial objects."
 msgstr ""
 
 #: manual/design/core.md:80
-msgid "`Int64 -> Int` is a homomorphism, because `2^64 ≡ 0 (mod 2^32)`."
-msgstr ""
-
-#: manual/design/core.md:81
-msgid "`Int -> Int64` is not, because `2^32 ≢ 0 (mod 2^64)`."
-msgstr ""
-
-#: manual/design/core.md:82
-msgid "No fixed-width integer maps homomorphically into `BigInt`, `Float` or `Double`, where `m·1 ≠ 0` for every `m > 0`."
-msgstr ""
-
-#: manual/design/core.md:85
-msgid "Why the traits do not refer to each other"
+msgid "The derivation in full, first for ℕ. Let $R$ be a semiring and define $\\varphi : \\mathbb{N} \\to R$ by recursion:"
 msgstr ""
 
 #: manual/design/core.md:87
+msgid "Additivity, by induction on $n$ (associativity of $+$ in $R$):"
+msgstr ""
+
+#: manual/design/core.md:97
+msgid "Multiplicativity, by induction on $n$ (absorption $x \\cdot 0 = 0$, additivity, distributivity):"
+msgstr ""
+
+#: manual/design/core.md:108
+msgid "Uniqueness: any semiring homomorphism $\\psi$ satisfies $\\psi(0) = 0$ and $\\psi(n + 1) = \\psi(n) + \\psi(1) = \\psi(n) + 1$, the same recursion, so $\\psi = \\varphi$ by induction."
+msgstr ""
+
+#: manual/design/core.md:112
+msgid "For ℤ, let $R$ be a ring. Every integer is a difference $a - b$ of naturals; put $\\hat\\varphi(a - b) = \\varphi(a) - \\varphi(b)$. This is well defined, because $a - b = c - d$ means $a + d = b + c$ in ℕ, hence $\\varphi(a) + \\varphi(d) = \\varphi(b) + \\varphi(c)$ in $R$, and adding $-\\varphi(b) - \\varphi(d)$ to both sides (with $+$ commutative) gives $\\varphi(a) - \\varphi(b) = \\varphi(c) - \\varphi(d)$. It is additive term by term, and multiplicative by distributivity:"
+msgstr ""
+
+#: manual/design/core.md:128
+msgid "A ring homomorphism must also satisfy $\\psi(-n) = -\\psi(n)$, so it agrees with $\\hat\\varphi$ on negatives too, and $\\hat\\varphi$ is unique.[^initial]"
+msgstr ""
+
+#: manual/design/core.md:131
+msgid "In the language of category theory, ℕ is the initial object of the category of semirings and ℤ that of rings. ℤ is the Grothendieck group of the additive monoid ℕ, which is the construction used above."
+msgstr ""
+
+#: manual/design/core.md:135
+msgid "Because the map depends only on `R`, it is a property of the target and fits a single-parameter trait: `FromNat::from_natural` and `FromInteger::from_integer`."
+msgstr ""
+
+#: manual/design/core.md:139
+msgid "Fixed-width integers"
+msgstr ""
+
+#: manual/design/core.md:141
+msgid "`Int` adds and multiplies modulo 2^32, so as a ring it is ℤ/2^32. Its `from_integer` is the reduction `ℤ -> ℤ/2^32`, which is surjective. `normalize` goes the other way and picks one integer in every residue class, the one in `[-2^31, 2^31)`. The law `from_integer(normalize(x)) == x` says exactly that `normalize` is a section of the reduction:"
+msgstr ""
+
+#: manual/design/core.md:147
+msgid "`normalize` is injective, because it has a left inverse."
+msgstr ""
+
+#: manual/design/core.md:148
+msgid "Its image contains exactly one element of every class: at most one because it is injective, and at least one because of the law."
+msgstr ""
+
+#: manual/design/core.md:150
+msgid "It is not a homomorphism: `normalize(2147483647 + 1) = -2^31`, while `normalize(2147483647) + normalize(1) = 2^31`."
+msgstr ""
+
+#: manual/design/core.md:153
+msgid "In symbols, with $m = 2^k$ and $\\pi : \\mathbb{Z} \\to \\mathbb{Z}/m$ the reduction, whose kernel is $m\\mathbb{Z}$, the shipped instances use"
+msgstr ""
+
+#: manual/design/core.md:162
+msgid "with $\\bmod$ taking values in $[0, 2^k)$. Both are well defined, since $n$ and $n + jm$ give the same value, and both satisfy $\\pi(s(x)) = x$, since each differs from $n$ by a multiple of $m$. The two injectivity steps above, written out:"
+msgstr ""
+
+#: manual/design/core.md:171
+msgid "The failure of additivity is a multiple of the modulus:"
+msgstr ""
+
+#: manual/design/core.md:179
+msgid "For $x = 2^{31} - 1$ and $y = 1$ on `Int` the difference is $2^{32}$, so no choice of representatives can repair it: $s$ is a homomorphism only when $m = 0$, that is for `BigInt`."
+msgstr ""
+
+#: manual/design/core.md:183
+msgid "The [hom design](hom.md) shows what a section does preserve."
+msgstr ""
+
+#: manual/design/core.md:185
+msgid "When a conversion is a homomorphism"
+msgstr ""
+
+#: manual/design/core.md:187
+msgid "`lift_to : S -> R` is `R::from_integer` composed with `S::normalize`. When `S` is ℤ/m (with `m = 0` for `BigInt`), a ring homomorphism `ℤ/m -> R` exists if and only if `m·1 = 0` in `R`:"
+msgstr ""
+
+#: manual/design/core.md:191
+msgid "If `ψ` is one, then `0 = ψ(0) = ψ(m·1) = m·1` in `R`."
+msgstr ""
+
+#: manual/design/core.md:192
+msgid "If `m·1 = 0`, the canonical map `ℤ -> R` sends `mℤ` to `0` and so factors through ℤ/m. It is unique because `ℤ -> ℤ/m` is surjective."
+msgstr ""
+
+#: manual/design/core.md:195
+msgid "In that case `lift_to` is this homomorphism: write the canonical map `ℤ -> R` as `ψ ∘ π` with `π : ℤ -> ℤ/m`; then `lift_to = ψ ∘ π ∘ normalize = ψ`. So:"
+msgstr ""
+
+#: manual/design/core.md:199
+msgid "`Int64 -> Int` is a homomorphism, because `2^64 ≡ 0 (mod 2^32)`."
+msgstr ""
+
+#: manual/design/core.md:200
+msgid "`Int -> Int64` is not, because `2^32 ≢ 0 (mod 2^64)`."
+msgstr ""
+
+#: manual/design/core.md:201
+msgid "No fixed-width integer maps homomorphically into `BigInt`, `Float` or `Double`, where `m·1 ≠ 0` for every `m > 0`."
+msgstr ""
+
+#: manual/design/core.md:204
+msgid "The same argument as one chain, with $\\iota_R : \\mathbb{Z} \\to R$ the canonical map and $\\iota_R = \\psi \\circ \\pi$ when $m \\cdot 1_R = 0$:"
+msgstr ""
+
+#: manual/design/core.md:212
+msgid ""
+"For the two modulus examples, $2^{64} \\cdot 1 = 2^{32} \\cdot (2^{32} \\cdot 1) = 2^{32} \\cdot 0 = 0$ in ℤ/2^32, while $2^{32} \\cdot 1 \\n"
+"eq 0$ in ℤ/2^64 because $0 < 2^{32} < 2^{64}$."
+msgstr ""
+
+#: manual/design/core.md:216
+msgid "Why unsigned types stop at `Semiring`"
+msgstr ""
+
+#: manual/design/core.md:218
+msgid "`UInt`, `UInt16` and `UInt64` are read as natural numbers that wrap: `Nat` promises non-negative representatives, and code over them treats values as counts and sizes. ℕ has no additive inverses, so it is a semiring and not a ring:"
+msgstr ""
+
+#: manual/design/core.md:227
+msgid "a contradiction. As an abstract ring the unsigned type is ℤ/2^k, which does have negatives, $-x = 2^k - x$. Exposing them would make `-1` silently mean $2^k - 1$ in generic code written for rings, which is the confusion the `Nat` reading avoids. The core library also provides no `Neg` for unsigned types, and MoonBit does not let this package add an instance of a foreign trait to a foreign type, so `AddGroup` could not be implemented without a wrapper type anyway. The canonical map is still total: `from_integer(-1)` on `UInt` is $2^{32} - 1$, the image of $-1$ in ℤ/2^32."
+msgstr ""
+
+#: manual/design/core.md:236
+msgid "Why the traits do not refer to each other"
+msgstr ""
+
+#: manual/design/core.md:238
 msgid "Every conversion factors through ℤ: `S -> ℤ -> R`. The first half depends only on `S` (`Integral`), the second only on `R` (`FromInteger`), so neither trait has to relate two types. `FromInteger` takes a `BigInt` rather than a generic integral source, which lets `Integral` extend it without a cycle."
 msgstr ""
 
-#: manual/design/core.md:92
-#: manual/design/hom.md:105
+#: manual/design/core.md:243
+msgid "Fields and division rings"
+msgstr ""
+
+#: manual/design/core.md:245
+msgid "`Field` is `Ring + Inverse + Div` with commutative multiplication. The commutativity is part of the contract even though no method states it."
+msgstr ""
+
+#: manual/design/core.md:248
+msgid "Definitions"
+msgstr ""
+
+#: manual/design/core.md:250
+msgid ""
+"A *division ring* is a ring with $1 \\n"
+"eq 0$ in which every $a \\n"
+"eq 0$ has a two-sided inverse, $a a^{-1} = a^{-1} a = 1$. A *field* is a division ring whose multiplication commutes, $ab = ba$. The two differ only in that law, and the method signatures of `Ring + Inverse + Div` cannot tell them apart."
+msgstr ""
+
+#: manual/design/core.md:255
+msgid "The standard example of a division ring that is not a field is Hamilton's quaternions ℍ, with basis $1, i, j, k$ and $i^2 = j^2 = k^2 = ijk = -1$. From $ijk = -1$, multiplying on the right by $k$ gives $ij \\cdot k^2 = -k$, so $ij = k$; similarly $ji = -k$:"
+msgstr ""
+
+#: manual/design/core.md:264
+msgid "What breaks without commutativity"
+msgstr ""
+
+#: manual/design/core.md:266
+msgid "In any division ring the inverse of a product reverses the order:"
+msgstr ""
+
+#: manual/design/core.md:273
+msgid "The other order is the inverse of the other product, $a^{-1}b^{-1} = (ba)^{-1}$, and inversion is injective, so"
+msgstr ""
+
+#: manual/design/core.md:280
+msgid "In ℍ, $(ij)^{-1} = k^{-1} = -k$, while $i^{-1} j^{-1} = (-i)(-j) = ij = k$. Division is ambiguous in the same way: $a b^{-1}$ and $b^{-1} a$ are different elements in general, and `Div` provides only one of them."
+msgstr ""
+
+#: manual/design/core.md:285
+msgid "Generic code bounded by `F : Field` may rely on $ab = ba$: rewrite $(ab)^{-1}$ as $a^{-1}b^{-1}$, compute $a/b \\cdot c$ as $ac/b$, or reorder products to save work. A non-commutative type that implemented `Field` would compile and then get wrong answers from such code. That is why the trait states commutativity, and why a division ring that is not a field must not implement it. Generic code that also works for division rings asks for `Ring + Inverse + Div` and keeps the order of its factors."
+msgstr ""
+
+#: manual/design/core.md:293
+msgid "Every finite division ring is commutative,[^wedderburn] so the distinction only arises for infinite types."
+msgstr ""
+
+#: manual/design/core.md:296
+msgid "Wedderburn's little theorem (1905): a finite division ring is a field. Over the reals, Frobenius' theorem (1877) adds that the only finite-dimensional associative division algebras are ℝ, ℂ and ℍ."
+msgstr ""
+
+#: manual/design/core.md:300
+msgid "Floating-point instances"
+msgstr ""
+
+#: manual/design/core.md:302
+msgid "`Float` and `Double` implement `Field` up to rounding. Their multiplication is commutative exactly, $\\mathrm{fl}(ab) = \\mathrm{fl}(ba)$, because IEEE 754 rounds the exact product, which does not depend on the order. Associativity and distributivity hold only approximately, and `0` has no inverse: `inv` aborts on it."
+msgstr ""
+
+#: manual/design/core.md:308
+#: manual/design/hom.md:143
+msgid "Alternatives rejected"
+msgstr ""
+
+#: manual/design/core.md:310
+msgid "A two-parameter conversion trait `Into[S, R]`: MoonBit traits have only `Self`, and the factorization through ℤ makes it unnecessary."
+msgstr ""
+
+#: manual/design/core.md:312
+msgid "One broad \"number\" trait: it would hide the difference between ℤ, ℤ/2^k, approximate reals and fields, which are exactly the differences generic code has to respect."
+msgstr ""
+
+#: manual/design/core.md:315
+msgid "`NatHomomorphism` and `IntegralHomomorphism` as the conversion interface: they promised a homomorphism that a fixed-width source cannot give. They remain only as deprecated traits."
+msgstr ""
+
+#: manual/design/core.md:318
+msgid "A separate division-ring trait: no shipped type needs it, and code that must work without commutativity can ask for `Ring + Inverse + Div`."
+msgstr ""
+
+#: manual/design/core.md:321
+#: manual/design/hom.md:159
 msgid "Boundaries"
 msgstr ""
 
-#: manual/design/core.md:94
+#: manual/design/core.md:323
 msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
 msgstr ""
 
-#: manual/design/core.md:96
+#: manual/design/core.md:325
 msgid "It does not erase the semantic difference between exact and approximate number systems."
+msgstr ""
+
+#: manual/design/core.md:327
+msgid "It does not check laws at compile time. The laws of every structural trait, including the commutativity of `Field`, are contracts on the implementor, tested with the tools of the [hom API](../api/hom.md)."
+msgstr ""
+
+#: manual/design/core.md:330
+msgid "It does not model an arbitrary-precision ℕ: such a type is not a quotient of ℤ, so it cannot be `Integral`."
 msgstr ""
 
 #: manual/design/hom.md:1
@@ -546,66 +1113,98 @@ msgid "`s(ω(x)) = ω(s(x))` exactly when `ω(s(x))` lies in the image of `s`. I
 msgstr ""
 
 #: manual/design/hom.md:64
+msgid "The same two steps in display form, for an $n$-ary operation $\\omega$ and $x = (x_1, \\dots, x_n)$ with $s(x) = (s(x_1), \\dots, s(x_n))$:"
+msgstr ""
+
+#: manual/design/hom.md:76
+msgid "so $s(\\omega_Q(x)) - \\omega_A(s(x)) \\in \\ker \\pi$ whenever $A$ has subtraction. If $\\omega_A(s(x)) = s(y)$ for some $y$, applying $\\pi$ gives $y = \\omega_Q(x)$, hence $\\omega_A(s(x)) = s(\\omega_Q(x))$."
+msgstr ""
+
+#: manual/design/hom.md:80
 msgid "So `Section::check` only tests the section law; `check_ops` tests that `π` is a homomorphism on lifted arguments, and point 2 follows. For `Int`, the image of `s` is `[-2^31, 2^31)`, and \"the result is in the image\" means \"the result did not wrap around\"."
 msgstr ""
 
-#: manual/design/hom.md:69
+#: manual/design/hom.md:85
 msgid "The carry"
 msgstr ""
 
-#: manual/design/hom.md:71
+#: manual/design/hom.md:87
 msgid "For addition on `Int` the difference in point 1 is `s(a) + s(b) - s(a + b) = c(a, b)·2^32` with `c(a, b) ∈ {-1, 0, 1}`, the carry. Expanding `s(a) + s(b) + s(e)` in two ways gives"
 msgstr ""
 
-#: manual/design/hom.md:79
-msgid "so `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That extension does not split, because ℤ has no element of finite order, so no choice of representatives makes `s` a homomorphism. For multiplication the difference is the high word of the product."
+#: manual/design/hom.md:95
+msgid "The identity comes from associativity. Write $m = 2^{32}$ and $s(a) + s(b) = s(a + b) + c(a, b)\\,m$, then group the sum of three lifts both ways:"
 msgstr ""
 
-#: manual/design/hom.md:84
+#: manual/design/hom.md:108
+msgid "Both sides are equal in ℤ, so the coefficients of $m$ agree. The bound on $c$ follows from the range of the representatives: $s(a) + s(b) \\in [-2^{32}, 2^{32} - 2]$ and $s(a + b) \\in [-2^{31}, 2^{31})$, so $c(a, b)\\,m$ lies strictly between $-3 \\cdot 2^{31}$ and $3 \\cdot 2^{31}$, and $c(a, b) \\in \\{-1, 0, 1\\}$."
+msgstr ""
+
+#: manual/design/hom.md:114
+msgid "So `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That extension does not split, because ℤ has no element of finite order, so no choice of representatives makes `s` a homomorphism. Directly: an additive section $\\sigma : \\mathbb{Z}/m \\to \\mathbb{Z}$ would give $m\\,\\sigma(1) = \\sigma(m \\cdot 1) = \\sigma(0) = 0$, so $\\sigma(1) = 0$, contradicting $\\pi(\\sigma(1)) = 1$. For multiplication the difference is the high word of the product."
+msgstr ""
+
+#: manual/design/hom.md:122
 msgid "Normal forms"
 msgstr ""
 
-#: manual/design/hom.md:86
+#: manual/design/hom.md:124
 msgid "`n = s ∘ π : A -> A` is a normal form: `n(n(a)) = n(a)`, `a` and `n(a)` are congruent, and `a`, `b` are congruent exactly when `n(a) = n(b)`. The quotient operations are computed on representatives as `s(ω_Q(x)) = n(ω_A(s(x)))`: compute in `A`, then normalize. Wrapped `Int` arithmetic is this computation for `A = ℤ`. Because `Section::normalize` is built from `s` and `π`, it cannot give two congruent values different normal forms."
 msgstr ""
 
-#: manual/design/hom.md:94
+#: manual/design/hom.md:132
 msgid "Why `Section` is not a `Hom`"
 msgstr ""
 
-#: manual/design/hom.md:96
+#: manual/design/hom.md:134
 msgid "A section is injective and agrees with the operations on its image, so it is easy to mistake for a homomorphism and compose it as one. Keeping it in a separate certificate makes the difference visible in the types: `Section` carries `π` as a `Hom`, and only promises `π(s(q)) = q`."
 msgstr ""
 
-#: manual/design/hom.md:101
+#: manual/design/hom.md:139
 msgid "The law does not fix which representatives are chosen. `[0, 2^32)` and `[-2^31, 2^31)` both give sections of `BigInt -> Int`; only the second preserves the signed order of `Int`. Such properties need their own checks."
 msgstr ""
 
-#: manual/design/hom.md:107
+#: manual/design/hom.md:145
+msgid "A homomorphism trait `Hom[A, B]` implemented by types: it needs two type parameters, which MoonBit traits do not have, and it would allow only one homomorphism per pair of types, while a pair usually has several, such as the identity and conjugation on the complex numbers."
+msgstr ""
+
+#: manual/design/hom.md:149
+msgid "Plain functions `(A) -> B` without a certificate: nothing would separate checked homomorphisms from arbitrary conversions, and composition would not record where the obligations came from."
+msgstr ""
+
+#: manual/design/hom.md:152
+msgid "Treating representative lifts such as `Int -> BigInt` as homomorphisms: the cocycle argument above shows that they are not, so they get their own certificate, `Section`."
+msgstr ""
+
+#: manual/design/hom.md:155
+msgid "Recording the check relation (strict, lax, tolerance) in the type: it would multiply the inference rules for each strength. The relation is chosen at check time instead, and the boundaries below state the cost."
+msgstr ""
+
+#: manual/design/hom.md:161
 msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
 msgstr ""
 
-#: manual/design/hom.md:109
+#: manual/design/hom.md:163
 msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
 msgstr ""
 
-#: manual/design/hom.md:111
+#: manual/design/hom.md:165
 msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
 msgstr ""
 
-#: manual/design/hom.md:113
+#: manual/design/hom.md:167
 msgid "Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get this from trait coherence; dictionaries from `Algebra::make` only by convention."
 msgstr ""
 
-#: manual/design/hom.md:116
+#: manual/design/hom.md:170
 msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
 msgstr ""
 
-#: manual/design/hom.md:118
+#: manual/design/hom.md:172
 msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are sections, so they agree with the operations only while arithmetic does not wrap."
 msgstr ""
 
-#: manual/design/hom.md:121
+#: manual/design/hom.md:175
 msgid "The section law does not fix which representatives are chosen, so properties such as order preservation need their own checks."
 msgstr ""
 
@@ -642,98 +1241,186 @@ msgid "`lift_to` and `Section` keep the choice of a representative apart from ho
 msgstr ""
 
 #: manual/index.md:15
-msgid "Exported traits"
+msgid "Install"
 msgstr ""
 
-#: manual/index.md:25
-msgid "Exported operations and default types"
+#: manual/index.md:21
+msgid "Then import `\"Luna-Flow/luna-generic\"` in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10)."
 msgstr ""
 
-#: manual/index.md:27
-msgid "Operations: `One`, `Zero`, `Inverse`, `Conjugate`"
+#: manual/index.md:24
+msgid "Pages"
 msgstr ""
 
-#: manual/index.md:28
-msgid "Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
+#: manual/index.md:26
+msgid "The repository is one MoonBit package at `src`, documented as `core`. Its certificate subsystem, `Hom` and `Section`, has its own pages as `hom`."
 msgstr ""
 
-#: manual/index.md:30
-msgid "Integer model"
+#: manual/index.md:29
+msgid "Part"
+msgstr ""
+
+#: manual/index.md:29
+msgid "Tutorial"
+msgstr ""
+
+#: manual/index.md:29
+msgid "API"
+msgstr ""
+
+#: manual/index.md:29
+msgid "Design"
+msgstr ""
+
+#: manual/index.md:31
+msgid "`core`: traits, conversions, instances"
+msgstr ""
+
+#: manual/index.md:31
+msgid "[tutorial](tutorial/core.md)"
+msgstr ""
+
+#: manual/index.md:31
+msgid "[API](api/core.md)"
+msgstr ""
+
+#: manual/index.md:31
+msgid "[design](design/core.md)"
 msgstr ""
 
 #: manual/index.md:32
-msgid "`Integral` covers signed integers, unsigned integers, and `BigInt`"
+msgid "`hom`: homomorphisms and sections"
 msgstr ""
 
-#: manual/index.md:33
-msgid "`Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, and `UInt64`"
+#: manual/index.md:32
+msgid "[tutorial](tutorial/hom.md)"
+msgstr ""
+
+#: manual/index.md:32
+msgid "[API](api/hom.md)"
+msgstr ""
+
+#: manual/index.md:32
+msgid "[design](design/hom.md)"
 msgstr ""
 
 #: manual/index.md:34
-msgid "Fixed-width integers are ℤ/2^k; `FromInteger::from_integer` reduces modulo 2^k"
+msgid "Exported traits"
 msgstr ""
 
-#: manual/index.md:35
-msgid "`Integral::normalize` picks the representative of a value as a `BigInt`, and `from_integer(normalize(x)) == x`"
-msgstr ""
-
-#: manual/index.md:36
-msgid "Unsigned integer instances stop at `Semiring`"
-msgstr ""
-
-#: manual/index.md:40
-msgid "`FromInteger::from_integer` is the canonical map out of ℤ: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`"
-msgstr ""
-
-#: manual/index.md:41
-msgid "`lift_to(x)` lifts to the representative and maps it into the target; it is a function, not a homomorphism"
+#: manual/index.md:38
+msgid "`Semiring`, `Ring`, `Field` (commutative: $ab = ba$)"
 msgstr ""
 
 #: manual/index.md:42
-msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are deprecated in favour of `FromNat`, `FromInteger` and `lift_to`"
+msgid "Deprecated: `NatHomomorphism`, `IntegralHomomorphism`"
 msgstr ""
 
 #: manual/index.md:44
-msgid "Generalized homomorphisms"
+msgid "Exported operations and default types"
 msgstr ""
 
 #: manual/index.md:46
-msgid "`Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation), the canonical map `Hom::from_integer`, or inference rules"
+msgid "Operations: `One`, `Zero`, `Inverse`, `Conjugate`"
 msgstr ""
 
 #: manual/index.md:47
-msgid "`Section[S, Q, A]`: a certificate that a lift picks one representative per class of a quotient; `Section::of_integral` is the canonical one for integral types"
-msgstr ""
-
-#: manual/index.md:48
-msgid "Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`"
+msgid "Default numeric types: `Int`, `Int16`, `Int64`, `UInt`, `UInt16`, `UInt64`, `BigInt`, `Float`, `Double`"
 msgstr ""
 
 #: manual/index.md:49
-msgid "Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`"
-msgstr ""
-
-#: manual/index.md:50
-msgid "`Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength"
+msgid "Integer model"
 msgstr ""
 
 #: manual/index.md:51
-msgid "See the [hom API](api/hom.md), [tutorial](tutorial/hom.md) and [design](design/hom.md)"
+msgid "`Integral` covers signed integers, unsigned integers, and `BigInt`"
+msgstr ""
+
+#: manual/index.md:52
+msgid "`Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, and `UInt64`"
 msgstr ""
 
 #: manual/index.md:53
-msgid "Where to read next"
+msgid "Fixed-width integers are ℤ/2^k; `FromInteger::from_integer` reduces modulo 2^k"
+msgstr ""
+
+#: manual/index.md:54
+msgid "`Integral::normalize` picks the representative of a value as a `BigInt`, and `from_integer(normalize(x)) == x`"
 msgstr ""
 
 #: manual/index.md:55
-msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the conversions are shaped this way."
+msgid "Unsigned integer instances stop at `Semiring`"
 msgstr ""
 
 #: manual/index.md:57
-msgid "Validation"
+msgid "Conversions"
 msgstr ""
 
 #: manual/index.md:59
+msgid "`FromInteger::from_integer` is the canonical map out of ℤ: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`"
+msgstr ""
+
+#: manual/index.md:60
+msgid "`lift_to(x)` lifts to the representative and maps it into the target; it is a function, not a homomorphism"
+msgstr ""
+
+#: manual/index.md:61
+msgid "`NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are deprecated in favour of `FromNat`, `FromInteger` and `lift_to`"
+msgstr ""
+
+#: manual/index.md:63
+msgid "Generalized homomorphisms"
+msgstr ""
+
+#: manual/index.md:65
+msgid "`Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation), the canonical map `Hom::from_integer`, or inference rules"
+msgstr ""
+
+#: manual/index.md:66
+msgid "`Section[S, Q, A]`: a certificate that a lift picks one representative per class of a quotient; `Section::of_integral` is the canonical one for integral types"
+msgstr ""
+
+#: manual/index.md:67
+msgid "Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`"
+msgstr ""
+
+#: manual/index.md:68
+msgid "Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`"
+msgstr ""
+
+#: manual/index.md:69
+msgid "`Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength"
+msgstr ""
+
+#: manual/index.md:70
+msgid "See the [hom API](api/hom.md), [tutorial](tutorial/hom.md) and [design](design/hom.md)"
+msgstr ""
+
+#: manual/index.md:72
+msgid "Where to read next"
+msgstr ""
+
+#: manual/index.md:74
+msgid "The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the conversions are shaped this way."
+msgstr ""
+
+#: manual/index.md:76
+msgid "New to the package: read the [core tutorial](tutorial/core.md), then the [hom tutorial](tutorial/hom.md)."
+msgstr ""
+
+#: manual/index.md:77
+msgid "Using it in a library: keep the [core API](api/core.md) and the [hom API](api/hom.md) at hand; each trait lists the laws an instance must satisfy."
+msgstr ""
+
+#: manual/index.md:78
+msgid "Contributing: read both design pages, [core](design/core.md) and [hom](design/hom.md), before changing a trait or adding an inference rule."
+msgstr ""
+
+#: manual/index.md:80
+msgid "Validation"
+msgstr ""
+
+#: manual/index.md:82
 msgid "Recommended release checks:"
 msgstr ""
 
@@ -742,128 +1429,212 @@ msgid "core tutorial"
 msgstr ""
 
 #: manual/tutorial/core.md:3
-msgid "Quick start for library authors"
+msgid "This tutorial gets you writing one algorithm for many number types with the traits of `luna-generic`, converting integers into any number type, and plugging your own types into the same vocabulary. The reasons behind the design are in the [core design](../design/core.md)."
 msgstr ""
 
-#: manual/tutorial/core.md:5
+#: manual/tutorial/core.md:8
 msgid "I want to"
 msgstr ""
 
-#: manual/tutorial/core.md:5
+#: manual/tutorial/core.md:8
 msgid "Use"
 msgstr ""
 
-#: manual/tutorial/core.md:7
+#: manual/tutorial/core.md:10
 msgid "write one algorithm for many number types"
 msgstr ""
 
-#: manual/tutorial/core.md:7
+#: manual/tutorial/core.md:10
 msgid "trait bounds such as `T : Ring`"
 msgstr ""
 
-#: manual/tutorial/core.md:8
+#: manual/tutorial/core.md:11
 msgid "turn an integer constant or index into a `T`"
 msgstr ""
 
-#: manual/tutorial/core.md:8
+#: manual/tutorial/core.md:11
 msgid "`@luna-generic.lift_to(i)` with `T : FromInteger`"
 msgstr ""
 
-#: manual/tutorial/core.md:9
+#: manual/tutorial/core.md:12
 msgid "let my number type be built from integers"
 msgstr ""
 
-#: manual/tutorial/core.md:9
+#: manual/tutorial/core.md:12
 msgid "implement `FromNat` and `FromInteger`"
 msgstr ""
 
-#: manual/tutorial/core.md:10
+#: manual/tutorial/core.md:13
 msgid "define a new integer type"
 msgstr ""
 
-#: manual/tutorial/core.md:10
+#: manual/tutorial/core.md:13
 msgid "also implement `Integral`, and add one check"
 msgstr ""
 
-#: manual/tutorial/core.md:11
+#: manual/tutorial/core.md:14
 msgid "get one exact form of any integer"
 msgstr ""
 
-#: manual/tutorial/core.md:11
+#: manual/tutorial/core.md:14
 msgid "`Integral::normalize(x)`, a `BigInt`"
 msgstr ""
 
-#: manual/tutorial/core.md:13
-msgid "The rest of this page walks through each row. The reasons behind the design are in the [core design](../design/core.md)."
+#: manual/tutorial/core.md:16
+#: manual/tutorial/hom.md:8
+msgid "Quick start"
 msgstr ""
 
-#: manual/tutorial/core.md:16
-msgid "Write algorithms against structure, not concrete numbers"
+#: manual/tutorial/core.md:18
+msgid "Add the package to your module:"
 msgstr ""
 
 #: manual/tutorial/core.md:24
-msgid "This function can work over signed integers, `BigInt`, `Float`, `Double`, and future external types that implement the same traits."
+msgid "Import it in the `moon.pkg` of the package that uses it:"
 msgstr ""
 
-#: manual/tutorial/core.md:27
-msgid "Turn integers into your number type with `lift_to`"
+#: manual/tutorial/core.md:32
+msgid "The examples on this page bring the traits into scope with one `using` declaration:"
 msgstr ""
 
-#: manual/tutorial/core.md:35
-msgid "`lift_to` converts the value of any integer type (`Int`, `UInt64`, `BigInt`, ...) into any type with `FromInteger`. It sees the value the integer holds now: if an `Int` computation has already wrapped around, `lift_to` converts the wrapped value. Do the arithmetic in `BigInt` or in `T` when you need the full range."
+#: manual/tutorial/core.md:48
+msgid "The smallest useful program is one generic function used at three types:"
 msgstr ""
 
-#: manual/tutorial/core.md:41
-msgid "Make your number type buildable from integers"
-msgstr ""
-
-#: manual/tutorial/core.md:43
-msgid "Implement the two conversions from `BigInt`:"
-msgstr ""
-
-#: manual/tutorial/core.md:55
-msgid "`from_natural` is only called with non-negative values. Both must agree with your arithmetic: converting `a + b` gives the sum of the converted values, the same holds for `*`, and `0` and `1` become your zero and one. Check it on a few values, including large and negative ones:"
+#: manual/tutorial/core.md:62
+msgid "`double_and_add_one` works over the signed integers, `BigInt`, `Float`, `Double`, and any future type that implements the same traits."
 msgstr ""
 
 #: manual/tutorial/core.md:65
-msgid "Floating-point types only agree up to rounding; the [hom tutorial](hom.md) shows how to check them with a tolerance."
+#: manual/tutorial/hom.md:41
+msgid "Everyday tasks"
 msgstr ""
 
-#: manual/tutorial/core.md:68
-msgid "Define a new integer type"
+#: manual/tutorial/core.md:67
+msgid "Write algorithms against structure, not concrete numbers"
 msgstr ""
 
-#: manual/tutorial/core.md:70
-msgid "This is rare. An integer type implements `Integral` on top of the two conversions above. `normalize` returns the value of `x` as a `BigInt`, exactly as your type shows it, so converting it back gives `x` again. Check that round trip with the smallest and largest values of your type:"
+#: manual/tutorial/core.md:69
+msgid "Ask for the smallest trait that states what the algorithm needs. A sum of products needs only `Semiring`, so it also runs on unsigned integers:"
 msgstr ""
 
-#: manual/tutorial/core.md:80
+#: manual/tutorial/core.md:87
+msgid "Require `Ring` when you subtract, and `Field` only when you divide."
+msgstr ""
+
+#: manual/tutorial/core.md:89
+msgid "Turn integers into your number type with `lift_to`"
+msgstr ""
+
+#: manual/tutorial/core.md:102
+msgid "`lift_to` converts the value of any integer type (`Int`, `UInt64`, `BigInt`, ...) into any type with `FromInteger`. It sees the value the integer holds now: if an `Int` computation has already wrapped around, `lift_to` converts the wrapped value. Do the arithmetic in `BigInt` or in `T` when you need the full range."
+msgstr ""
+
+#: manual/tutorial/core.md:108
+msgid "Average values in any field"
+msgstr ""
+
+#: manual/tutorial/core.md:124
 msgid "Get one exact form of any integer"
 msgstr ""
 
-#: manual/tutorial/core.md:88
-msgid "Use `Integral::normalize` when you need one exact representation across multiple integer types."
+#: manual/tutorial/core.md:138
+msgid "Use `Integral::normalize` when you need one exact representation across multiple integer types. Unsigned values come out non-negative, signed values keep their sign."
 msgstr ""
 
-#: manual/tutorial/core.md:91
-#: manual/tutorial/hom.md:111
-msgid "Practical guidance"
+#: manual/tutorial/core.md:142
+#: manual/tutorial/hom.md:153
+msgid "Going further"
 msgstr ""
 
-#: manual/tutorial/core.md:93
+#: manual/tutorial/core.md:144
+msgid "Make your number type buildable from integers"
+msgstr ""
+
+#: manual/tutorial/core.md:146
+msgid "The running example is an 8-bit wrapping integer. A type that only needs to be built from integers implements the two conversions from `BigInt`:"
+msgstr ""
+
+#: manual/tutorial/core.md:180
+msgid "`from_natural` is only called with non-negative values. Both must agree with your arithmetic: converting `a + b` gives the sum of the converted values, the same holds for `*`, and `0` and `1` become your zero and one. Check it on a few values, including large and negative ones:"
+msgstr ""
+
+#: manual/tutorial/core.md:194
+msgid "Floating-point types only agree up to rounding; the [hom tutorial](hom.md) shows how to check them with a tolerance."
+msgstr ""
+
+#: manual/tutorial/core.md:197
+msgid "Define a new integer type"
+msgstr ""
+
+#: manual/tutorial/core.md:199
+msgid "This is rare. An integer type implements `Integral` on top of the two conversions above. `normalize` returns the value of `x` as a `BigInt`, exactly as your type shows it, so converting it back gives `x` again. Check that round trip with the smallest and largest values of your type:"
+msgstr ""
+
+#: manual/tutorial/core.md:216
+msgid "The last line shows the wrap-around: `127 + 1` is `-128` in `I8`, and `lift_to` converts the wrapped value."
+msgstr ""
+
+#: manual/tutorial/core.md:219
+msgid "Combine with sibling packages"
+msgstr ""
+
+#: manual/tutorial/core.md:221
+msgid "Higher-level Luna Flow packages state their requirements with these traits, so a type that implements them can be passed to their generic code. Keep your instances honest: implement a trait only when your type satisfies its laws, listed on the [core API](../api/core.md)."
+msgstr ""
+
+#: manual/tutorial/core.md:226
+#: manual/tutorial/hom.md:187
+msgid "Common pitfalls"
+msgstr ""
+
+#: manual/tutorial/core.md:228
 msgid "Choose the smallest trait set that expresses the algorithm you need."
 msgstr ""
 
-#: manual/tutorial/core.md:94
+#: manual/tutorial/core.md:229
 msgid "Require `Field` only when reciprocal or division semantics are really needed."
 msgstr ""
 
-#: manual/tutorial/core.md:95
+#: manual/tutorial/core.md:230
+msgid "`Field` promises commutative multiplication. Do not implement it for a type whose products depend on the order of the factors; ask for `Ring + Inverse + Div` in code that must accept such types."
+msgstr ""
+
+#: manual/tutorial/core.md:233
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
 msgstr ""
 
-#: manual/tutorial/core.md:97
+#: manual/tutorial/core.md:235
+msgid "`Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` returns an infinity. Test for zero before inverting."
+msgstr ""
+
+#: manual/tutorial/core.md:237
+msgid "Unsigned integers are not `Ring`: generic code that negates cannot take `UInt`."
+msgstr ""
+
+#: manual/tutorial/core.md:239
+msgid "`lift_to` converts the wrapped value. Overflow that happened before the call is not undone."
+msgstr ""
+
+#: manual/tutorial/core.md:241
 msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHomomorphism` and `IntegralHomomorphism`."
+msgstr ""
+
+#: manual/tutorial/core.md:244
+#: manual/tutorial/hom.md:201
+msgid "Next steps"
+msgstr ""
+
+#: manual/tutorial/core.md:246
+msgid "The [core API](../api/core.md) lists every trait, its laws and the shipped instances."
+msgstr ""
+
+#: manual/tutorial/core.md:248
+msgid "The [core design](../design/core.md) derives why conversions factor through ℤ and why `Field` must be commutative."
+msgstr ""
+
+#: manual/tutorial/core.md:250
+msgid "The [hom tutorial](hom.md) checks conversions and other maps with certificates."
 msgstr ""
 
 #: manual/tutorial/hom.md:1
@@ -874,74 +1645,110 @@ msgstr ""
 msgid "A `Hom[S, A, B]` is a map `A -> B` that keeps the operations listed by `S` consistent: converting a sum gives the sum of the conversions, and so on. This page shows how to declare, check and combine them. Why they are built this way is in the [hom design](../design/hom.md)."
 msgstr ""
 
-#: manual/tutorial/hom.md:8
+#: manual/tutorial/hom.md:10
+msgid "`Hom` ships with `luna-generic`; install and import the package as in the [core tutorial](core.md). The examples on this page use this declaration:"
+msgstr ""
+
+#: manual/tutorial/hom.md:27
+msgid "The smallest useful program declares one homomorphism and checks it:"
+msgstr ""
+
+#: manual/tutorial/hom.md:43
 msgid "Leaf homomorphisms: one `postulate`, one check"
 msgstr ""
 
-#: manual/tutorial/hom.md:21
-msgid "Truncating `Int64` to `Int` keeps `+` and `*` consistent even when values wrap around, so the check passes on extreme samples. Widening `Int` to `Int64` does not: `2147483647 + 1` wraps around in `Int` but not in `Int64`, so its check fails as soon as a sample sum overflows."
-msgstr ""
-
-#: manual/tutorial/hom.md:26
-msgid "Every `Hom::postulate` is a promise you make. Searching the repository for `postulate` lists all of them, and each one should have a matching `check` test."
-msgstr ""
-
-#: manual/tutorial/hom.md:30
-msgid "Building from smaller homomorphisms"
-msgstr ""
-
-#: manual/tutorial/hom.md:40
-msgid "Composition, forgetting, pairing, projection and upgrades create no new promises. They treat every certificate as exact, so a map that only passes a `<=` or tolerance check below must be checked again after it is composed."
-msgstr ""
-
-#: manual/tutorial/hom.md:44
-msgid "Checking a conversion that is not a homomorphism"
-msgstr ""
-
-#: manual/tutorial/hom.md:46
-msgid "Converting an `Int` to `BigInt` keeps every value, but not the wrapped arithmetic: `2147483647 + 1` is negative in `Int` and positive in `BigInt`. Such a conversion is described by a `Section` instead of a `Hom`. It records the way back as well, and checks that going there and back returns the original value:"
+#: manual/tutorial/hom.md:45
+msgid "Truncating `Int64` to `Int`, as above, keeps `+` and `*` consistent even when values wrap around, so the check passes on extreme samples. Widening `Int` to `Int64` does not: `2147483647 + 1` wraps around in `Int` but not in `Int64`, so its check fails as soon as a sample sum overflows."
 msgstr ""
 
 #: manual/tutorial/hom.md:58
-msgid "A conversion that changes values, for example one that drops the sign or rounds through `Float`, fails `check`."
+msgid "Every `Hom::postulate` is a promise you make. Searching the repository for `postulate` lists all of them, and each one should have a matching `check` test."
 msgstr ""
 
-#: manual/tutorial/hom.md:61
-msgid "`s.is_representative(b)` tells whether a `BigInt` is a value the conversion can produce. Arithmetic on converted values matches the original arithmetic exactly when the result is such a value:"
-msgstr ""
-
-#: manual/tutorial/hom.md:70
-msgid "When no certificate is needed, `lift_to` converts into any `FromInteger` target:"
+#: manual/tutorial/hom.md:62
+msgid "Building from smaller homomorphisms"
 msgstr ""
 
 #: manual/tutorial/hom.md:77
-msgid "Choosing the strength of preservation"
+msgid "Composition, forgetting, pairing, projection and upgrades create no new promises. They treat every certificate as exact, so a map that only passes a `<=` or tolerance check below must be checked again after it is composed."
 msgstr ""
 
-#: manual/tutorial/hom.md:85
-msgid "Use a tolerance for floating-point targets. A tolerance relative to the result suits non-negative inputs; with signed inputs `x + y` can cancel to a small value while the rounding error stays proportional to `|x| + |y|`:"
+#: manual/tutorial/hom.md:81
+msgid "Checking a conversion that is not a homomorphism"
 msgstr ""
 
-#: manual/tutorial/hom.md:96
-msgid "Custom signatures"
+#: manual/tutorial/hom.md:83
+msgid "Converting an `Int` to `BigInt` keeps every value, but not the wrapped arithmetic: `2147483647 + 1` is negative in `Int` and positive in `BigInt`. Such a conversion is described by a `Section` instead of a `Hom`. It records the way back as well, and checks that going there and back returns the original value:"
 msgstr ""
 
-#: manual/tutorial/hom.md:106
-msgid "`Hom` and `check` work for any signature with one carrier, as long as both dictionaries list the same operations in the same order. Keep one dictionary per tag and carrier: certificates checked against different meanings of the same tag do not compose."
+#: manual/tutorial/hom.md:98
+msgid "A conversion that changes values, for example one that drops the sign or rounds through `Float`, fails `check`."
+msgstr ""
+
+#: manual/tutorial/hom.md:101
+msgid "`s.is_representative(b)` tells whether a `BigInt` is a value the conversion can produce. Arithmetic on converted values matches the original arithmetic exactly when the result is such a value:"
 msgstr ""
 
 #: manual/tutorial/hom.md:113
+msgid "When no certificate is needed, `lift_to` converts into any `FromInteger` target:"
+msgstr ""
+
+#: manual/tutorial/hom.md:123
+msgid "Choosing the strength of preservation"
+msgstr ""
+
+#: manual/tutorial/hom.md:134
+msgid "Use a tolerance for floating-point targets. A tolerance relative to the result suits non-negative inputs; with signed inputs `x + y` can cancel to a small value while the rounding error stays proportional to `|x| + |y|`:"
+msgstr ""
+
+#: manual/tutorial/hom.md:150
+msgid "`16777217` is $2^{24} + 1$, the first integer that `Float` cannot hold, so the exact check fails while the tolerance check passes."
+msgstr ""
+
+#: manual/tutorial/hom.md:155
+msgid "Custom signatures"
+msgstr ""
+
+#: manual/tutorial/hom.md:173
+msgid "`Hom` and `check` work for any signature with one carrier, as long as both dictionaries list the same operations in the same order. Keep one dictionary per tag and carrier: certificates checked against different meanings of the same tag do not compose."
+msgstr ""
+
+#: manual/tutorial/hom.md:178
+msgid "Maps that are not determined by the types"
+msgstr ""
+
+#: manual/tutorial/hom.md:180
+msgid "The canonical map out of ℤ is unique, so it lives in the `FromInteger` trait. Most other homomorphisms are not unique: a type can have several structure-preserving maps to itself, such as the identity and complex conjugation on the complex numbers. Write such maps as explicit `Hom` values, never as trait instances, so that the choice stays visible at the call site."
+msgstr ""
+
+#: manual/tutorial/hom.md:189
 msgid "Use `Hom::from_integer` for the conversion out of `BigInt` into a number type; it holds for every input."
 msgstr ""
 
-#: manual/tutorial/hom.md:115
-msgid "Use `Section::of_integral` to check conversions out of machine integers, and `lift_to` when you only need the value."
+#: manual/tutorial/hom.md:191
+msgid "Use `Section::of_integral` to check conversions out of machine integers, and `lift_to` when you only need the value. Do not wrap a widening such as `Int -> Int64` in `Hom::postulate`: it is not a homomorphism."
 msgstr ""
 
-#: manual/tutorial/hom.md:117
-msgid "Write maps that are not determined by the types, such as complex conjugation, as explicit `Hom` values, never as trait instances."
-msgstr ""
-
-#: manual/tutorial/hom.md:119
+#: manual/tutorial/hom.md:194
 msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
+msgstr ""
+
+#: manual/tutorial/hom.md:196
+msgid "A map checked with `<=` or a tolerance is still composed as if it were exact. Check the composite again."
+msgstr ""
+
+#: manual/tutorial/hom.md:198
+msgid "Checks of binary operations test every pair of samples, so a few dozen samples already mean thousands of evaluations."
+msgstr ""
+
+#: manual/tutorial/hom.md:203
+msgid "The [hom API](../api/hom.md) lists every constructor, rule and check."
+msgstr ""
+
+#: manual/tutorial/hom.md:204
+msgid "The [hom design](../design/hom.md) proves what a section preserves and why a lift into ℤ cannot be a homomorphism."
+msgstr ""
+
+#: manual/tutorial/hom.md:206
+msgid "The [core tutorial](core.md) covers the traits that the built-in signatures are derived from."
 msgstr ""
