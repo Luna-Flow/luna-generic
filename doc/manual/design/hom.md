@@ -61,6 +61,22 @@ For every operation `ω` and arguments `x`:
    computation, so `ω(s(x)) = s(ω(x))`. Conversely `s(ω(x))` is always in the
    image.
 
+The same two steps in display form, for an $n$-ary operation $\omega$ and
+$x = (x_1, \dots, x_n)$ with $s(x) = (s(x_1), \dots, s(x_n))$:
+
+$$
+\begin{aligned}
+\pi\bigl(s(\omega_Q(x))\bigr) &= \omega_Q(x)
+  && \text{section law} \\
+\pi\bigl(\omega_A(s(x))\bigr) &= \omega_Q(\pi(s(x))) = \omega_Q(x)
+  && \pi \text{ is a homomorphism}
+\end{aligned}
+$$
+
+so $s(\omega_Q(x)) - \omega_A(s(x)) \in \ker \pi$ whenever $A$ has
+subtraction. If $\omega_A(s(x)) = s(y)$ for some $y$, applying $\pi$ gives
+$y = \omega_Q(x)$, hence $\omega_A(s(x)) = s(\omega_Q(x))$.
+
 So `Section::check` only tests the section law; `check_ops` tests that `π` is
 a homomorphism on lifted arguments, and point 2 follows. For `Int`, the image
 of `s` is `[-2^31, 2^31)`, and "the result is in the image" means "the result
@@ -76,9 +92,31 @@ carry. Expanding `s(a) + s(b) + s(e)` in two ways gives
 c(a, b) + c(a + b, e) = c(b, e) + c(a, b + e)
 ```
 
-so `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That
+The identity comes from associativity. Write $m = 2^{32}$ and
+$s(a) + s(b) = s(a + b) + c(a, b)\,m$, then group the sum of three lifts
+both ways:
+
+$$
+\begin{aligned}
+(s(a) + s(b)) + s(e) &= s(a + b) + s(e) + c(a, b)\,m \\
+&= s(a + b + e) + \bigl(c(a + b, e) + c(a, b)\bigr)\,m, \\
+s(a) + (s(b) + s(e)) &= s(a) + s(b + e) + c(b, e)\,m \\
+&= s(a + b + e) + \bigl(c(a, b + e) + c(b, e)\bigr)\,m .
+\end{aligned}
+$$
+
+Both sides are equal in ℤ, so the coefficients of $m$ agree. The bound on
+$c$ follows from the range of the representatives:
+$s(a) + s(b) \in [-2^{32}, 2^{32} - 2]$ and $s(a + b) \in [-2^{31}, 2^{31})$,
+so $c(a, b)\,m$ lies strictly between $-3 \cdot 2^{31}$ and
+$3 \cdot 2^{31}$, and $c(a, b) \in \{-1, 0, 1\}$.
+
+So `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That
 extension does not split, because ℤ has no element of finite order, so no
-choice of representatives makes `s` a homomorphism. For multiplication the
+choice of representatives makes `s` a homomorphism. Directly: an additive
+section $\sigma : \mathbb{Z}/m \to \mathbb{Z}$ would give
+$m\,\sigma(1) = \sigma(m \cdot 1) = \sigma(0) = 0$, so $\sigma(1) = 0$,
+contradicting $\pi(\sigma(1)) = 1$. For multiplication the
 difference is the high word of the product.
 
 ### Normal forms
@@ -101,6 +139,22 @@ carries `π` as a `Hom`, and only promises `π(s(q)) = q`.
 The law does not fix which representatives are chosen. `[0, 2^32)` and
 `[-2^31, 2^31)` both give sections of `BigInt -> Int`; only the second
 preserves the signed order of `Int`. Such properties need their own checks.
+
+## Alternatives rejected
+
+- A homomorphism trait `Hom[A, B]` implemented by types: it needs two type
+  parameters, which MoonBit traits do not have, and it would allow only one
+  homomorphism per pair of types, while a pair usually has several, such as
+  the identity and conjugation on the complex numbers.
+- Plain functions `(A) -> B` without a certificate: nothing would separate
+  checked homomorphisms from arbitrary conversions, and composition would
+  not record where the obligations came from.
+- Treating representative lifts such as `Int -> BigInt` as homomorphisms:
+  the cocycle argument above shows that they are not, so they get their own
+  certificate, `Section`.
+- Recording the check relation (strict, lax, tolerance) in the type: it
+  would multiply the inference rules for each strength. The relation is
+  chosen at check time instead, and the boundaries below state the cost.
 
 ## Boundaries
 
