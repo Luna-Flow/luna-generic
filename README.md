@@ -23,7 +23,7 @@ This documentation tracks the intended `v0.4.0` release content.
 
 ### Public Surface
 
-- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `FromNat`, `FromInteger`, `Integral`, `Nat`, `Num`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
+- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field` (commutative), `FromNat`, `FromInteger`, `Integral`, `Nat`, `Num`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
 - Functions: `lift_to`
 - Generalized homomorphisms: `Hom`, `Section`, `Algebra`, `Op`, `Prod`, `Reduct`, and the signature tags `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
@@ -47,12 +47,13 @@ This documentation tracks the intended `v0.4.0` release content.
 
 Comprehensive API documentation is available at [mooncakes.io](https://mooncakes.io/docs/Luna-Flow/luna-generic).
 
-The manual is published at [luna-flow.github.io/en/luna-generic](https://luna-flow.github.io/en/luna-generic/), with Simplified Chinese and Japanese translations. Its English source lives in [doc/manual](./doc/manual/index.md); translations are maintained as gettext catalogs in `doc/locale`.
+The manual is published at [lunaflow.cn/en/luna-generic](https://lunaflow.cn/en/luna-generic/), with Simplified Chinese and Japanese translations. Its English source lives in [doc/manual](./doc/manual/index.md); translations are maintained as gettext catalogs in `doc/locale`.
 
 ## Version History
 
 | Version | Date | Status | Notes |
 | --- | --- | --- | --- |
+| Unreleased | - | in progress | Documentation expanded: every public item on the API pages with laws and compiled examples, layered tutorials, derivations on the design pages, and the commutativity contract of `Field`; zh_CN and ja_JP translations updated |
 | `0.4.0` | 2026-10-07 | release candidate | Adds `FromNat`, `FromInteger`, `lift_to` and `Section`; `Integral` extends `FromInteger` with the section law; deprecates `NatHomomorphism` and `IntegralHomomorphism` |
 | `0.3.3` | 2026-06-12 | published on mooncakes | Refactors homomorphism traits around polymorphic methods and unifies natural/integral embeddings through `normalize` |
 | `0.3.2` | 2026-06-06 | published on mooncakes | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
@@ -61,7 +62,7 @@ The manual is published at [luna-flow.github.io/en/luna-generic](https://luna-fl
 
 ## Development
 
-Useful local commands:
+Requires the MoonBit toolchain 0.10 or later. Useful local commands:
 
 ```bash
 moon check
