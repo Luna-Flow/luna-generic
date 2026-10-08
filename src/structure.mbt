@@ -17,6 +17,14 @@ pub(open) trait Semiring: AddMonoid + MulMonoid {}
 pub(open) trait Ring: Semiring + Neg + Sub {}
 
 ///|
+/// A field: a commutative ring in which every non-zero element has an
+/// inverse.
+///
+/// Laws, which the compiler does not check: `a * b == b * a`,
+/// `a * inv(a) == 1` for `a != 0`, and `a / b == a * inv(b)` for `b != 0`.
+/// Commutativity is part of the contract: a division ring whose
+/// multiplication does not commute must not implement `Field`, because
+/// generic code may rely on `inv(a * b) == inv(a) * inv(b)`.
 pub(open) trait Field: Ring + Inverse + Div {}
 
 ///|
