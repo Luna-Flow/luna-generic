@@ -12,11 +12,30 @@ The current release candidate centers on three changes:
 - `Integral` is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of its canonical map.
 - `lift_to` and `Section` keep the choice of a representative apart from homomorphisms.
 
+## Install
+
+```bash
+moon add Luna-Flow/luna-generic@0.4.0
+```
+
+Then import `"Luna-Flow/luna-generic"` in your `moon.pkg`. The package needs
+the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10).
+
+## Pages
+
+The repository is one MoonBit package at `src`, documented as `core`. Its
+certificate subsystem, `Hom` and `Section`, has its own pages as `hom`.
+
+| Part | Tutorial | API | Design |
+| --- | --- | --- | --- |
+| `core`: traits, conversions, instances | [tutorial](tutorial/core.md) | [API](api/core.md) | [design](design/core.md) |
+| `hom`: homomorphisms and sections | [tutorial](tutorial/hom.md) | [API](api/hom.md) | [design](design/hom.md) |
+
 ## Exported traits
 
 - `AddMonoid`, `MulMonoid`
 - `AddGroup`, `MulGroup`
-- `Semiring`, `Ring`, `Field`
+- `Semiring`, `Ring`, `Field` (commutative: $ab = ba$)
 - `FromNat`, `FromInteger`
 - `Integral`, `Nat`
 - `Num`
@@ -53,6 +72,10 @@ The current release candidate centers on three changes:
 ## Where to read next
 
 The [core tutorial](tutorial/core.md) writes small generic algorithms against these traits. The [core API](api/core.md) lists every exported trait and instance, and the [core design](design/core.md) explains why the hierarchy and the conversions are shaped this way.
+
+- New to the package: read the [core tutorial](tutorial/core.md), then the [hom tutorial](tutorial/hom.md).
+- Using it in a library: keep the [core API](api/core.md) and the [hom API](api/hom.md) at hand; each trait lists the laws an instance must satisfy.
+- Contributing: read both design pages, [core](design/core.md) and [hom](design/hom.md), before changing a trait or adding an inference rule.
 
 ## Validation
 
