@@ -49,16 +49,9 @@ Comprehensive API documentation is available at [mooncakes.io](https://mooncakes
 
 The manual is published at [lunaflow.cn/en/luna-generic](https://lunaflow.cn/en/luna-generic/), with Simplified Chinese and Japanese translations. Its English source lives in [doc/manual](./doc/manual/index.md); translations are maintained as gettext catalogs in `doc/locale`.
 
-## Version History
+## Changelog
 
-| Version | Date | Status | Notes |
-| --- | --- | --- | --- |
-| Unreleased | - | in progress | Documentation expanded: every public item on the API pages with laws and compiled examples, layered tutorials, derivations on the design pages, and the commutativity contract of `Field`; zh_CN and ja_JP translations updated |
-| `0.4.0` | 2026-10-07 | release candidate | Adds `FromNat`, `FromInteger`, `lift_to` and `Section`; `Integral` extends `FromInteger` with the section law; deprecates `NatHomomorphism` and `IntegralHomomorphism` |
-| `0.3.3` | 2026-06-12 | published on mooncakes | Refactors homomorphism traits around polymorphic methods and unifies natural/integral embeddings through `normalize` |
-| `0.3.2` | 2026-06-06 | published on mooncakes | Adds `Integral::normalize` as the canonical `BigInt` normalization entry point and aligns docs with the new integral embedding model |
-| `0.3.1` | 2026-06-06 | published on mooncakes | Adds `BigInt` coverage, explicit integral embedding traits, and trilingual documentation refresh |
-| `0.3.0` | 2026-06-06 | previous release baseline | Earlier generic algebraic trait surface before the current integral embedding redesign |
+The current version is `0.4.0`. Release notes for every version are in [CHANGELOG.md](./CHANGELOG.md).
 
 ## Development
 
