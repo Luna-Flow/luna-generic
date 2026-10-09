@@ -305,6 +305,108 @@ rounds the exact product, which does not depend on the order. Associativity
 and distributivity hold only approximately, and `0` has no inverse: `inv`
 aborts on it.
 
+### Rounding ℤ into `Float` and `Double`
+
+A binary floating-point format with precision $p$ and maximum exponent
+$e_{\max}$ has the positive finite values
+
+$$
+q \cdot 2^{e - p + 1}, \qquad 2^{p-1} \le q < 2^p, \quad e \le e_{\max},
+$$
+
+plus subnormals, which no non-zero integer needs because $e \ge 0$ for
+$|n| \ge 1$. `Double` has $p = 53$, $e_{\max} = 1023$; `Float` has $p = 24$,
+$e_{\max} = 127$. No map ℤ → `Double` is a ring homomorphism, since
+$2^{53} + 1$ is not representable, so `from_integer` is the next best thing:
+the IEEE 754-2019 conversion convertFromInt (§5.4.1) with the default
+rounding attribute roundTiesToEven (§4.3.1). Write $\mathrm{RN}_p$ for it.
+It is odd, $\mathrm{RN}_p(-n) = -\mathrm{RN}_p(n)$, monotone, exact for
+$|n| \le 2^p$, and its relative error is at most $2^{-p}$ while the result
+is finite.
+
+**The rounding step.** Let $m = |n| > 0$ with $2^{n_b - 1} \le m < 2^{n_b}$,
+so $n_b$ is the bit length of $m$, and set $s = n_b - p - 1$. When $s \ge 0$,
+divide with remainder,
+
+$$
+m = t \cdot 2^s + r, \qquad 0 \le r < 2^s;
+$$
+
+when $s < 0$, put $t = m \cdot 2^{-s}$ and $r = 0$. Either way
+$2^p \le t < 2^{p+1}$: $t$ holds exactly the top $p + 1$ bits of $m$. Split
+off its last bit, $t = 2q + b$ with $b \in \{0, 1\}$, and
+
+$$
+m = (q + f) \cdot 2^{s+1}, \qquad f = \frac{b}{2} + \frac{r}{2^{s+1}},
+\qquad 0 \le f < 1 .
+$$
+
+The two neighbours of $m$ with $p$ significant bits are $q \cdot 2^{s+1}$
+and $(q + 1) \cdot 2^{s+1}$, and round-to-nearest-even takes the upper one
+exactly when $f > \tfrac12$, or $f = \tfrac12$ and $q$ is odd. Because
+$r / 2^{s+1} < \tfrac12$,
+
+$$
+f > \tfrac12 \iff b = 1 \wedge r \neq 0, \qquad
+f = \tfrac12 \iff b = 1 \wedge r = 0,
+$$
+
+so the rule needs only the round bit $b$, the sticky bit $[r \neq 0]$ and
+the parity of $q$:
+
+$$
+\mathrm{RN}_p(m) =
+\begin{cases}
+(q + 1) \cdot 2^{s+1} & \text{if } b = 1 \text{ and } (r \ne 0 \text{ or } q \text{ odd}), \\
+q \cdot 2^{s+1} & \text{otherwise.}
+\end{cases}
+$$
+
+The exponent is $e = (p - 1) + (s + 1) = n_b - 1$. If rounding up carries,
+$q + 1 = 2^p$, the value is $2^{p-1} \cdot 2^{s+2}$ and $e = n_b$. The
+implementation computes $t$ as `m >> s`, the sticky bit as
+`(t << s) != m`, and assembles the result from its bit pattern: sign,
+biased exponent $e + e_{\max}$, and $q$ without its leading bit. It uses
+only `bit_length`, shifts, `to_uint64` and comparisons of `BigInt`, which
+behave identically on every backend, and it runs in time linear in the
+length of $n$.
+
+**Overflow.** The largest finite value is
+
+$$
+\Omega = (2^p - 1) \cdot 2^{e_{\max} - p + 1} = 2^{e_{\max} + 1} - 2^{e_{\max} - p + 1}.
+$$
+
+Its significand $2^p - 1$ is odd, so the midpoint between $\Omega$ and
+$2^{e_{\max}+1}$, namely $2^{e_{\max}+1} - 2^{e_{\max}-p}$, rounds up to
+$2^{e_{\max}+1}$, which does not fit. Following §7.4, an overflowing result
+under roundTiesToEven is $\pm\infty$ with the sign of $n$:
+
+$$
+\mathrm{RN}_p(n) = \pm\infty \iff |n| \ge 2^{e_{\max}+1} - 2^{e_{\max}-p},
+$$
+
+that is $|n| \ge 2^{1024} - 2^{970}$ for `Double` and
+$|n| \ge 2^{128} - 2^{103}$ for `Float`. The integer just below each
+threshold still rounds to $\Omega$.
+
+**Why `Float` is rounded once.** Rounding to `Double` and then to `Float`
+is not $\mathrm{RN}_{24}$. Take $n = 2^{53} + 2^{29} + 1$. At 53 bits the
+spacing is $2$, so $n$ is halfway between $2^{53} + 2^{29}$ and
+$2^{53} + 2^{29} + 2$, and the tie goes to the even significand,
+$2^{53} + 2^{29}$. That value is exactly halfway between the `Float`
+neighbours $2^{53}$ and $2^{53} + 2^{30}$, and the second rounding goes to
+the even one, $2^{53}$. But $n$ itself lies above that midpoint, so
+$\mathrm{RN}_{24}(n) = 2^{53} + 2^{30}$. `Float` therefore runs the same
+rounding step with $p = 24$ directly.
+
+**Why not through a decimal string.** Earlier versions printed the `BigInt`
+in decimal and parsed the result as a `Double`. That is correctly rounded in
+range, but the parser rejects values at or above the overflow threshold, so
+the conversion aborted instead of returning $\pm\infty$; the decimal
+conversion costs time quadratic in the length on some backends; and
+`Float` was rounded twice.
+
 ## Alternatives rejected
 
 - A two-parameter conversion trait `Into[S, R]`: MoonBit traits have only

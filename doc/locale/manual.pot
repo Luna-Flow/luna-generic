@@ -185,7 +185,7 @@ msgid "Precondition: $n \\ge 0$. The result must be $n \\cdot 1 = 1 + \\dots + 1
 msgstr ""
 
 #: manual/api/core.md:408
-msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value."
+msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value, ties to even, as described under `FromInteger` below."
 msgstr ""
 
 #: manual/api/core.md:413
@@ -196,133 +196,153 @@ msgstr ""
 msgid "It satisfies the laws of `from_natural` on all of ℤ and must agree with `from_natural` on non-negative arguments. It is defined for every integer, also on types without negation: on an unsigned type, `from_integer(-1)` is $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width integers, rounding for `Float` and `Double`."
 msgstr ""
 
+#: manual/api/core.md:428
+msgid "For `Float` and `Double`, `from_integer(n)` is the IEEE 754 conversion convertFromInt: $n$ rounded to the nearest value with $p$ significant bits, $p = 24$ for `Float` and $p = 53$ for `Double`, ties to the even significand. Integers with $|n| \\le 2^p$ are exact. When the rounded value is larger than the largest finite number, the result is $\\pm\\infty$; the conversion never aborts:"
+msgstr ""
+
+#: manual/api/core.md:435
+msgid "Target"
+msgstr ""
+
+#: manual/api/core.md:435
+msgid "Exact up to"
+msgstr ""
+
+#: manual/api/core.md:435
+msgid "Result is $\\pm\\infty$ when"
+msgstr ""
+
 #: manual/api/core.md:440
+msgid "Zero gives $+0$. The [core design](../design/core.md) derives the rounding rule and the thresholds."
+msgstr ""
+
+#: manual/api/core.md:468
 msgid "To give your own number type these conversions, implement both traits; the [core tutorial](../tutorial/core.md) shows how."
 msgstr ""
 
-#: manual/api/core.md:443
+#: manual/api/core.md:471
 msgid "Integer types"
 msgstr ""
 
-#: manual/api/core.md:447
+#: manual/api/core.md:475
 msgid "`Integral` is an integer type: ℤ itself, or a quotient ℤ/2^k such as a fixed-width integer."
 msgstr ""
 
-#: manual/api/core.md:456
+#: manual/api/core.md:484
 msgid "`normalize(x)` returns the representative of `x` as a `BigInt`. The law is that `normalize` is a section of the canonical map:"
 msgstr ""
 
-#: manual/api/core.md:463
+#: manual/api/core.md:491
 msgid "The shipped instances pick $[-2^{k-1}, 2^{k-1})$ for signed types, $[0, 2^k)$ for unsigned ones, and the identity for `BigInt`. `normalize` is a homomorphism only for `BigInt`; on fixed-width types it is not, because their arithmetic wraps. `Section::of_integral` packages the pair as a certificate that can be checked."
 msgstr ""
 
-#: manual/api/core.md:479
+#: manual/api/core.md:507
 msgid "`Nat` is an `Integral` type whose representatives are non-negative: $\\operatorname{normalize}(x) \\ge 0$ for every `x`."
 msgstr ""
 
-#: manual/api/core.md:487
+#: manual/api/core.md:515
 msgid "Implemented by `UInt`, `UInt16` and `UInt64`. An arbitrary-precision ℕ is not a quotient of ℤ and therefore cannot be `Integral`; see the [core design](../design/core.md)."
 msgstr ""
 
-#: manual/api/core.md:503
+#: manual/api/core.md:531
 msgid "`lift_to(x)` lifts an integral value to its representative and maps it into any `FromInteger` target."
 msgstr ""
 
-#: manual/api/core.md:510
+#: manual/api/core.md:538
 msgid "It is `R::from_integer(x.normalize())`. It is a function, not a homomorphism: it converts the value `x` holds now, so a sum that has already wrapped in `S` stays wrapped. It preserves the operations exactly when the modulus of `R` divides that of `S`, as for `Int64 -> Int`; the [core design](../design/core.md) derives this condition."
 msgstr ""
 
-#: manual/api/core.md:527
+#: manual/api/core.md:555
 msgid "Shipped instances"
 msgstr ""
 
-#: manual/api/core.md:529
+#: manual/api/core.md:557
 msgid "Type"
 msgstr ""
 
-#: manual/api/core.md:529
+#: manual/api/core.md:557
 msgid "Traits"
 msgstr ""
 
-#: manual/api/core.md:533
+#: manual/api/core.md:561
 msgid "as the signed integers, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
 msgstr ""
 
-#: manual/api/core.md:534
+#: manual/api/core.md:562
 msgid "`AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Num`, `Zero`, `One`, `Inverse`, `FromNat`, `FromInteger`, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
 msgstr ""
 
-#: manual/api/core.md:536
+#: manual/api/core.md:564
 msgid "`Byte` implements none of them."
 msgstr ""
 
-#: manual/api/core.md:538
+#: manual/api/core.md:566
 #: manual/api/hom.md:646
 msgid "Semantic notes"
 msgstr ""
 
-#: manual/api/core.md:540
+#: manual/api/core.md:568
 msgid "Fixed-width integers are ℤ/2^k. Their `from_integer` reduces modulo 2^k, and `normalize` picks the representative in the type's range: `[-2^(k-1), 2^(k-1))` for signed types, `[0, 2^k)` for unsigned ones."
 msgstr ""
 
-#: manual/api/core.md:543
+#: manual/api/core.md:571
 msgid "`BigInt` is ℤ itself: `from_integer` and `normalize` are the identity."
 msgstr ""
 
-#: manual/api/core.md:544
+#: manual/api/core.md:572
 msgid "`lift_to` is a homomorphism exactly when the target modulus divides the source modulus, as for `Int64 -> Int`. Into `BigInt`, `Float` or `Double` it is not one for fixed-width sources, because their arithmetic wraps."
 msgstr ""
 
-#: manual/api/core.md:547
+#: manual/api/core.md:575
 msgid "`Nat` covers the integral types whose representatives are non-negative. A true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope."
 msgstr ""
 
-#: manual/api/core.md:549
+#: manual/api/core.md:577
 msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
 msgstr ""
 
-#: manual/api/core.md:551
-msgid "`Float` and `Double` round in `from_natural` and `from_integer`, so very large values are approximate."
+#: manual/api/core.md:579
+msgid "`Float` and `Double` round to nearest, ties to even, in `from_natural` and `from_integer`, so very large values are approximate, and values beyond the largest finite number become $\\pm\\infty$ instead of aborting."
 msgstr ""
 
-#: manual/api/core.md:553
+#: manual/api/core.md:582
 msgid "`Field` requires commutative multiplication. The compiler cannot check it, so it is the implementor's responsibility."
 msgstr ""
 
-#: manual/api/core.md:556
+#: manual/api/core.md:585
 #: manual/api/hom.md:660
 msgid "Deprecated"
 msgstr ""
 
-#: manual/api/core.md:560
+#: manual/api/core.md:589
 msgid "`NatHomomorphism::from_nat(x)` lifts a `Nat` value to its representative and maps it into `Self`."
 msgstr ""
 
-#: manual/api/core.md:569
+#: manual/api/core.md:598
 msgid "Deprecated because the composite is not a homomorphism for fixed-width sources. Replacement: implement `FromNat` and `FromInteger`, and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
 msgstr ""
 
-#: manual/api/core.md:575
+#: manual/api/core.md:604
 msgid "`IntegralHomomorphism::from_integral(x)` lifts an `Integral` value to its representative and maps it into `Self`."
 msgstr ""
 
-#: manual/api/core.md:584
+#: manual/api/core.md:613
 msgid "Deprecated for the same reason. Replacement: implement `FromInteger` and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
 msgstr ""
 
-#: manual/api/core.md:587
+#: manual/api/core.md:616
 msgid "Source map"
 msgstr ""
 
-#: manual/api/core.md:589
+#: manual/api/core.md:618
 msgid "`src/structure.mbt`: trait definitions"
 msgstr ""
 
-#: manual/api/core.md:590
+#: manual/api/core.md:619
 msgid "`src/operation.mbt`: operational traits"
 msgstr ""
 
-#: manual/api/core.md:592
+#: manual/api/core.md:621
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr ""
 
@@ -991,44 +1011,98 @@ msgid "`Float` and `Double` implement `Field` up to rounding. Their multiplicati
 msgstr ""
 
 #: manual/design/core.md:308
+msgid "Rounding ℤ into `Float` and `Double`"
+msgstr ""
+
+#: manual/design/core.md:310
+msgid "A binary floating-point format with precision $p$ and maximum exponent $e_{\\max}$ has the positive finite values"
+msgstr ""
+
+#: manual/design/core.md:317
+msgid "plus subnormals, which no non-zero integer needs because $e \\ge 0$ for $|n| \\ge 1$. `Double` has $p = 53$, $e_{\\max} = 1023$; `Float` has $p = 24$, $e_{\\max} = 127$. No map ℤ → `Double` is a ring homomorphism, since $2^{53} + 1$ is not representable, so `from_integer` is the next best thing: the IEEE 754-2019 conversion convertFromInt (§5.4.1) with the default rounding attribute roundTiesToEven (§4.3.1). Write $\\mathrm{RN}_p$ for it. It is odd, $\\mathrm{RN}_p(-n) = -\\mathrm{RN}_p(n)$, monotone, exact for $|n| \\le 2^p$, and its relative error is at most $2^{-p}$ while the result is finite."
+msgstr ""
+
+#: manual/design/core.md:327
+msgid "**The rounding step.** Let $m = |n| > 0$ with $2^{n_b - 1} \\le m < 2^{n_b}$, so $n_b$ is the bit length of $m$, and set $s = n_b - p - 1$. When $s \\ge 0$, divide with remainder,"
+msgstr ""
+
+#: manual/design/core.md:335
+msgid "when $s < 0$, put $t = m \\cdot 2^{-s}$ and $r = 0$. Either way $2^p \\le t < 2^{p+1}$: $t$ holds exactly the top $p + 1$ bits of $m$. Split off its last bit, $t = 2q + b$ with $b \\in \\{0, 1\\}$, and"
+msgstr ""
+
+#: manual/design/core.md:344
+msgid "The two neighbours of $m$ with $p$ significant bits are $q \\cdot 2^{s+1}$ and $(q + 1) \\cdot 2^{s+1}$, and round-to-nearest-even takes the upper one exactly when $f > \\tfrac12$, or $f = \\tfrac12$ and $q$ is odd. Because $r / 2^{s+1} < \\tfrac12$,"
+msgstr ""
+
+#: manual/design/core.md:354
+msgid ""
+"so the rule needs only the round bit $b$, the sticky bit $[r \\n"
+"eq 0]$ and the parity of $q$:"
+msgstr ""
+
+#: manual/design/core.md:365
+msgid "The exponent is $e = (p - 1) + (s + 1) = n_b - 1$. If rounding up carries, $q + 1 = 2^p$, the value is $2^{p-1} \\cdot 2^{s+2}$ and $e = n_b$. The implementation computes $t$ as `m >> s`, the sticky bit as `(t << s) != m`, and assembles the result from its bit pattern: sign, biased exponent $e + e_{\\max}$, and $q$ without its leading bit. It uses only `bit_length`, shifts, `to_uint64` and comparisons of `BigInt`, which behave identically on every backend, and it runs in time linear in the length of $n$."
+msgstr ""
+
+#: manual/design/core.md:374
+msgid "**Overflow.** The largest finite value is"
+msgstr ""
+
+#: manual/design/core.md:380
+msgid "Its significand $2^p - 1$ is odd, so the midpoint between $\\Omega$ and $2^{e_{\\max}+1}$, namely $2^{e_{\\max}+1} - 2^{e_{\\max}-p}$, rounds up to $2^{e_{\\max}+1}$, which does not fit. Following §7.4, an overflowing result under roundTiesToEven is $\\pm\\infty$ with the sign of $n$:"
+msgstr ""
+
+#: manual/design/core.md:389
+msgid "that is $|n| \\ge 2^{1024} - 2^{970}$ for `Double` and $|n| \\ge 2^{128} - 2^{103}$ for `Float`. The integer just below each threshold still rounds to $\\Omega$."
+msgstr ""
+
+#: manual/design/core.md:393
+msgid "**Why `Float` is rounded once.** Rounding to `Double` and then to `Float` is not $\\mathrm{RN}_{24}$. Take $n = 2^{53} + 2^{29} + 1$. At 53 bits the spacing is $2$, so $n$ is halfway between $2^{53} + 2^{29}$ and $2^{53} + 2^{29} + 2$, and the tie goes to the even significand, $2^{53} + 2^{29}$. That value is exactly halfway between the `Float` neighbours $2^{53}$ and $2^{53} + 2^{30}$, and the second rounding goes to the even one, $2^{53}$. But $n$ itself lies above that midpoint, so $\\mathrm{RN}_{24}(n) = 2^{53} + 2^{30}$. `Float` therefore runs the same rounding step with $p = 24$ directly."
+msgstr ""
+
+#: manual/design/core.md:403
+msgid "**Why not through a decimal string.** Earlier versions printed the `BigInt` in decimal and parsed the result as a `Double`. That is correctly rounded in range, but the parser rejects values at or above the overflow threshold, so the conversion aborted instead of returning $\\pm\\infty$; the decimal conversion costs time quadratic in the length on some backends; and `Float` was rounded twice."
+msgstr ""
+
+#: manual/design/core.md:410
 #: manual/design/hom.md:143
 msgid "Alternatives rejected"
 msgstr ""
 
-#: manual/design/core.md:310
+#: manual/design/core.md:412
 msgid "A two-parameter conversion trait `Into[S, R]`: MoonBit traits have only `Self`, and the factorization through ℤ makes it unnecessary."
 msgstr ""
 
-#: manual/design/core.md:312
+#: manual/design/core.md:414
 msgid "One broad \"number\" trait: it would hide the difference between ℤ, ℤ/2^k, approximate reals and fields, which are exactly the differences generic code has to respect."
 msgstr ""
 
-#: manual/design/core.md:315
+#: manual/design/core.md:417
 msgid "`NatHomomorphism` and `IntegralHomomorphism` as the conversion interface: they promised a homomorphism that a fixed-width source cannot give. They remain only as deprecated traits."
 msgstr ""
 
-#: manual/design/core.md:318
+#: manual/design/core.md:420
 msgid "A separate division-ring trait: no shipped type needs it, and code that must work without commutativity can ask for `Ring + Inverse + Div`."
 msgstr ""
 
-#: manual/design/core.md:321
+#: manual/design/core.md:423
 #: manual/design/hom.md:159
 msgid "Boundaries"
 msgstr ""
 
-#: manual/design/core.md:323
+#: manual/design/core.md:425
 msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
 msgstr ""
 
-#: manual/design/core.md:325
+#: manual/design/core.md:427
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr ""
 
-#: manual/design/core.md:327
+#: manual/design/core.md:429
 msgid "It does not check laws at compile time. The laws of every structural trait, including the commutativity of `Field`, are contracts on the implementor, tested with the tools of the [hom API](../api/hom.md)."
 msgstr ""
 
-#: manual/design/core.md:330
+#: manual/design/core.md:432
 msgid "It does not model an arbitrary-precision ℕ: such a type is not a quotient of ℤ, so it cannot be `Integral`."
 msgstr ""
 
@@ -1609,31 +1683,35 @@ msgid "`Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` return
 msgstr ""
 
 #: manual/tutorial/core.md:237
-msgid "Unsigned integers are not `Ring`: generic code that negates cannot take `UInt`."
-msgstr ""
-
-#: manual/tutorial/core.md:239
-msgid "`lift_to` converts the wrapped value. Overflow that happened before the call is not undone."
+msgid "Converting a huge integer into `Float` or `Double` with `from_integer` or `lift_to` gives an infinity, not an error: anything from about $3.4 \\times 10^{38}$ for `Float` and $1.8 \\times 10^{308}$ for `Double`. Check the result with `is_inf` when the input can be that large."
 msgstr ""
 
 #: manual/tutorial/core.md:241
+msgid "Unsigned integers are not `Ring`: generic code that negates cannot take `UInt`."
+msgstr ""
+
+#: manual/tutorial/core.md:243
+msgid "`lift_to` converts the wrapped value. Overflow that happened before the call is not undone."
+msgstr ""
+
+#: manual/tutorial/core.md:245
 msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHomomorphism` and `IntegralHomomorphism`."
 msgstr ""
 
-#: manual/tutorial/core.md:244
+#: manual/tutorial/core.md:248
 #: manual/tutorial/hom.md:201
 msgid "Next steps"
 msgstr ""
 
-#: manual/tutorial/core.md:246
+#: manual/tutorial/core.md:250
 msgid "The [core API](../api/core.md) lists every trait, its laws and the shipped instances."
 msgstr ""
 
-#: manual/tutorial/core.md:248
+#: manual/tutorial/core.md:252
 msgid "The [core design](../design/core.md) derives why conversions factor through ℤ and why `Field` must be commutative."
 msgstr ""
 
-#: manual/tutorial/core.md:250
+#: manual/tutorial/core.md:254
 msgid "The [hom tutorial](hom.md) checks conversions and other maps with certificates."
 msgstr ""
 

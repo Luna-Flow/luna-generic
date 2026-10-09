@@ -185,8 +185,8 @@ msgid "Precondition: $n \\ge 0$. The result must be $n \\cdot 1 = 1 + \\dots + 1
 msgstr "前提：$n \\ge 0$。结果必须是 $n \\cdot 1 = 1 + \\dots + 1$（共 $n$ 项），因此："
 
 #: manual/api/core.md:408
-msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value."
-msgstr "定宽整数按模 $2^k$ 约化；`Float` 与 `Double` 舍入到最近的值。"
+msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value, ties to even, as described under `FromInteger` below."
+msgstr "定宽整数按模 $2^k$ 约化；`Float` 与 `Double` 舍入到最近的值，平局取偶，详见下文 `FromInteger`。"
 
 #: manual/api/core.md:413
 msgid "`FromInteger::from_integer(n)` is the unique ring homomorphism ℤ → `Self`, with the integer given as a `BigInt`."
@@ -196,133 +196,153 @@ msgstr "`FromInteger::from_integer(n)` 是唯一的环同态 ℤ → `Self`，�
 msgid "It satisfies the laws of `from_natural` on all of ℤ and must agree with `from_natural` on non-negative arguments. It is defined for every integer, also on types without negation: on an unsigned type, `from_integer(-1)` is $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width integers, rounding for `Float` and `Double`."
 msgstr "它在整个 ℤ 上满足 `from_natural` 的定律，并且必须在非负参数上与 `from_natural` 一致。它对每个整数都有定义，在没有取负运算的类型上也是如此：在无符号类型上，`from_integer(-1)` 是 $2^k - 1$。对 `BigInt` 精确，对定宽整数按模 $2^k$ 约化，对 `Float` 与 `Double` 舍入。"
 
+#: manual/api/core.md:428
+msgid "For `Float` and `Double`, `from_integer(n)` is the IEEE 754 conversion convertFromInt: $n$ rounded to the nearest value with $p$ significant bits, $p = 24$ for `Float` and $p = 53$ for `Double`, ties to the even significand. Integers with $|n| \\le 2^p$ are exact. When the rounded value is larger than the largest finite number, the result is $\\pm\\infty$; the conversion never aborts:"
+msgstr "对 `Float` 与 `Double`，`from_integer(n)` 是 IEEE 754 的 convertFromInt 转换：把 $n$ 舍入到最近的、具有 $p$ 位有效数字的值，`Float` 的 $p = 24$，`Double` 的 $p = 53$，平局时取有效数为偶数的那个。$|n| \\le 2^p$ 的整数精确转换。舍入后的值超过最大有限数时，结果为 $\\pm\\infty$；转换从不 abort："
+
+#: manual/api/core.md:435
+msgid "Target"
+msgstr "目标类型"
+
+#: manual/api/core.md:435
+msgid "Exact up to"
+msgstr "精确范围"
+
+#: manual/api/core.md:435
+msgid "Result is $\\pm\\infty$ when"
+msgstr "结果为 $\\pm\\infty$ 的条件"
+
 #: manual/api/core.md:440
+msgid "Zero gives $+0$. The [core design](../design/core.md) derives the rounding rule and the thresholds."
+msgstr "零转换为 $+0$。[core 设计](../design/core.md)推导了舍入规则和这些阈值。"
+
+#: manual/api/core.md:468
 msgid "To give your own number type these conversions, implement both traits; the [core tutorial](../tutorial/core.md) shows how."
 msgstr "要让你自己的数值类型具备这些转换，请实现这两个 trait；[core 教程](../tutorial/core.md) 演示了做法。"
 
-#: manual/api/core.md:443
+#: manual/api/core.md:471
 msgid "Integer types"
 msgstr "整数类型"
 
-#: manual/api/core.md:447
+#: manual/api/core.md:475
 msgid "`Integral` is an integer type: ℤ itself, or a quotient ℤ/2^k such as a fixed-width integer."
 msgstr "`Integral` 是整数类型：ℤ 本身，或者商 ℤ/2^k，例如定宽整数。"
 
-#: manual/api/core.md:456
+#: manual/api/core.md:484
 msgid "`normalize(x)` returns the representative of `x` as a `BigInt`. The law is that `normalize` is a section of the canonical map:"
 msgstr "`normalize(x)` 以 `BigInt` 返回 `x` 的代表元。其定律是 `normalize` 为典范映射的截面："
 
-#: manual/api/core.md:463
+#: manual/api/core.md:491
 msgid "The shipped instances pick $[-2^{k-1}, 2^{k-1})$ for signed types, $[0, 2^k)$ for unsigned ones, and the identity for `BigInt`. `normalize` is a homomorphism only for `BigInt`; on fixed-width types it is not, because their arithmetic wraps. `Section::of_integral` packages the pair as a certificate that can be checked."
 msgstr "随包实例的选择为：有符号类型取 $[-2^{k-1}, 2^{k-1})$，无符号类型取 $[0, 2^k)$，`BigInt` 取恒等映射。`normalize` 只对 `BigInt` 是同态；在定宽类型上不是，因为它们的运算会回绕。`Section::of_integral` 把这一对映射打包成可检查的证书。"
 
-#: manual/api/core.md:479
+#: manual/api/core.md:507
 msgid "`Nat` is an `Integral` type whose representatives are non-negative: $\\operatorname{normalize}(x) \\ge 0$ for every `x`."
 msgstr "`Nat` 是代表元非负的 `Integral` 类型：对每个 `x` 有 $\\operatorname{normalize}(x) \\ge 0$。"
 
-#: manual/api/core.md:487
+#: manual/api/core.md:515
 msgid "Implemented by `UInt`, `UInt16` and `UInt64`. An arbitrary-precision ℕ is not a quotient of ℤ and therefore cannot be `Integral`; see the [core design](../design/core.md)."
 msgstr "由 `UInt`、`UInt16` 和 `UInt64` 实现。任意精度的 ℕ 不是 ℤ 的商，因此不能是 `Integral`；见 [core 设计](../design/core.md)。"
 
-#: manual/api/core.md:503
+#: manual/api/core.md:531
 msgid "`lift_to(x)` lifts an integral value to its representative and maps it into any `FromInteger` target."
 msgstr "`lift_to(x)` 把整数值提升为其代表元，再映入任意 `FromInteger` 目标。"
 
-#: manual/api/core.md:510
+#: manual/api/core.md:538
 msgid "It is `R::from_integer(x.normalize())`. It is a function, not a homomorphism: it converts the value `x` holds now, so a sum that has already wrapped in `S` stays wrapped. It preserves the operations exactly when the modulus of `R` divides that of `S`, as for `Int64 -> Int`; the [core design](../design/core.md) derives this condition."
 msgstr "它就是 `R::from_integer(x.normalize())`。它是函数而非同态：它转换的是 `x` 当前持有的值，所以已在 `S` 中回绕的和依旧是回绕后的值。当且仅当 `R` 的模数整除 `S` 的模数时它保持运算，例如 `Int64 -> Int`；[core 设计](../design/core.md) 推导了这一条件。"
 
-#: manual/api/core.md:527
+#: manual/api/core.md:555
 msgid "Shipped instances"
 msgstr "内置实例"
 
-#: manual/api/core.md:529
+#: manual/api/core.md:557
 msgid "Type"
 msgstr "类型"
 
-#: manual/api/core.md:529
+#: manual/api/core.md:557
 msgid "Traits"
 msgstr "Trait"
 
-#: manual/api/core.md:533
+#: manual/api/core.md:561
 msgid "as the signed integers, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
 msgstr "与有符号整数相同，另加已弃用的 `NatHomomorphism` 与 `IntegralHomomorphism`"
 
-#: manual/api/core.md:534
+#: manual/api/core.md:562
 msgid "`AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Num`, `Zero`, `One`, `Inverse`, `FromNat`, `FromInteger`, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
 msgstr "`AddMonoid`、`MulMonoid`、`AddGroup`、`MulGroup`、`Semiring`、`Ring`、`Field`、`Num`、`Zero`、`One`、`Inverse`、`FromNat`、`FromInteger`，另加已弃用的 `NatHomomorphism` 与 `IntegralHomomorphism`"
 
-#: manual/api/core.md:536
+#: manual/api/core.md:564
 msgid "`Byte` implements none of them."
 msgstr "`Byte` 不实现其中任何一个。"
 
-#: manual/api/core.md:538
+#: manual/api/core.md:566
 #: manual/api/hom.md:646
 msgid "Semantic notes"
 msgstr "语义说明"
 
-#: manual/api/core.md:540
+#: manual/api/core.md:568
 msgid "Fixed-width integers are ℤ/2^k. Their `from_integer` reduces modulo 2^k, and `normalize` picks the representative in the type's range: `[-2^(k-1), 2^(k-1))` for signed types, `[0, 2^k)` for unsigned ones."
 msgstr "定宽整数是 ℤ/2^k。它们的 `from_integer` 按模 2^k 约化，`normalize` 选取类型范围内的代表元：有符号类型为 `[-2^(k-1), 2^(k-1))`，无符号类型为 `[0, 2^k)`。"
 
-#: manual/api/core.md:543
+#: manual/api/core.md:571
 msgid "`BigInt` is ℤ itself: `from_integer` and `normalize` are the identity."
 msgstr "`BigInt` 就是 ℤ 本身：`from_integer` 与 `normalize` 都是恒等映射。"
 
-#: manual/api/core.md:544
+#: manual/api/core.md:572
 msgid "`lift_to` is a homomorphism exactly when the target modulus divides the source modulus, as for `Int64 -> Int`. Into `BigInt`, `Float` or `Double` it is not one for fixed-width sources, because their arithmetic wraps."
 msgstr "`lift_to` 当且仅当目标模数整除源模数时是同态，例如 `Int64 -> Int`。对定宽源而言，映到 `BigInt`、`Float` 或 `Double` 都不是同态，因为源侧运算会回绕。"
 
-#: manual/api/core.md:547
+#: manual/api/core.md:575
 msgid "`Nat` covers the integral types whose representatives are non-negative. A true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope."
 msgstr "`Nat` 涵盖代表元非负的整数类型。真正的任意精度 ℕ 不是 ℤ 的商，不在本包范围内。"
 
-#: manual/api/core.md:549
+#: manual/api/core.md:577
 msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
 msgstr "无符号整数实例止步于 `Semiring`，不会伪装成带加法逆元的结构。"
 
-#: manual/api/core.md:551
-msgid "`Float` and `Double` round in `from_natural` and `from_integer`, so very large values are approximate."
-msgstr "`Float` 与 `Double` 在 `from_natural` 和 `from_integer` 中会舍入，因此非常大的值是近似的。"
+#: manual/api/core.md:579
+msgid "`Float` and `Double` round to nearest, ties to even, in `from_natural` and `from_integer`, so very large values are approximate, and values beyond the largest finite number become $\\pm\\infty$ instead of aborting."
+msgstr "`Float` 与 `Double` 在 `from_natural` 和 `from_integer` 中舍入到最近值、平局取偶，因此非常大的值是近似的，超出最大有限数的值变为 $\\pm\\infty$，而不会 abort。"
 
-#: manual/api/core.md:553
+#: manual/api/core.md:582
 msgid "`Field` requires commutative multiplication. The compiler cannot check it, so it is the implementor's responsibility."
 msgstr "`Field` 要求乘法可交换。编译器无法检查这一点，因此由实现者负责。"
 
-#: manual/api/core.md:556
+#: manual/api/core.md:585
 #: manual/api/hom.md:660
 msgid "Deprecated"
 msgstr "已弃用"
 
-#: manual/api/core.md:560
+#: manual/api/core.md:589
 msgid "`NatHomomorphism::from_nat(x)` lifts a `Nat` value to its representative and maps it into `Self`."
 msgstr "`NatHomomorphism::from_nat(x)` 把 `Nat` 值提升为其代表元，再映入 `Self`。"
 
-#: manual/api/core.md:569
+#: manual/api/core.md:598
 msgid "Deprecated because the composite is not a homomorphism for fixed-width sources. Replacement: implement `FromNat` and `FromInteger`, and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
 msgstr "已弃用，因为对定宽源而言这一复合不是同态。替代方案：实现 `FromNat` 与 `FromInteger`，并调用 `lift_to(x)`。`BigInt`、`Float` 和 `Double` 仍实现它。"
 
-#: manual/api/core.md:575
+#: manual/api/core.md:604
 msgid "`IntegralHomomorphism::from_integral(x)` lifts an `Integral` value to its representative and maps it into `Self`."
 msgstr "`IntegralHomomorphism::from_integral(x)` 把 `Integral` 值提升为其代表元，再映入 `Self`。"
 
-#: manual/api/core.md:584
+#: manual/api/core.md:613
 msgid "Deprecated for the same reason. Replacement: implement `FromInteger` and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
 msgstr "因同样的理由弃用。替代方案：实现 `FromInteger` 并调用 `lift_to(x)`。`BigInt`、`Float` 和 `Double` 仍实现它。"
 
-#: manual/api/core.md:587
+#: manual/api/core.md:616
 msgid "Source map"
 msgstr "源码入口"
 
-#: manual/api/core.md:589
+#: manual/api/core.md:618
 msgid "`src/structure.mbt`: trait definitions"
 msgstr "`src/structure.mbt`：trait 定义"
 
-#: manual/api/core.md:590
+#: manual/api/core.md:619
 msgid "`src/operation.mbt`: operational traits"
 msgstr "`src/operation.mbt`：基础操作 traits"
 
-#: manual/api/core.md:592
+#: manual/api/core.md:621
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：默认实例"
 
@@ -998,44 +1018,100 @@ msgid "`Float` and `Double` implement `Field` up to rounding. Their multiplicati
 msgstr "`Float` 与 `Double` 在舍入意义下实现 `Field`。它们的乘法严格可交换，$\\mathrm{fl}(ab) = \\mathrm{fl}(ba)$，因为 IEEE 754 对精确乘积舍入，而精确乘积与顺序无关。结合律与分配律只近似成立，且 `0` 没有逆元：`inv` 在其上中止。"
 
 #: manual/design/core.md:308
+msgid "Rounding ℤ into `Float` and `Double`"
+msgstr "把 ℤ 舍入到 `Float` 与 `Double`"
+
+#: manual/design/core.md:310
+msgid "A binary floating-point format with precision $p$ and maximum exponent $e_{\\max}$ has the positive finite values"
+msgstr "精度为 $p$、最大指数为 $e_{\\max}$ 的二进制浮点格式，其正的有限值为"
+
+#: manual/design/core.md:317
+msgid "plus subnormals, which no non-zero integer needs because $e \\ge 0$ for $|n| \\ge 1$. `Double` has $p = 53$, $e_{\\max} = 1023$; `Float` has $p = 24$, $e_{\\max} = 127$. No map ℤ → `Double` is a ring homomorphism, since $2^{53} + 1$ is not representable, so `from_integer` is the next best thing: the IEEE 754-2019 conversion convertFromInt (§5.4.1) with the default rounding attribute roundTiesToEven (§4.3.1). Write $\\mathrm{RN}_p$ for it. It is odd, $\\mathrm{RN}_p(-n) = -\\mathrm{RN}_p(n)$, monotone, exact for $|n| \\le 2^p$, and its relative error is at most $2^{-p}$ while the result is finite."
+msgstr "另有次正规数，但任何非零整数都用不到它们，因为 $|n| \\ge 1$ 时 $e \\ge 0$。`Double` 的 $p = 53$、$e_{\\max} = 1023$；`Float` 的 $p = 24$、$e_{\\max} = 127$。由于 $2^{53} + 1$ 不可表示，ℤ → `Double` 不存在环同态，所以 `from_integer` 取次优的选择：IEEE 754-2019 的 convertFromInt 转换（§5.4.1），使用默认舍入属性 roundTiesToEven（§4.3.1）。记它为 $\\mathrm{RN}_p$。它是奇函数，$\\mathrm{RN}_p(-n) = -\\mathrm{RN}_p(n)$，单调，在 $|n| \\le 2^p$ 上精确，并且只要结果有限，相对误差至多为 $2^{-p}$。"
+
+#: manual/design/core.md:327
+msgid "**The rounding step.** Let $m = |n| > 0$ with $2^{n_b - 1} \\le m < 2^{n_b}$, so $n_b$ is the bit length of $m$, and set $s = n_b - p - 1$. When $s \\ge 0$, divide with remainder,"
+msgstr "**舍入步骤。** 令 $m = |n| > 0$，满足 $2^{n_b - 1} \\le m < 2^{n_b}$，即 $n_b$ 是 $m$ 的位长，并令 $s = n_b - p - 1$。当 $s \\ge 0$ 时做带余除法，"
+
+#: manual/design/core.md:335
+msgid "when $s < 0$, put $t = m \\cdot 2^{-s}$ and $r = 0$. Either way $2^p \\le t < 2^{p+1}$: $t$ holds exactly the top $p + 1$ bits of $m$. Split off its last bit, $t = 2q + b$ with $b \\in \\{0, 1\\}$, and"
+msgstr "当 $s < 0$ 时，令 $t = m \\cdot 2^{-s}$、$r = 0$。两种情形下都有 $2^p \\le t < 2^{p+1}$：$t$ 恰好是 $m$ 的最高 $p + 1$ 位。拆出它的最低位，$t = 2q + b$，$b \\in \\{0, 1\\}$，于是"
+
+#: manual/design/core.md:344
+msgid "The two neighbours of $m$ with $p$ significant bits are $q \\cdot 2^{s+1}$ and $(q + 1) \\cdot 2^{s+1}$, and round-to-nearest-even takes the upper one exactly when $f > \\tfrac12$, or $f = \\tfrac12$ and $q$ is odd. Because $r / 2^{s+1} < \\tfrac12$,"
+msgstr "$m$ 两侧具有 $p$ 位有效数字的相邻值是 $q \\cdot 2^{s+1}$ 与 $(q + 1) \\cdot 2^{s+1}$；最近偶数舍入恰在 $f > \\tfrac12$，或 $f = \\tfrac12$ 且 $q$ 为奇数时取较大者。由于 $r / 2^{s+1} < \\tfrac12$，"
+
+#: manual/design/core.md:354
+msgid ""
+"so the rule needs only the round bit $b$, the sticky bit $[r \\n"
+"eq 0]$ and the parity of $q$:"
+msgstr ""
+"所以该规则只需要舍入位 $b$、粘滞位 $[r \\n"
+"eq 0]$ 和 $q$ 的奇偶性："
+
+#: manual/design/core.md:365
+msgid "The exponent is $e = (p - 1) + (s + 1) = n_b - 1$. If rounding up carries, $q + 1 = 2^p$, the value is $2^{p-1} \\cdot 2^{s+2}$ and $e = n_b$. The implementation computes $t$ as `m >> s`, the sticky bit as `(t << s) != m`, and assembles the result from its bit pattern: sign, biased exponent $e + e_{\\max}$, and $q$ without its leading bit. It uses only `bit_length`, shifts, `to_uint64` and comparisons of `BigInt`, which behave identically on every backend, and it runs in time linear in the length of $n$."
+msgstr "指数为 $e = (p - 1) + (s + 1) = n_b - 1$。若向上舍入产生进位，即 $q + 1 = 2^p$，则值为 $2^{p-1} \\cdot 2^{s+2}$，且 $e = n_b$。实现用 `m >> s` 计算 $t$，用 `(t << s) != m` 计算粘滞位，再由位模式拼出结果：符号、带偏置的指数 $e + e_{\\max}$，以及去掉最高位的 $q$。它只用到 `BigInt` 的 `bit_length`、移位、`to_uint64` 和比较，这些在所有后端上行为一致，运行时间与 $n$ 的长度成线性。"
+
+#: manual/design/core.md:374
+msgid "**Overflow.** The largest finite value is"
+msgstr "**溢出。** 最大的有限值是"
+
+#: manual/design/core.md:380
+msgid "Its significand $2^p - 1$ is odd, so the midpoint between $\\Omega$ and $2^{e_{\\max}+1}$, namely $2^{e_{\\max}+1} - 2^{e_{\\max}-p}$, rounds up to $2^{e_{\\max}+1}$, which does not fit. Following §7.4, an overflowing result under roundTiesToEven is $\\pm\\infty$ with the sign of $n$:"
+msgstr "它的有效数 $2^p - 1$ 是奇数，所以 $\\Omega$ 与 $2^{e_{\\max}+1}$ 的中点 $2^{e_{\\max}+1} - 2^{e_{\\max}-p}$ 向上舍入到 $2^{e_{\\max}+1}$，而后者无法表示。按照 §7.4，roundTiesToEven 下溢出的结果是与 $n$ 同号的 $\\pm\\infty$："
+
+#: manual/design/core.md:389
+msgid "that is $|n| \\ge 2^{1024} - 2^{970}$ for `Double` and $|n| \\ge 2^{128} - 2^{103}$ for `Float`. The integer just below each threshold still rounds to $\\Omega$."
+msgstr "即 `Double` 为 $|n| \\ge 2^{1024} - 2^{970}$，`Float` 为 $|n| \\ge 2^{128} - 2^{103}$。紧挨在各阈值下方的整数仍舍入到 $\\Omega$。"
+
+#: manual/design/core.md:393
+msgid "**Why `Float` is rounded once.** Rounding to `Double` and then to `Float` is not $\\mathrm{RN}_{24}$. Take $n = 2^{53} + 2^{29} + 1$. At 53 bits the spacing is $2$, so $n$ is halfway between $2^{53} + 2^{29}$ and $2^{53} + 2^{29} + 2$, and the tie goes to the even significand, $2^{53} + 2^{29}$. That value is exactly halfway between the `Float` neighbours $2^{53}$ and $2^{53} + 2^{30}$, and the second rounding goes to the even one, $2^{53}$. But $n$ itself lies above that midpoint, so $\\mathrm{RN}_{24}(n) = 2^{53} + 2^{30}$. `Float` therefore runs the same rounding step with $p = 24$ directly."
+msgstr "**为什么 `Float` 只舍入一次。** 先舍入到 `Double` 再舍入到 `Float` 并不等于 $\\mathrm{RN}_{24}$。取 $n = 2^{53} + 2^{29} + 1$。在 53 位下间距为 $2$，所以 $n$ 恰在 $2^{53} + 2^{29}$ 与 $2^{53} + 2^{29} + 2$ 的中点，平局取有效数为偶数者，得 $2^{53} + 2^{29}$。这个值又恰在 `Float` 的相邻值 $2^{53}$ 与 $2^{53} + 2^{30}$ 的中点，第二次舍入取偶数者 $2^{53}$。但 $n$ 本身位于该中点之上，所以 $\\mathrm{RN}_{24}(n) = 2^{53} + 2^{30}$。因此 `Float` 直接以 $p = 24$ 执行同一舍入步骤。"
+
+#: manual/design/core.md:403
+msgid "**Why not through a decimal string.** Earlier versions printed the `BigInt` in decimal and parsed the result as a `Double`. That is correctly rounded in range, but the parser rejects values at or above the overflow threshold, so the conversion aborted instead of returning $\\pm\\infty$; the decimal conversion costs time quadratic in the length on some backends; and `Float` was rounded twice."
+msgstr "**为什么不经过十进制字符串。** 早期版本把 `BigInt` 打印成十进制，再把结果解析为 `Double`。这在有限范围内是正确舍入的，但解析器拒绝达到或超过溢出阈值的值，于是转换会 abort，而不是返回 $\\pm\\infty$；十进制转换在部分后端上耗时与长度成平方关系；而且 `Float` 被舍入了两次。"
+
+#: manual/design/core.md:410
 #: manual/design/hom.md:143
 msgid "Alternatives rejected"
 msgstr "被否决的方案"
 
-#: manual/design/core.md:310
+#: manual/design/core.md:412
 msgid "A two-parameter conversion trait `Into[S, R]`: MoonBit traits have only `Self`, and the factorization through ℤ makes it unnecessary."
 msgstr "双参数转换 trait `Into[S, R]`：MoonBit 的 trait 只有 `Self`，而经由 ℤ 的分解使它没有必要。"
 
-#: manual/design/core.md:312
+#: manual/design/core.md:414
 msgid "One broad \"number\" trait: it would hide the difference between ℤ, ℤ/2^k, approximate reals and fields, which are exactly the differences generic code has to respect."
 msgstr "一个宽泛的“数”trait：它会掩盖 ℤ、ℤ/2^k、近似实数与域之间的差异，而这些恰恰是泛型代码必须尊重的差异。"
 
-#: manual/design/core.md:315
+#: manual/design/core.md:417
 msgid "`NatHomomorphism` and `IntegralHomomorphism` as the conversion interface: they promised a homomorphism that a fixed-width source cannot give. They remain only as deprecated traits."
 msgstr "把 `NatHomomorphism` 与 `IntegralHomomorphism` 作为转换接口：它们承诺了定宽源无法给出的同态。它们仅作为已弃用的 trait 保留。"
 
-#: manual/design/core.md:318
+#: manual/design/core.md:420
 msgid "A separate division-ring trait: no shipped type needs it, and code that must work without commutativity can ask for `Ring + Inverse + Div`."
 msgstr "单独的除环 trait：没有随包类型需要它，而必须在无交换律下工作的代码可以要求 `Ring + Inverse + Div`。"
 
-#: manual/design/core.md:321
+#: manual/design/core.md:423
 #: manual/design/hom.md:159
 msgid "Boundaries"
 msgstr "边界"
 
-#: manual/design/core.md:323
+#: manual/design/core.md:425
 msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
 msgstr "本包不定义矩阵、复数、多项式、解析函数或数值算法。"
 
-#: manual/design/core.md:325
+#: manual/design/core.md:427
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr "它不会刻意抹平精确数值系统与近似数值系统之间的语义差异。"
 
-#: manual/design/core.md:327
+#: manual/design/core.md:429
 msgid "It does not check laws at compile time. The laws of every structural trait, including the commutativity of `Field`, are contracts on the implementor, tested with the tools of the [hom API](../api/hom.md)."
 msgstr "它不在编译期检查定律。每个结构 trait 的定律（包括 `Field` 的交换律）都是对实现者的契约，用 [hom API](../api/hom.md) 中的工具测试。"
 
-#: manual/design/core.md:330
+#: manual/design/core.md:432
 msgid "It does not model an arbitrary-precision ℕ: such a type is not a quotient of ℤ, so it cannot be `Integral`."
 msgstr "它不建模任意精度的 ℕ：这样的类型不是 ℤ 的商，因此不能是 `Integral`。"
 
@@ -1616,31 +1692,35 @@ msgid "`Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` return
 msgstr "对 `Float` 与 `Double`，`Inverse::inv` 在 `0.0` 上中止，而 `/` 返回无穷大。求逆前先检查是否为零。"
 
 #: manual/tutorial/core.md:237
+msgid "Converting a huge integer into `Float` or `Double` with `from_integer` or `lift_to` gives an infinity, not an error: anything from about $3.4 \\times 10^{38}$ for `Float` and $1.8 \\times 10^{308}$ for `Double`. Check the result with `is_inf` when the input can be that large."
+msgstr "用 `from_integer` 或 `lift_to` 把极大的整数转换为 `Float` 或 `Double`，得到的是无穷大而不是错误：`Float` 约从 $3.4 \\times 10^{38}$ 起，`Double` 约从 $1.8 \\times 10^{308}$ 起。输入可能这么大时，用 `is_inf` 检查结果。"
+
+#: manual/tutorial/core.md:241
 msgid "Unsigned integers are not `Ring`: generic code that negates cannot take `UInt`."
 msgstr "无符号整数不是 `Ring`：会取负的泛型代码不能接受 `UInt`。"
 
-#: manual/tutorial/core.md:239
+#: manual/tutorial/core.md:243
 msgid "`lift_to` converts the wrapped value. Overflow that happened before the call is not undone."
 msgstr "`lift_to` 转换的是回绕后的值。调用之前发生的溢出不会被撤销。"
 
-#: manual/tutorial/core.md:241
+#: manual/tutorial/core.md:245
 msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHomomorphism` and `IntegralHomomorphism`."
 msgstr "优先使用 `lift_to`、`FromNat` 与 `FromInteger`，而不是已废弃的 `NatHomomorphism` 与 `IntegralHomomorphism`。"
 
-#: manual/tutorial/core.md:244
+#: manual/tutorial/core.md:248
 #: manual/tutorial/hom.md:201
 msgid "Next steps"
 msgstr "下一步"
 
-#: manual/tutorial/core.md:246
+#: manual/tutorial/core.md:250
 msgid "The [core API](../api/core.md) lists every trait, its laws and the shipped instances."
 msgstr "[core API](../api/core.md) 列出了每个 trait、它的定律以及随包实例。"
 
-#: manual/tutorial/core.md:248
+#: manual/tutorial/core.md:252
 msgid "The [core design](../design/core.md) derives why conversions factor through ℤ and why `Field` must be commutative."
 msgstr "[core 设计](../design/core.md) 推导了为什么转换经由 ℤ 分解，以及为什么 `Field` 必须可交换。"
 
-#: manual/tutorial/core.md:250
+#: manual/tutorial/core.md:254
 msgid "The [hom tutorial](hom.md) checks conversions and other maps with certificates."
 msgstr "[hom 教程](hom.md) 用证书检查转换和其他映射。"
 
