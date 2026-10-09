@@ -44,13 +44,6 @@ pub impl NatHomomorphism for Double
 pub impl IntegralHomomorphism for Double
 
 ///|
-fn double_from_bigint(a : BigInt) -> Double {
-  @string.from_str(BigInt::to_string(a)) catch {
-    _ => abort("BigInt decimal conversion failed")
-  }
-}
-
-///|
 pub impl NatHomomorphism for Double with fn[S : Nat] from_nat(a : S) -> Double {
   double_from_bigint(Integral::normalize(a))
 }

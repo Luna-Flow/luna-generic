@@ -1,7 +1,5 @@
 import {
-  "moonbitlang/core/string",
-}
-
-import {
   "moonbitlang/core/test",
+  "moonbitlang/core/double",
+  "moonbitlang/core/float",
 } for "test"
