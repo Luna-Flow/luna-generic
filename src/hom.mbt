@@ -54,9 +54,23 @@ pub struct Algebra[S, A] {
 /// passed to `check` for the same `S` and `A` must interpret the operations
 /// the same way. `Hom::then` chains certificates through the middle carrier,
 /// so two different algebras on it (say `max` and `min` both tagged `S`)
-/// would compose into a map that preserves neither.
+/// would compose into a map that preserves neither. Operation arities must be
+/// nonnegative.
 pub fn[S, A] Algebra::make(ops : Array[Op[A]]) -> Algebra[S, A] {
+  guard valid_operation_arities(ops) else {
+    abort("Algebra: operation arity must be nonnegative")
+  }
   { ops, }
+}
+
+///|
+fn[A] valid_operation_arities(ops : Array[Op[A]]) -> Bool {
+  for op in ops {
+    if op.arity < 0 {
+      return false
+    }
+  }
+  true
 }
 
 ///|

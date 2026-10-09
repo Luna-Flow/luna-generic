@@ -194,6 +194,14 @@ test "panic algebras with different signatures are rejected" {
 }
 
 ///|
+test "panic negative operation arity is rejected at construction" {
+  let invalid : Algebra[MaxSig, Int] = Algebra::make([
+    { name: "invalid", arity: -1, eval: _ => 0, },
+  ])
+  ignore(invalid)
+}
+
+///|
 test "custom signatures through Algebra::make" {
   let max_src : Algebra[MaxSig, Int] = Algebra::make([
     {
