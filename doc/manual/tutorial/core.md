@@ -234,6 +234,10 @@ laws, listed on the [core API](../api/core.md).
   the same abstract surface as exact types.
 - `Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` returns
   an infinity. Test for zero before inverting.
+- Converting a huge integer into `Float` or `Double` with `from_integer` or
+  `lift_to` gives an infinity, not an error: anything from about $3.4 \times
+  10^{38}$ for `Float` and $1.8 \times 10^{308}$ for `Double`. Check the
+  result with `is_inf` when the input can be that large.
 - Unsigned integers are not `Ring`: generic code that negates cannot take
   `UInt`.
 - `lift_to` converts the wrapped value. Overflow that happened before the

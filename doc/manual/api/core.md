@@ -406,7 +406,7 @@ $$
 $$
 
 Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the
-nearest value.
+nearest value, ties to even, as described under `FromInteger` below.
 
 ### `FromInteger`
 
@@ -425,6 +425,21 @@ also on types without negation: on an unsigned type, `from_integer(-1)` is
 $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width
 integers, rounding for `Float` and `Double`.
 
+For `Float` and `Double`, `from_integer(n)` is the IEEE 754 conversion
+convertFromInt: $n$ rounded to the nearest value with $p$ significant bits,
+$p = 24$ for `Float` and $p = 53$ for `Double`, ties to the even
+significand. Integers with $|n| \le 2^p$ are exact. When the rounded value
+is larger than the largest finite number, the result is $\pm\infty$; the
+conversion never aborts:
+
+| Target | Exact up to | Result is $\pm\infty$ when |
+| --- | --- | --- |
+| `Float` | $\lvert n \rvert \le 2^{24}$ | $\lvert n \rvert \ge 2^{128} - 2^{103}$ |
+| `Double` | $\lvert n \rvert \le 2^{53}$ | $\lvert n \rvert \ge 2^{1024} - 2^{970}$ |
+
+Zero gives $+0$. The [core design](../design/core.md) derives the rounding
+rule and the thresholds.
+
 ```moonbit
 test "from_integer" {
   let big = BigInt::from_string("4294967301") // 2^32 + 5
@@ -434,6 +449,19 @@ test "from_integer" {
   inspect(i, content="5")
   inspect(u, content="4294967295")
   inspect(d, content="4294967301")
+}
+```
+
+```moonbit
+test "from_integer into Double rounds and overflows" {
+  let two53 = BigInt::from_int(1) << 53
+  // 2^53 + 1 lies halfway between 2^53 and 2^53 + 2; the tie goes to 2^53.
+  let tie : Double = FromInteger::from_integer(two53 + BigInt::from_int(1))
+  let huge : Double = FromInteger::from_integer(BigInt::from_int(1) << 1024)
+  let tiny : Double = FromInteger::from_integer(-(BigInt::from_int(1) << 1024))
+  inspect(tie == 9007199254740992.0, content="true")
+  inspect(huge, content="Infinity")
+  inspect(tiny, content="-Infinity")
 }
 ```
 
@@ -548,8 +576,9 @@ test "lift_to" {
   true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope.
 - Unsigned integer instances stop at `Semiring`; they do not pretend to be
   additive groups or rings.
-- `Float` and `Double` round in `from_natural` and `from_integer`, so very
-  large values are approximate.
+- `Float` and `Double` round to nearest, ties to even, in `from_natural` and
+  `from_integer`, so very large values are approximate, and values beyond the
+  largest finite number become $\pm\infty$ instead of aborting.
 - `Field` requires commutative multiplication. The compiler cannot check it,
   so it is the implementor's responsibility.
 

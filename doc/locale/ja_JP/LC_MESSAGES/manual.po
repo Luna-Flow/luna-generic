@@ -185,8 +185,8 @@ msgid "Precondition: $n \\ge 0$. The result must be $n \\cdot 1 = 1 + \\dots + 1
 msgstr "前提条件は $n \\ge 0$ です。結果は $n \\cdot 1 = 1 + \\dots + 1$（$n$ 項）でなければならないので、次が成り立ちます:"
 
 #: manual/api/core.md:408
-msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value."
-msgstr "固定幅の整数は $2^k$ を法として簡約し、`Float` と `Double` は最も近い値に丸めます。"
+msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value, ties to even, as described under `FromInteger` below."
+msgstr "固定幅の整数は $2^k$ を法として簡約し、`Float` と `Double` は最も近い値に丸めます。タイは偶数側に丸めます。詳しくは下の `FromInteger` を参照してください。"
 
 #: manual/api/core.md:413
 msgid "`FromInteger::from_integer(n)` is the unique ring homomorphism ℤ → `Self`, with the integer given as a `BigInt`."
@@ -196,133 +196,153 @@ msgstr "`FromInteger::from_integer(n)` は唯一の環準同型 ℤ → `Self` �
 msgid "It satisfies the laws of `from_natural` on all of ℤ and must agree with `from_natural` on non-negative arguments. It is defined for every integer, also on types without negation: on an unsigned type, `from_integer(-1)` is $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width integers, rounding for `Float` and `Double`."
 msgstr "ℤ 全体で `from_natural` の法則を満たし、非負の引数では `from_natural` と一致しなければなりません。符号反転を持たない型でも、すべての整数に対して定義されます。符号なし型では `from_integer(-1)` は $2^k - 1$ です。`BigInt` では厳密、固定幅の整数では $2^k$ を法とする簡約、`Float` と `Double` では丸めです。"
 
+#: manual/api/core.md:428
+msgid "For `Float` and `Double`, `from_integer(n)` is the IEEE 754 conversion convertFromInt: $n$ rounded to the nearest value with $p$ significant bits, $p = 24$ for `Float` and $p = 53$ for `Double`, ties to the even significand. Integers with $|n| \\le 2^p$ are exact. When the rounded value is larger than the largest finite number, the result is $\\pm\\infty$; the conversion never aborts:"
+msgstr "`Float` と `Double` では、`from_integer(n)` は IEEE 754 の変換 convertFromInt です。$n$ を有効桁 $p$ ビットの最も近い値に丸め（`Float` は $p = 24$、`Double` は $p = 53$）、タイは仮数が偶数になる側に丸めます。$|n| \\le 2^p$ の整数は正確に変換されます。丸めた値が最大の有限値を超える場合、結果は $\\pm\\infty$ になり、変換が abort することはありません。"
+
+#: manual/api/core.md:435
+msgid "Target"
+msgstr "変換先"
+
+#: manual/api/core.md:435
+msgid "Exact up to"
+msgstr "正確な範囲"
+
+#: manual/api/core.md:435
+msgid "Result is $\\pm\\infty$ when"
+msgstr "結果が $\\pm\\infty$ になる条件"
+
 #: manual/api/core.md:440
+msgid "Zero gives $+0$. The [core design](../design/core.md) derives the rounding rule and the thresholds."
+msgstr "ゼロは $+0$ になります。丸め規則としきい値の導出は [core の設計](../design/core.md)にあります。"
+
+#: manual/api/core.md:468
 msgid "To give your own number type these conversions, implement both traits; the [core tutorial](../tutorial/core.md) shows how."
 msgstr "独自の数値型にこれらの変換を持たせるには、両方の trait を実装します。方法は [core チュートリアル](../tutorial/core.md) にあります。"
 
-#: manual/api/core.md:443
+#: manual/api/core.md:471
 msgid "Integer types"
 msgstr "整数型"
 
-#: manual/api/core.md:447
+#: manual/api/core.md:475
 msgid "`Integral` is an integer type: ℤ itself, or a quotient ℤ/2^k such as a fixed-width integer."
 msgstr "`Integral` は整数型です。ℤ そのもの、または固定幅整数のような商 ℤ/2^k です。"
 
-#: manual/api/core.md:456
+#: manual/api/core.md:484
 msgid "`normalize(x)` returns the representative of `x` as a `BigInt`. The law is that `normalize` is a section of the canonical map:"
 msgstr "`normalize(x)` は `x` の代表元を `BigInt` として返します。法則は、`normalize` が標準写像の切断であることです:"
 
-#: manual/api/core.md:463
+#: manual/api/core.md:491
 msgid "The shipped instances pick $[-2^{k-1}, 2^{k-1})$ for signed types, $[0, 2^k)$ for unsigned ones, and the identity for `BigInt`. `normalize` is a homomorphism only for `BigInt`; on fixed-width types it is not, because their arithmetic wraps. `Section::of_integral` packages the pair as a certificate that can be checked."
 msgstr "同梱のインスタンスは、符号付き型では $[-2^{k-1}, 2^{k-1})$、符号なし型では $[0, 2^k)$、`BigInt` では恒等写像を選びます。`normalize` が準同型になるのは `BigInt` だけで、固定幅の型では演算が回り込むため準同型ではありません。`Section::of_integral` はこの組を検査できる証明書にまとめます。"
 
-#: manual/api/core.md:479
+#: manual/api/core.md:507
 msgid "`Nat` is an `Integral` type whose representatives are non-negative: $\\operatorname{normalize}(x) \\ge 0$ for every `x`."
 msgstr "`Nat` は代表元が非負の `Integral` 型です。すべての `x` について $\\operatorname{normalize}(x) \\ge 0$ です。"
 
-#: manual/api/core.md:487
+#: manual/api/core.md:515
 msgid "Implemented by `UInt`, `UInt16` and `UInt64`. An arbitrary-precision ℕ is not a quotient of ℤ and therefore cannot be `Integral`; see the [core design](../design/core.md)."
 msgstr "`UInt`、`UInt16`、`UInt64` が実装します。任意精度の ℕ は ℤ の商ではないため `Integral` にはなれません。[core 設計](../design/core.md) を参照してください。"
 
-#: manual/api/core.md:503
+#: manual/api/core.md:531
 msgid "`lift_to(x)` lifts an integral value to its representative and maps it into any `FromInteger` target."
 msgstr "`lift_to(x)` は整数値を代表元に持ち上げ、任意の `FromInteger` 対象へ写します。"
 
-#: manual/api/core.md:510
+#: manual/api/core.md:538
 msgid "It is `R::from_integer(x.normalize())`. It is a function, not a homomorphism: it converts the value `x` holds now, so a sum that has already wrapped in `S` stays wrapped. It preserves the operations exactly when the modulus of `R` divides that of `S`, as for `Int64 -> Int`; the [core design](../design/core.md) derives this condition."
 msgstr "これは `R::from_integer(x.normalize())` です。準同型ではなく関数です。`x` が現在持つ値を変換するので、`S` ですでに回り込んだ和は回り込んだままです。`R` の法が `S` の法を割り切るとき、かつそのときに限り演算を保存します（例: `Int64 -> Int`）。この条件は [core 設計](../design/core.md) で導出しています。"
 
-#: manual/api/core.md:527
+#: manual/api/core.md:555
 msgid "Shipped instances"
 msgstr "同梱インスタンス"
 
-#: manual/api/core.md:529
+#: manual/api/core.md:557
 msgid "Type"
 msgstr "型"
 
-#: manual/api/core.md:529
+#: manual/api/core.md:557
 msgid "Traits"
 msgstr "Trait"
 
-#: manual/api/core.md:533
+#: manual/api/core.md:561
 msgid "as the signed integers, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
 msgstr "符号付き整数と同じ。加えて非推奨の `NatHomomorphism` と `IntegralHomomorphism`"
 
-#: manual/api/core.md:534
+#: manual/api/core.md:562
 msgid "`AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Num`, `Zero`, `One`, `Inverse`, `FromNat`, `FromInteger`, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism`"
 msgstr "`AddMonoid`、`MulMonoid`、`AddGroup`、`MulGroup`、`Semiring`、`Ring`、`Field`、`Num`、`Zero`、`One`、`Inverse`、`FromNat`、`FromInteger`。加えて非推奨の `NatHomomorphism` と `IntegralHomomorphism`"
 
-#: manual/api/core.md:536
+#: manual/api/core.md:564
 msgid "`Byte` implements none of them."
 msgstr "`Byte` はどれも実装しません。"
 
-#: manual/api/core.md:538
+#: manual/api/core.md:566
 #: manual/api/hom.md:646
 msgid "Semantic notes"
 msgstr "意味論メモ"
 
-#: manual/api/core.md:540
+#: manual/api/core.md:568
 msgid "Fixed-width integers are ℤ/2^k. Their `from_integer` reduces modulo 2^k, and `normalize` picks the representative in the type's range: `[-2^(k-1), 2^(k-1))` for signed types, `[0, 2^k)` for unsigned ones."
 msgstr "固定幅の整数は ℤ/2^k です。その `from_integer` は 2^k を法として簡約し、`normalize` は型の範囲内の代表元を選びます。符号付き型では `[-2^(k-1), 2^(k-1))`、符号なし型では `[0, 2^k)` です。"
 
-#: manual/api/core.md:543
+#: manual/api/core.md:571
 msgid "`BigInt` is ℤ itself: `from_integer` and `normalize` are the identity."
 msgstr "`BigInt` は ℤ そのものです。`from_integer` と `normalize` は恒等写像です。"
 
-#: manual/api/core.md:544
+#: manual/api/core.md:572
 msgid "`lift_to` is a homomorphism exactly when the target modulus divides the source modulus, as for `Int64 -> Int`. Into `BigInt`, `Float` or `Double` it is not one for fixed-width sources, because their arithmetic wraps."
 msgstr "`lift_to` が準同型になるのは、対象の法がソースの法を割り切るとき、かつそのときに限ります（例: `Int64 -> Int`）。固定幅のソースから `BigInt`、`Float`、`Double` への場合は、演算が回り込むため準同型ではありません。"
 
-#: manual/api/core.md:547
+#: manual/api/core.md:575
 msgid "`Nat` covers the integral types whose representatives are non-negative. A true arbitrary-precision ℕ is not a quotient of ℤ and is out of scope."
 msgstr "`Nat` は代表元が非負である整数型を表します。真の任意精度 ℕ は ℤ の商ではないため、範囲外です。"
 
-#: manual/api/core.md:549
+#: manual/api/core.md:577
 msgid "Unsigned integer instances stop at `Semiring`; they do not pretend to be additive groups or rings."
 msgstr "符号なし整数は `Semiring` までで止まり、加法逆元を持つ構造のふりをしません。"
 
-#: manual/api/core.md:551
-msgid "`Float` and `Double` round in `from_natural` and `from_integer`, so very large values are approximate."
-msgstr "`Float` と `Double` は `from_natural` と `from_integer` で丸めを行うため、非常に大きな値は近似になります。"
+#: manual/api/core.md:579
+msgid "`Float` and `Double` round to nearest, ties to even, in `from_natural` and `from_integer`, so very large values are approximate, and values beyond the largest finite number become $\\pm\\infty$ instead of aborting."
+msgstr "`Float` と `Double` は `from_natural` と `from_integer` で最近接・偶数丸めを行います。そのため非常に大きな値は近似になり、最大の有限値を超える値は abort せずに $\\pm\\infty$ になります。"
 
-#: manual/api/core.md:553
+#: manual/api/core.md:582
 msgid "`Field` requires commutative multiplication. The compiler cannot check it, so it is the implementor's responsibility."
 msgstr "`Field` は乗法の可換性を要求します。コンパイラは検査できないので、実装者の責任です。"
 
-#: manual/api/core.md:556
+#: manual/api/core.md:585
 #: manual/api/hom.md:660
 msgid "Deprecated"
 msgstr "非推奨"
 
-#: manual/api/core.md:560
+#: manual/api/core.md:589
 msgid "`NatHomomorphism::from_nat(x)` lifts a `Nat` value to its representative and maps it into `Self`."
 msgstr "`NatHomomorphism::from_nat(x)` は `Nat` の値を代表元に持ち上げ、`Self` へ写します。"
 
-#: manual/api/core.md:569
+#: manual/api/core.md:598
 msgid "Deprecated because the composite is not a homomorphism for fixed-width sources. Replacement: implement `FromNat` and `FromInteger`, and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
 msgstr "固定幅のソースではこの合成が準同型にならないため非推奨です。代替: `FromNat` と `FromInteger` を実装し、`lift_to(x)` を呼びます。`BigInt`、`Float`、`Double` は引き続き実装しています。"
 
-#: manual/api/core.md:575
+#: manual/api/core.md:604
 msgid "`IntegralHomomorphism::from_integral(x)` lifts an `Integral` value to its representative and maps it into `Self`."
 msgstr "`IntegralHomomorphism::from_integral(x)` は `Integral` の値を代表元に持ち上げ、`Self` へ写します。"
 
-#: manual/api/core.md:584
+#: manual/api/core.md:613
 msgid "Deprecated for the same reason. Replacement: implement `FromInteger` and call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`."
 msgstr "同じ理由で非推奨です。代替: `FromInteger` を実装し、`lift_to(x)` を呼びます。`BigInt`、`Float`、`Double` は引き続き実装しています。"
 
-#: manual/api/core.md:587
+#: manual/api/core.md:616
 msgid "Source map"
 msgstr "ソース入口"
 
-#: manual/api/core.md:589
+#: manual/api/core.md:618
 msgid "`src/structure.mbt`: trait definitions"
 msgstr "`src/structure.mbt`：trait 定義"
 
-#: manual/api/core.md:590
+#: manual/api/core.md:619
 msgid "`src/operation.mbt`: operational traits"
 msgstr "`src/operation.mbt`：基礎操作 traits"
 
-#: manual/api/core.md:592
+#: manual/api/core.md:621
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：既定インスタンス"
 
@@ -998,44 +1018,100 @@ msgid "`Float` and `Double` implement `Field` up to rounding. Their multiplicati
 msgstr "`Float` と `Double` は丸めの範囲で `Field` を実装します。乗法は厳密に可換で $\\mathrm{fl}(ab) = \\mathrm{fl}(ba)$ です。IEEE 754 は正確な積を丸め、正確な積は順序に依存しないからです。結合法則と分配法則は近似的にしか成り立たず、`0` には逆元がありません。`inv` はそこで中断します。"
 
 #: manual/design/core.md:308
+msgid "Rounding ℤ into `Float` and `Double`"
+msgstr "ℤ から `Float` と `Double` への丸め"
+
+#: manual/design/core.md:310
+msgid "A binary floating-point format with precision $p$ and maximum exponent $e_{\\max}$ has the positive finite values"
+msgstr "精度 $p$、最大指数 $e_{\\max}$ の二進浮動小数点形式の正の有限値は次のとおりです。"
+
+#: manual/design/core.md:317
+msgid "plus subnormals, which no non-zero integer needs because $e \\ge 0$ for $|n| \\ge 1$. `Double` has $p = 53$, $e_{\\max} = 1023$; `Float` has $p = 24$, $e_{\\max} = 127$. No map ℤ → `Double` is a ring homomorphism, since $2^{53} + 1$ is not representable, so `from_integer` is the next best thing: the IEEE 754-2019 conversion convertFromInt (§5.4.1) with the default rounding attribute roundTiesToEven (§4.3.1). Write $\\mathrm{RN}_p$ for it. It is odd, $\\mathrm{RN}_p(-n) = -\\mathrm{RN}_p(n)$, monotone, exact for $|n| \\le 2^p$, and its relative error is at most $2^{-p}$ while the result is finite."
+msgstr "これに非正規化数が加わりますが、$|n| \\ge 1$ なら $e \\ge 0$ なので、ゼロでない整数には必要ありません。`Double` は $p = 53$、$e_{\\max} = 1023$、`Float` は $p = 24$、$e_{\\max} = 127$ です。$2^{53} + 1$ は表現できないので、ℤ → `Double` の環準同型は存在しません。そこで `from_integer` は次善の策として、IEEE 754-2019 の変換 convertFromInt（§5.4.1）を既定の丸め属性 roundTiesToEven（§4.3.1）で使います。これを $\\mathrm{RN}_p$ と書きます。$\\mathrm{RN}_p$ は奇関数 $\\mathrm{RN}_p(-n) = -\\mathrm{RN}_p(n)$ で、単調であり、$|n| \\le 2^p$ では正確で、結果が有限である限り相対誤差は $2^{-p}$ 以下です。"
+
+#: manual/design/core.md:327
+msgid "**The rounding step.** Let $m = |n| > 0$ with $2^{n_b - 1} \\le m < 2^{n_b}$, so $n_b$ is the bit length of $m$, and set $s = n_b - p - 1$. When $s \\ge 0$, divide with remainder,"
+msgstr "**丸めの手順。** $m = |n| > 0$ とし、$2^{n_b - 1} \\le m < 2^{n_b}$、つまり $n_b$ を $m$ のビット長とします。$s = n_b - p - 1$ と置きます。$s \\ge 0$ のときは剰余付きで割り、"
+
+#: manual/design/core.md:335
+msgid "when $s < 0$, put $t = m \\cdot 2^{-s}$ and $r = 0$. Either way $2^p \\le t < 2^{p+1}$: $t$ holds exactly the top $p + 1$ bits of $m$. Split off its last bit, $t = 2q + b$ with $b \\in \\{0, 1\\}$, and"
+msgstr "$s < 0$ のときは $t = m \\cdot 2^{-s}$、$r = 0$ と置きます。どちらの場合も $2^p \\le t < 2^{p+1}$ で、$t$ は $m$ の上位 $p + 1$ ビットそのものです。最下位ビットを分けて $t = 2q + b$（$b \\in \\{0, 1\\}$）とすると、"
+
+#: manual/design/core.md:344
+msgid "The two neighbours of $m$ with $p$ significant bits are $q \\cdot 2^{s+1}$ and $(q + 1) \\cdot 2^{s+1}$, and round-to-nearest-even takes the upper one exactly when $f > \\tfrac12$, or $f = \\tfrac12$ and $q$ is odd. Because $r / 2^{s+1} < \\tfrac12$,"
+msgstr "$m$ の両隣にある有効桁 $p$ ビットの値は $q \\cdot 2^{s+1}$ と $(q + 1) \\cdot 2^{s+1}$ です。最近接偶数丸めが大きい方を選ぶのは、$f > \\tfrac12$ のとき、または $f = \\tfrac12$ かつ $q$ が奇数のときに限ります。$r / 2^{s+1} < \\tfrac12$ なので、"
+
+#: manual/design/core.md:354
+msgid ""
+"so the rule needs only the round bit $b$, the sticky bit $[r \\n"
+"eq 0]$ and the parity of $q$:"
+msgstr ""
+"したがって規則に必要なのは、丸めビット $b$、スティッキービット $[r \\n"
+"eq 0]$、$q$ の偶奇だけです。"
+
+#: manual/design/core.md:365
+msgid "The exponent is $e = (p - 1) + (s + 1) = n_b - 1$. If rounding up carries, $q + 1 = 2^p$, the value is $2^{p-1} \\cdot 2^{s+2}$ and $e = n_b$. The implementation computes $t$ as `m >> s`, the sticky bit as `(t << s) != m`, and assembles the result from its bit pattern: sign, biased exponent $e + e_{\\max}$, and $q$ without its leading bit. It uses only `bit_length`, shifts, `to_uint64` and comparisons of `BigInt`, which behave identically on every backend, and it runs in time linear in the length of $n$."
+msgstr "指数は $e = (p - 1) + (s + 1) = n_b - 1$ です。切り上げで繰り上がり $q + 1 = 2^p$ が起きると、値は $2^{p-1} \\cdot 2^{s+2}$ で $e = n_b$ になります。実装は $t$ を `m >> s`、スティッキービットを `(t << s) != m` で求め、結果をビットパターンから組み立てます。符号、バイアス付き指数 $e + e_{\\max}$、先頭ビットを除いた $q$ です。使うのは `BigInt` の `bit_length`、シフト、`to_uint64`、比較だけで、これらはすべてのバックエンドで同じ動作をし、実行時間は $n$ の長さに比例します。"
+
+#: manual/design/core.md:374
+msgid "**Overflow.** The largest finite value is"
+msgstr "**オーバーフロー。** 最大の有限値は次のとおりです。"
+
+#: manual/design/core.md:380
+msgid "Its significand $2^p - 1$ is odd, so the midpoint between $\\Omega$ and $2^{e_{\\max}+1}$, namely $2^{e_{\\max}+1} - 2^{e_{\\max}-p}$, rounds up to $2^{e_{\\max}+1}$, which does not fit. Following §7.4, an overflowing result under roundTiesToEven is $\\pm\\infty$ with the sign of $n$:"
+msgstr "その仮数 $2^p - 1$ は奇数なので、$\\Omega$ と $2^{e_{\\max}+1}$ の中点 $2^{e_{\\max}+1} - 2^{e_{\\max}-p}$ は $2^{e_{\\max}+1}$ に切り上げられ、これは表現できません。§7.4 により、roundTiesToEven でオーバーフローした結果は $n$ と同じ符号の $\\pm\\infty$ です。"
+
+#: manual/design/core.md:389
+msgid "that is $|n| \\ge 2^{1024} - 2^{970}$ for `Double` and $|n| \\ge 2^{128} - 2^{103}$ for `Float`. The integer just below each threshold still rounds to $\\Omega$."
+msgstr "つまり `Double` では $|n| \\ge 2^{1024} - 2^{970}$、`Float` では $|n| \\ge 2^{128} - 2^{103}$ です。各しきい値のすぐ下の整数は $\\Omega$ に丸められます。"
+
+#: manual/design/core.md:393
+msgid "**Why `Float` is rounded once.** Rounding to `Double` and then to `Float` is not $\\mathrm{RN}_{24}$. Take $n = 2^{53} + 2^{29} + 1$. At 53 bits the spacing is $2$, so $n$ is halfway between $2^{53} + 2^{29}$ and $2^{53} + 2^{29} + 2$, and the tie goes to the even significand, $2^{53} + 2^{29}$. That value is exactly halfway between the `Float` neighbours $2^{53}$ and $2^{53} + 2^{30}$, and the second rounding goes to the even one, $2^{53}$. But $n$ itself lies above that midpoint, so $\\mathrm{RN}_{24}(n) = 2^{53} + 2^{30}$. `Float` therefore runs the same rounding step with $p = 24$ directly."
+msgstr "**`Float` を一度だけ丸める理由。** `Double` に丸めてから `Float` に丸めても $\\mathrm{RN}_{24}$ にはなりません。$n = 2^{53} + 2^{29} + 1$ を考えます。53 ビットでは間隔が $2$ なので、$n$ は $2^{53} + 2^{29}$ と $2^{53} + 2^{29} + 2$ のちょうど中点にあり、タイは仮数が偶数の側、$2^{53} + 2^{29}$ に丸められます。この値は `Float` の隣接値 $2^{53}$ と $2^{53} + 2^{30}$ のちょうど中点にあり、二度目の丸めは偶数側の $2^{53}$ を選びます。しかし $n$ 自体はその中点より上にあるので、$\\mathrm{RN}_{24}(n) = 2^{53} + 2^{30}$ です。そのため `Float` は同じ丸め手順を $p = 24$ で直接行います。"
+
+#: manual/design/core.md:403
+msgid "**Why not through a decimal string.** Earlier versions printed the `BigInt` in decimal and parsed the result as a `Double`. That is correctly rounded in range, but the parser rejects values at or above the overflow threshold, so the conversion aborted instead of returning $\\pm\\infty$; the decimal conversion costs time quadratic in the length on some backends; and `Float` was rounded twice."
+msgstr "**十進文字列を経由しない理由。** 以前の版は `BigInt` を十進で出力し、それを `Double` として解析していました。有限の範囲では正しく丸められますが、パーサはオーバーフローしきい値以上の値を拒否するため、変換は $\\pm\\infty$ を返さずに abort していました。また十進変換は一部のバックエンドで長さの二乗に比例する時間がかかり、`Float` は二度丸められていました。"
+
+#: manual/design/core.md:410
 #: manual/design/hom.md:143
 msgid "Alternatives rejected"
 msgstr "採用しなかった代替案"
 
-#: manual/design/core.md:310
+#: manual/design/core.md:412
 msgid "A two-parameter conversion trait `Into[S, R]`: MoonBit traits have only `Self`, and the factorization through ℤ makes it unnecessary."
 msgstr "二引数の変換 trait `Into[S, R]`: MoonBit の trait には `Self` しかなく、ℤ を経由する分解があるので不要です。"
 
-#: manual/design/core.md:312
+#: manual/design/core.md:414
 msgid "One broad \"number\" trait: it would hide the difference between ℤ, ℤ/2^k, approximate reals and fields, which are exactly the differences generic code has to respect."
 msgstr "広い「数」trait: ℤ、ℤ/2^k、近似的な実数、体の違いを隠してしまいますが、それこそジェネリックなコードが尊重すべき違いです。"
 
-#: manual/design/core.md:315
+#: manual/design/core.md:417
 msgid "`NatHomomorphism` and `IntegralHomomorphism` as the conversion interface: they promised a homomorphism that a fixed-width source cannot give. They remain only as deprecated traits."
 msgstr "`NatHomomorphism` と `IntegralHomomorphism` を変換インターフェースにすること: 固定幅のソースには与えられない準同型を約束していました。非推奨の trait としてのみ残っています。"
 
-#: manual/design/core.md:318
+#: manual/design/core.md:420
 msgid "A separate division-ring trait: no shipped type needs it, and code that must work without commutativity can ask for `Ring + Inverse + Div`."
 msgstr "斜体専用の trait: 同梱の型には不要で、可換性なしで動く必要のあるコードは `Ring + Inverse + Div` を要求できます。"
 
-#: manual/design/core.md:321
+#: manual/design/core.md:423
 #: manual/design/hom.md:159
 msgid "Boundaries"
 msgstr "境界"
 
-#: manual/design/core.md:323
+#: manual/design/core.md:425
 msgid "This package does not define matrices, complex numbers, polynomials, parsing, or numerical algorithms."
 msgstr "このパッケージは行列、複素数、多項式、解析関数、数値アルゴリズムを定義しません。"
 
-#: manual/design/core.md:325
+#: manual/design/core.md:427
 msgid "It does not erase the semantic difference between exact and approximate number systems."
 msgstr "正確系と近似系の意味論差を無理に隠しません。"
 
-#: manual/design/core.md:327
+#: manual/design/core.md:429
 msgid "It does not check laws at compile time. The laws of every structural trait, including the commutativity of `Field`, are contracts on the implementor, tested with the tools of the [hom API](../api/hom.md)."
 msgstr "コンパイル時に法則を検査しません。`Field` の可換性を含め、すべての構造 trait の法則は実装者への契約で、[hom API](../api/hom.md) の道具でテストします。"
 
-#: manual/design/core.md:330
+#: manual/design/core.md:432
 msgid "It does not model an arbitrary-precision ℕ: such a type is not a quotient of ℤ, so it cannot be `Integral`."
 msgstr "任意精度の ℕ はモデル化しません。そのような型は ℤ の商ではないので `Integral` になれません。"
 
@@ -1616,31 +1692,35 @@ msgid "`Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` return
 msgstr "`Float` と `Double` では `Inverse::inv` は `0.0` で中断しますが、`/` は無限大を返します。逆元をとる前にゼロを確認してください。"
 
 #: manual/tutorial/core.md:237
+msgid "Converting a huge integer into `Float` or `Double` with `from_integer` or `lift_to` gives an infinity, not an error: anything from about $3.4 \\times 10^{38}$ for `Float` and $1.8 \\times 10^{308}$ for `Double`. Check the result with `is_inf` when the input can be that large."
+msgstr "`from_integer` や `lift_to` で巨大な整数を `Float` や `Double` に変換すると、エラーではなく無限大になります。`Float` ではおよそ $3.4 \\times 10^{38}$ 以上、`Double` ではおよそ $1.8 \\times 10^{308}$ 以上です。入力がそこまで大きくなりうる場合は、結果を `is_inf` で確かめてください。"
+
+#: manual/tutorial/core.md:241
 msgid "Unsigned integers are not `Ring`: generic code that negates cannot take `UInt`."
 msgstr "符号なし整数は `Ring` ではありません。符号反転するジェネリックなコードは `UInt` を受け取れません。"
 
-#: manual/tutorial/core.md:239
+#: manual/tutorial/core.md:243
 msgid "`lift_to` converts the wrapped value. Overflow that happened before the call is not undone."
 msgstr "`lift_to` は回り込んだ値を変換します。呼び出し前に起きたオーバーフローは元に戻りません。"
 
-#: manual/tutorial/core.md:241
+#: manual/tutorial/core.md:245
 msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHomomorphism` and `IntegralHomomorphism`."
 msgstr "非推奨の `NatHomomorphism` と `IntegralHomomorphism` よりも、`lift_to`、`FromNat`、`FromInteger` を使ってください。"
 
-#: manual/tutorial/core.md:244
+#: manual/tutorial/core.md:248
 #: manual/tutorial/hom.md:201
 msgid "Next steps"
 msgstr "次のステップ"
 
-#: manual/tutorial/core.md:246
+#: manual/tutorial/core.md:250
 msgid "The [core API](../api/core.md) lists every trait, its laws and the shipped instances."
 msgstr "[core API](../api/core.md) にはすべての trait、その法則、同梱のインスタンスが載っています。"
 
-#: manual/tutorial/core.md:248
+#: manual/tutorial/core.md:252
 msgid "The [core design](../design/core.md) derives why conversions factor through ℤ and why `Field` must be commutative."
 msgstr "[core 設計](../design/core.md) では、変換が ℤ を経由して分解する理由と、`Field` が可換でなければならない理由を導出しています。"
 
-#: manual/tutorial/core.md:250
+#: manual/tutorial/core.md:254
 msgid "The [hom tutorial](hom.md) checks conversions and other maps with certificates."
 msgstr "[hom チュートリアル](hom.md) では、変換やその他の写像を証明書で検査します。"
 
