@@ -35,7 +35,7 @@ certificate subsystem, `Hom` and `Section`, has its own pages as `hom`.
 
 - `AddMonoid`, `MulMonoid`
 - `AddGroup`, `MulGroup`
-- `Semiring`, `Ring`, `Field` (commutative: $ab = ba$)
+- `Semiring`, `Ring`, `Field` (commutative, $0 \ne 1$: $ab = ba$)
 - `FromNat`, `FromInteger`
 - `Integral`, `Nat`
 - `Num`

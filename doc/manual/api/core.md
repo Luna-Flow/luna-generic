@@ -313,8 +313,8 @@ test "ring" {
 
 ### `Field`
 
-`Field` is a commutative `Ring` in which every non-zero element has an
-inverse.
+`Field` is a commutative, nontrivial `Ring`: $0 \ne 1$, and every non-zero
+element has an inverse.
 
 ```mbti
 pub(open) trait Field : Ring + Inverse + Div {
@@ -324,17 +324,17 @@ pub(open) trait Field : Ring + Inverse + Div {
 An implementor must satisfy the `Ring` laws and, for all $a, b$:
 
 $$
-ab = ba, \qquad a \cdot a^{-1} = 1 \ \text{ for } a \neq 0, \qquad
+0 \ne 1, \qquad ab = ba, \qquad a \cdot a^{-1} = 1 \ \text{ for } a \neq 0, \qquad
 a / b = a \cdot b^{-1} \ \text{ for } b \neq 0.
 $$
 
-Commutativity is part of the contract, as in the mathematical definition of
-a field. The compiler does not check it: a type whose multiplication does
-not commute but has inverses (a division ring) compiles as a `Field`, and
-generic code that relies on $ab = ba$, such as rewriting
-$(ab)^{-1}$ as $a^{-1}b^{-1}$, then gives wrong answers for it. Do not
-implement `Field` for such a type. The [core design](../design/core.md)
-explains the difference.
+Nontriviality and commutativity are part of the contract, as in the
+mathematical definition of a field. The compiler checks neither: the
+one-element zero ring satisfies the inverse law vacuously, and a type whose
+multiplication does not commute but has inverses (a division ring) also
+compiles as a `Field`. Generic code can then give wrong answers; for example,
+it may rewrite $(ab)^{-1}$ as $a^{-1}b^{-1}$. Do not implement `Field` for
+either type. The [core design](../design/core.md) explains the distinction.
 
 `Float` and `Double` implement `Field` up to rounding. Their `inv` aborts on
 `0`, while their `/` follows IEEE 754 and returns an infinity or NaN.

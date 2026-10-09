@@ -23,7 +23,7 @@ This documentation tracks the intended `v0.4.0` release content.
 
 ### Public Surface
 
-- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field` (commutative), `FromNat`, `FromInteger`, `Integral`, `Nat`, `Num`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
+- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field` (commutative, `0 != 1`), `FromNat`, `FromInteger`, `Integral`, `Nat`, `Num`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
 - Functions: `lift_to`
 - Generalized homomorphisms: `Hom`, `Section`, `Algebra`, `Op`, `Prod`, `Reduct`, and the signature tags `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`

@@ -45,7 +45,7 @@ over the carrier:
 | `MulGroup` | group $(A, \cdot, 1, {}^{-1})$ | $x x^{-1} = x^{-1} x = 1$ |
 | `Semiring` | semiring | $x+y = y+x$, $x(y+z) = xy+xz$, $(x+y)z = xz+yz$, $0x = x0 = 0$ |
 | `Ring` | ring | the `AddGroup` laws |
-| `Field` | field | $xy = yx$, $x x^{-1} = 1$ for $x \neq 0$, $x/y = x y^{-1}$ |
+| `Field` | field | $0 \ne 1$, $xy = yx$, $x x^{-1} = 1$ for $x \neq 0$, $x/y = x y^{-1}$ |
 
 The supertrait graph mirrors the inclusions between the structures: every
 ring is a semiring, every semiring is both an additive and a multiplicative
