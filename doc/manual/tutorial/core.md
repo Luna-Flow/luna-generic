@@ -227,9 +227,9 @@ laws, listed on the [core API](../api/core.md).
 
 - Choose the smallest trait set that expresses the algorithm you need.
 - Require `Field` only when reciprocal or division semantics are really needed.
-- `Field` promises commutative multiplication. Do not implement it for a type
-  whose products depend on the order of the factors; ask for
-  `Ring + Inverse + Div` in code that must accept such types.
+- `Field` promises `0 != 1` and commutative multiplication. Do not implement
+  it for a zero ring or a type whose products depend on factor order; ask for
+  `Ring + Inverse + Div` in code that must accept noncommutative types.
 - Treat `Float` and `Double` as approximate backends even though they satisfy
   the same abstract surface as exact types.
 - `Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` returns

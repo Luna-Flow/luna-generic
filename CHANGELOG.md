@@ -15,7 +15,7 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 - Every public item is documented on the API pages with its signature, laws and a compiled example.
 - Tutorials are layered: quick start, everyday tasks, going further, common pitfalls.
 - Design pages derive the results they rely on: initiality of ℕ and ℤ, uniqueness of the canonical map, sections of ℤ → ℤ/2^k, and why unsigned types stop at `Semiring`.
-- `Field` documents its commutativity contract ($ab = ba$, $a a^{-1} = 1$ for $a \ne 0$, $a / b = a b^{-1}$), both on the API page and as a doc comment on the trait.
+- `Field` documents its nontriviality and commutativity contracts ($0 \ne 1$, $ab = ba$, $a a^{-1} = 1$ for $a \ne 0$, $a / b = a b^{-1}$), both on the API page and as a doc comment on the trait.
 - zh_CN and ja_JP translations are complete.
 
 ## 0.4.0 - 2026-10-07

@@ -145,16 +145,16 @@ msgid "It satisfies the `Semiring` laws and the `AddGroup` laws. Multiplication 
 msgstr "它满足 `Semiring` 定律与 `AddGroup` 定律。乘法不必可交换。由有符号整数、`BigInt`、`Float` 和 `Double` 实现。"
 
 #: manual/api/core.md:316
-msgid "`Field` is a commutative `Ring` in which every non-zero element has an inverse."
-msgstr "`Field` 是每个非零元素都有逆元的交换 `Ring`。"
+msgid "`Field` is a commutative, nontrivial `Ring`: $0 \\ne 1$, and every non-zero element has an inverse."
+msgstr "`Field` 是满足 $0 \\ne 1$ 且每个非零元素都有逆元的交换 `Ring`。"
 
 #: manual/api/core.md:324
 msgid "An implementor must satisfy the `Ring` laws and, for all $a, b$:"
 msgstr "实现者必须满足 `Ring` 定律，并且对所有 $a, b$："
 
 #: manual/api/core.md:331
-msgid "Commutativity is part of the contract, as in the mathematical definition of a field. The compiler does not check it: a type whose multiplication does not commute but has inverses (a division ring) compiles as a `Field`, and generic code that relies on $ab = ba$, such as rewriting $(ab)^{-1}$ as $a^{-1}b^{-1}$, then gives wrong answers for it. Do not implement `Field` for such a type. The [core design](../design/core.md) explains the difference."
-msgstr "交换律是契约的一部分，正如域的数学定义。编译器不检查它：乘法不可交换但有逆元的类型（除环）也能作为 `Field` 编译通过，而依赖 $ab = ba$ 的泛型代码（例如把 $(ab)^{-1}$ 改写为 $a^{-1}b^{-1}$）对它就会给出错误答案。不要为这样的类型实现 `Field`。[core 设计](../design/core.md) 解释了两者的区别。"
+msgid "Nontriviality and commutativity are part of the contract, as in the mathematical definition of a field. The compiler checks neither: the one-element zero ring satisfies the inverse law vacuously, and a type whose multiplication does not commute but has inverses (a division ring) also compiles as a `Field`. Generic code can then give wrong answers; for example, it may rewrite $(ab)^{-1}$ as $a^{-1}b^{-1}$. Do not implement `Field` for either type. The [core design](../design/core.md) explains the distinction."
+msgstr "非平凡性和交换性都是域的数学定义所要求的契约，但编译器都不会检查：只有一个元素的零环会空泛地满足逆元定律，乘法不可交换但有逆元的类型（除环）也能作为 `Field` 编译通过。依赖这些性质的泛型代码可能因此给出错误结果，例如把 $(ab)^{-1}$ 改写为 $a^{-1}b^{-1}$。不要为这两类类型实现 `Field`。区别见 [core 设计](../design/core.md)。"
 
 #: manual/api/core.md:339
 msgid "`Float` and `Double` implement `Field` up to rounding. Their `inv` aborts on `0`, while their `/` follows IEEE 754 and returns an infinity or NaN."
@@ -789,10 +789,10 @@ msgstr "域"
 
 #: manual/design/core.md:48
 msgid ""
-"$xy = yx$, $x x^{-1} = 1$ for $x \\n"
+"$0 \\ne 1$, $xy = yx$, $x x^{-1} = 1$ for $x \\n"
 "eq 0$, $x/y = x y^{-1}$"
 msgstr ""
-"$xy = yx$，对 $x \\n"
+"$0 \\ne 1$，$xy = yx$，对 $x \\n"
 "eq 0$ 有 $x x^{-1} = 1$，$x/y = x y^{-1}$"
 
 #: manual/design/core.md:50
@@ -1392,8 +1392,8 @@ msgid "Exported traits"
 msgstr "导出 Trait"
 
 #: manual/index.md:38
-msgid "`Semiring`, `Ring`, `Field` (commutative: $ab = ba$)"
-msgstr "`Semiring`、`Ring`、`Field`（可交换：$ab = ba$）"
+msgid "`Semiring`, `Ring`, `Field` (commutative, $0 \\ne 1$: $ab = ba$)"
+msgstr "`Semiring`、`Ring`、`Field`（非平凡且可交换：$0 \\ne 1$、$ab = ba$）"
 
 #: manual/index.md:42
 msgid "Deprecated: `NatHomomorphism`, `IntegralHomomorphism`"
@@ -1680,8 +1680,8 @@ msgid "Require `Field` only when reciprocal or division semantics are really nee
 msgstr "只有确实需要倒数或除法时再要求 `Field`。"
 
 #: manual/tutorial/core.md:230
-msgid "`Field` promises commutative multiplication. Do not implement it for a type whose products depend on the order of the factors; ask for `Ring + Inverse + Div` in code that must accept such types."
-msgstr "`Field` 承诺乘法可交换。不要为乘积依赖因子顺序的类型实现它；在必须接受这类类型的代码中，要求 `Ring + Inverse + Div`。"
+msgid "`Field` promises `0 != 1` and commutative multiplication. Do not implement it for a zero ring or a type whose products depend on factor order; ask for `Ring + Inverse + Div` in code that must accept noncommutative types."
+msgstr "`Field` 要求 `0 != 1` 且乘法可交换。不要为零环或乘积依赖因子顺序的类型实现它；需要接受非交换类型的代码应要求 `Ring + Inverse + Div`。"
 
 #: manual/tutorial/core.md:233
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."

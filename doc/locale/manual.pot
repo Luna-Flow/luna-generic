@@ -145,7 +145,7 @@ msgid "It satisfies the `Semiring` laws and the `AddGroup` laws. Multiplication 
 msgstr ""
 
 #: manual/api/core.md:316
-msgid "`Field` is a commutative `Ring` in which every non-zero element has an inverse."
+msgid "`Field` is a commutative, nontrivial `Ring`: $0 \\ne 1$, and every non-zero element has an inverse."
 msgstr ""
 
 #: manual/api/core.md:324
@@ -153,7 +153,7 @@ msgid "An implementor must satisfy the `Ring` laws and, for all $a, b$:"
 msgstr ""
 
 #: manual/api/core.md:331
-msgid "Commutativity is part of the contract, as in the mathematical definition of a field. The compiler does not check it: a type whose multiplication does not commute but has inverses (a division ring) compiles as a `Field`, and generic code that relies on $ab = ba$, such as rewriting $(ab)^{-1}$ as $a^{-1}b^{-1}$, then gives wrong answers for it. Do not implement `Field` for such a type. The [core design](../design/core.md) explains the difference."
+msgid "Nontriviality and commutativity are part of the contract, as in the mathematical definition of a field. The compiler checks neither: the one-element zero ring satisfies the inverse law vacuously, and a type whose multiplication does not commute but has inverses (a division ring) also compiles as a `Field`. Generic code can then give wrong answers; for example, it may rewrite $(ab)^{-1}$ as $a^{-1}b^{-1}$. Do not implement `Field` for either type. The [core design](../design/core.md) explains the distinction."
 msgstr ""
 
 #: manual/api/core.md:339
@@ -789,7 +789,7 @@ msgstr ""
 
 #: manual/design/core.md:48
 msgid ""
-"$xy = yx$, $x x^{-1} = 1$ for $x \\n"
+"$0 \\ne 1$, $xy = yx$, $x x^{-1} = 1$ for $x \\n"
 "eq 0$, $x/y = x y^{-1}$"
 msgstr ""
 
@@ -1383,7 +1383,7 @@ msgid "Exported traits"
 msgstr ""
 
 #: manual/index.md:38
-msgid "`Semiring`, `Ring`, `Field` (commutative: $ab = ba$)"
+msgid "`Semiring`, `Ring`, `Field` (commutative, $0 \\ne 1$: $ab = ba$)"
 msgstr ""
 
 #: manual/index.md:42
@@ -1671,7 +1671,7 @@ msgid "Require `Field` only when reciprocal or division semantics are really nee
 msgstr ""
 
 #: manual/tutorial/core.md:230
-msgid "`Field` promises commutative multiplication. Do not implement it for a type whose products depend on the order of the factors; ask for `Ring + Inverse + Div` in code that must accept such types."
+msgid "`Field` promises `0 != 1` and commutative multiplication. Do not implement it for a zero ring or a type whose products depend on factor order; ask for `Ring + Inverse + Div` in code that must accept noncommutative types."
 msgstr ""
 
 #: manual/tutorial/core.md:233

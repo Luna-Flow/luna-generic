@@ -145,16 +145,16 @@ msgid "It satisfies the `Semiring` laws and the `AddGroup` laws. Multiplication 
 msgstr "`Semiring` の法則と `AddGroup` の法則を満たします。乗法は可換でなくてもかまいません。符号付き整数、`BigInt`、`Float`、`Double` が実装します。"
 
 #: manual/api/core.md:316
-msgid "`Field` is a commutative `Ring` in which every non-zero element has an inverse."
-msgstr "`Field` は非零の元がすべて逆元を持つ可換な `Ring` です。"
+msgid "`Field` is a commutative, nontrivial `Ring`: $0 \\ne 1$, and every non-zero element has an inverse."
+msgstr "`Field` は $0 \\ne 1$ を満たし、すべての非零元が逆元を持つ可換な `Ring` です。"
 
 #: manual/api/core.md:324
 msgid "An implementor must satisfy the `Ring` laws and, for all $a, b$:"
 msgstr "実装者は `Ring` の法則に加え、すべての $a, b$ について次を満たさなければなりません:"
 
 #: manual/api/core.md:331
-msgid "Commutativity is part of the contract, as in the mathematical definition of a field. The compiler does not check it: a type whose multiplication does not commute but has inverses (a division ring) compiles as a `Field`, and generic code that relies on $ab = ba$, such as rewriting $(ab)^{-1}$ as $a^{-1}b^{-1}$, then gives wrong answers for it. Do not implement `Field` for such a type. The [core design](../design/core.md) explains the difference."
-msgstr "可換性は、体の数学的定義と同じく契約の一部です。コンパイラはこれを検査しません。乗法が可換でないが逆元を持つ型（斜体）も `Field` としてコンパイルでき、$ab = ba$ に依存するジェネリックなコード（たとえば $(ab)^{-1}$ を $a^{-1}b^{-1}$ に書き換える）はその型に対して誤った答えを返します。そのような型に `Field` を実装しないでください。違いは [core 設計](../design/core.md) で説明しています。"
+msgid "Nontriviality and commutativity are part of the contract, as in the mathematical definition of a field. The compiler checks neither: the one-element zero ring satisfies the inverse law vacuously, and a type whose multiplication does not commute but has inverses (a division ring) also compiles as a `Field`. Generic code can then give wrong answers; for example, it may rewrite $(ab)^{-1}$ as $a^{-1}b^{-1}$. Do not implement `Field` for either type. The [core design](../design/core.md) explains the distinction."
+msgstr "非自明性と可換性は、体の数学的定義と同じく契約の一部です。コンパイラはどちらも検査しません。要素が一つだけの零環は逆元の法則を空虚に満たし、乗法が可換でないが逆元を持つ型（斜体）も `Field` としてコンパイルできます。その結果、$(ab)^{-1}$ を $a^{-1}b^{-1}$ に書き換えるなど、これらの性質に依存するジェネリックコードが誤答することがあります。どちらの型にも `Field` を実装しないでください。違いは [core 設計](../design/core.md) を参照してください。"
 
 #: manual/api/core.md:339
 msgid "`Float` and `Double` implement `Field` up to rounding. Their `inv` aborts on `0`, while their `/` follows IEEE 754 and returns an infinity or NaN."
@@ -789,10 +789,10 @@ msgstr "体"
 
 #: manual/design/core.md:48
 msgid ""
-"$xy = yx$, $x x^{-1} = 1$ for $x \\n"
+"$0 \\ne 1$, $xy = yx$, $x x^{-1} = 1$ for $x \\n"
 "eq 0$, $x/y = x y^{-1}$"
 msgstr ""
-"$xy = yx$、$x \\n"
+"$0 \\ne 1$、$xy = yx$、$x \\n"
 "eq 0$ なら $x x^{-1} = 1$、$x/y = x y^{-1}$"
 
 #: manual/design/core.md:50
@@ -1392,8 +1392,8 @@ msgid "Exported traits"
 msgstr "公開 Trait"
 
 #: manual/index.md:38
-msgid "`Semiring`, `Ring`, `Field` (commutative: $ab = ba$)"
-msgstr "`Semiring`、`Ring`、`Field`（可換: $ab = ba$）"
+msgid "`Semiring`, `Ring`, `Field` (commutative, $0 \\ne 1$: $ab = ba$)"
+msgstr "`Semiring`、`Ring`、`Field`（非自明で可換: $0 \\ne 1$、$ab = ba$）"
 
 #: manual/index.md:42
 msgid "Deprecated: `NatHomomorphism`, `IntegralHomomorphism`"
@@ -1680,8 +1680,8 @@ msgid "Require `Field` only when reciprocal or division semantics are really nee
 msgstr "逆元や除法が必要なときだけ `Field` を要求する。"
 
 #: manual/tutorial/core.md:230
-msgid "`Field` promises commutative multiplication. Do not implement it for a type whose products depend on the order of the factors; ask for `Ring + Inverse + Div` in code that must accept such types."
-msgstr "`Field` は乗法の可換性を約束します。積が因子の順序に依存する型には実装しないでください。そのような型を受け付けるコードでは `Ring + Inverse + Div` を要求します。"
+msgid "`Field` promises `0 != 1` and commutative multiplication. Do not implement it for a zero ring or a type whose products depend on factor order; ask for `Ring + Inverse + Div` in code that must accept noncommutative types."
+msgstr "`Field` は `0 != 1` と乗法の可換性を要求します。零環や積が因子の順序に依存する型には実装しないでください。非可換な型を受け付けるコードでは `Ring + Inverse + Div` を要求します。"
 
 #: manual/tutorial/core.md:233
 msgid "Treat `Float` and `Double` as approximate backends even though they satisfy the same abstract surface as exact types."
