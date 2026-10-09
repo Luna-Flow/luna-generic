@@ -32,6 +32,10 @@ obligations auditable and testable.
 - The signature is a phantom type `S` on the certificate, while the algebra is
   passed as a dictionary value `Algebra[S, A]`: the certificate says what is
   preserved, the dictionary is used for checking.
+- Custom operations supplied to `Algebra::make` must have nonnegative arity.
+  Law checking enumerates argument tuples recursively, so rejecting invalid
+  arities at construction prevents nontermination before a certificate is
+  checked.
 - Signature inclusions are `Reduct[S, T]` witnesses only this package can build.
 - The strength of preservation is the relation `rel` chosen at check time, so
   strict, lax and approximate homomorphisms share one API.

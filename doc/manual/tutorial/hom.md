@@ -175,6 +175,8 @@ dictionaries list the same operations in the same order. Keep one dictionary
 per tag and carrier: certificates checked against different meanings of the
 same tag do not compose.
 
+Operation arities must be nonnegative; `Algebra::make` aborts otherwise.
+
 ### Maps that are not determined by the types
 
 The canonical map out of ℤ is unique, so it lives in the `FromInteger`

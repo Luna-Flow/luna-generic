@@ -8,6 +8,7 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 
 ### Fixed
 
+- `Algebra::make` aborts immediately when a custom operation has negative arity, preventing recursive law checks from overflowing the stack ([#16](https://github.com/Luna-Flow/luna-generic/issues/16)).
 - `from_integer`, `from_natural` and `lift_to` into `Float` and `Double` (and the deprecated `from_nat` and `from_integral`) no longer abort on huge integers. They now round directly from the bits of the `BigInt`, to nearest with ties to even, and return ±inf when the rounded value overflows, that is for |n| ≥ 2^128 − 2^103 (`Float`) and |n| ≥ 2^1024 − 2^970 (`Double`), as IEEE 754 requires. `Float` is rounded once at 24 bits rather than through `Double`, which was one ulp off for values such as 2^53 + 2^29 + 1. The conversion no longer goes through a decimal string ([#13](https://github.com/Luna-Flow/luna-generic/issues/13)).
 
 ### Documentation

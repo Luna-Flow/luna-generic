@@ -277,7 +277,7 @@ msgid "`Byte` implements none of them."
 msgstr "`Byte` 不实现其中任何一个。"
 
 #: manual/api/core.md:566
-#: manual/api/hom.md:646
+#: manual/api/hom.md:647
 msgid "Semantic notes"
 msgstr "语义说明"
 
@@ -310,7 +310,7 @@ msgid "`Field` requires commutative multiplication. The compiler cannot check it
 msgstr "`Field` 要求乘法可交换。编译器无法检查这一点，因此由实现者负责。"
 
 #: manual/api/core.md:585
-#: manual/api/hom.md:660
+#: manual/api/hom.md:661
 msgid "Deprecated"
 msgstr "已弃用"
 
@@ -415,279 +415,280 @@ msgid "`Algebra[S, A]` is an interpretation of the signature `S` on the carrier 
 msgstr "`Algebra[S, A]` 是签名 `S` 在载体 `A` 上的一种解释：按签名规定的顺序排列的一组 `Op[A]`。"
 
 #: manual/api/hom.md:131
-msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag."
-msgstr "`Algebra::make(ops)` 为自定义签名标签构造字典。"
+#| msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag."
+msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag. It aborts if any operation has a negative arity."
+msgstr "`Algebra::make(ops)` 为自定义签名标签构造字典。如果任何运算的元数为负数，它会中止。"
 
-#: manual/api/hom.md:137
+#: manual/api/hom.md:138
 msgid "Keep one dictionary per tag and carrier, as explained above."
 msgstr "如上所述，每个标签与载体只保留一个字典。"
 
-#: manual/api/hom.md:151
+#: manual/api/hom.md:152
 msgid "These functions derive the dictionary of a built-in tag from the structure trait instance of `A`."
 msgstr "这些函数从 `A` 的结构 trait 实例导出内置标签的字典。"
 
-#: manual/api/hom.md:162
+#: manual/api/hom.md:163
 msgid "The operations are listed in the order of the tag: for example `0`, `1`, `+`, `*`, `neg` for `RingSig`. Trait coherence gives one dictionary per tag and carrier."
 msgstr "运算按标签的顺序列出：例如 `RingSig` 为 `0`、`1`、`+`、`*`、`neg`。trait 一致性保证每个标签与载体只有一个字典。"
 
-#: manual/api/hom.md:176
+#: manual/api/hom.md:177
 msgid "`Algebra::prod(a, b)` is the componentwise product algebra on `Prod[A, B]`."
 msgstr "`Algebra::prod(a, b)` 是 `Prod[A, B]` 上逐分量的积代数。"
 
-#: manual/api/hom.md:182
+#: manual/api/hom.md:183
 msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. Aborts when `a` and `b` do not list the same operations."
 msgstr "每个运算用 `a` 作用于 `fst`，用 `b` 作用于 `snd`。当 `a` 与 `b` 列出的运算不同时中止。"
 
-#: manual/api/hom.md:185
+#: manual/api/hom.md:186
 msgid "Product type"
 msgstr "积类型"
 
-#: manual/api/hom.md:189
+#: manual/api/hom.md:190
 msgid "`Prod[A, B]` is the binary product carrier with fields `fst` and `snd`."
 msgstr "`Prod[A, B]` 是带有字段 `fst` 与 `snd` 的二元积载体。"
 
-#: manual/api/hom.md:198
+#: manual/api/hom.md:199
 msgid "Operations act componentwise. `Prod` implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
 msgstr "运算逐分量进行。`Prod` 实现 `Add`、`Mul`、`Neg`、`Sub`、`Zero` 与 `One`；当两个分量都实现时，它也实现 `AddMonoid`、`MulMonoid`、`AddGroup`、`Semiring` 与 `Ring`。"
 
-#: manual/api/hom.md:204
+#: manual/api/hom.md:205
 msgid "These methods are the componentwise operations, also available as `+`, `-`, `*`, unary `-` and the `Zero` / `One` traits."
 msgstr "这些方法是逐分量运算，也可以通过 `+`、`-`、`*`、一元 `-` 以及 `Zero` / `One` trait 使用。"
 
-#: manual/api/hom.md:223
+#: manual/api/hom.md:224
 msgid "These methods compare componentwise and render a `Prod` for debugging; use `==`, `!=` and `inspect` in new code."
 msgstr "这些方法逐分量比较并为调试渲染 `Prod`；新代码中请使用 `==`、`!=` 与 `inspect`。"
 
-#: manual/api/hom.md:241
+#: manual/api/hom.md:242
 msgid "Homomorphisms"
 msgstr "同态"
 
-#: manual/api/hom.md:245
+#: manual/api/hom.md:246
 msgid "`Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of `S`."
 msgstr "`Hom[S, A, B]` 是带证书的映射 `A -> B`，证书表明它保持 `S` 的每个运算。"
 
-#: manual/api/hom.md:254
+#: manual/api/hom.md:255
 msgid "The certificate means that for every operation $\\omega$ of `S` with arity $n$ and all $x_1, \\dots, x_n$,"
 msgstr "该证书的含义是：对 `S` 中每个元数为 $n$ 的运算 $\\omega$ 以及所有 $x_1, \\dots, x_n$，"
 
-#: manual/api/hom.md:261
+#: manual/api/hom.md:262
 msgid "Only this package constructs `Hom` values. The leaves are `Hom::postulate` and `Hom::from_integer`; every other constructor is an inference rule."
 msgstr "只有本包能构造 `Hom` 值。叶子是 `Hom::postulate` 与 `Hom::from_integer`；其他所有构造器都是推理规则。"
 
-#: manual/api/hom.md:267
+#: manual/api/hom.md:268
 msgid "`Hom::postulate(f)` trusts `f` as an `S`-homomorphism without proof and creates a proof obligation."
 msgstr "`Hom::postulate(f)` 不加证明地把 `f` 当作 `S`-同态，并产生一个证明义务。"
 
-#: manual/api/hom.md:274
+#: manual/api/hom.md:275
 msgid "The caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation. Back every call with a `check` test."
 msgstr "调用者承诺：对 `S` 的每个运算 `op` 与所有参数 `xs`，有 `f(op_A(xs)) == op_B(xs.map(f))`。即使该映射只用宽松或容差关系检查，这一承诺始终是严格相等。每次调用都应配一个 `check` 测试。"
 
-#: manual/api/hom.md:291
+#: manual/api/hom.md:292
 msgid "`h.apply(x)` applies the underlying map."
 msgstr "`h.apply(x)` 应用底层映射。"
 
-#: manual/api/hom.md:305
+#: manual/api/hom.md:306
 msgid "`Hom::id()` is the identity homomorphism."
 msgstr "`Hom::id()` 是恒等同态。"
 
-#: manual/api/hom.md:313
+#: manual/api/hom.md:314
 msgid "`h.then(g)` is the composite: first `h`, then `g`."
 msgstr "`h.then(g)` 是复合：先 `h`，后 `g`。"
 
-#: manual/api/hom.md:319
+#: manual/api/hom.md:320
 msgid "If $f$ and $g$ preserve $\\omega$, so does $g \\circ f$:"
 msgstr "若 $f$ 与 $g$ 保持 $\\omega$，则 $g \\circ f$ 也保持："
 
-#: manual/api/hom.md:327
+#: manual/api/hom.md:328
 msgid "`h.forget(r)` forgets structure along a `Reduct[S, T]` witness."
 msgstr "`h.forget(r)` 沿 `Reduct[S, T]` 见证遗忘结构。"
 
-#: manual/api/hom.md:333
+#: manual/api/hom.md:334
 msgid "A map that preserves every operation of `S` preserves the operations of the smaller signature `T`."
 msgstr "保持 `S` 每个运算的映射也保持更小签名 `T` 的运算。"
 
-#: manual/api/hom.md:338
+#: manual/api/hom.md:339
 msgid "`Hom::pair(f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`; `Hom::fst()` and `Hom::snd()` are the projections out of `Prod`."
 msgstr "`Hom::pair(f, g)` 把 `x` 映为 `{ fst: f(x), snd: g(x) }`；`Hom::fst()` 与 `Hom::snd()` 是从 `Prod` 出发的投影。"
 
-#: manual/api/hom.md:347
+#: manual/api/hom.md:348
 msgid "They satisfy `pair(f, g).then(fst()) = f` and `pair(f, g).then(snd()) = g`."
 msgstr "它们满足 `pair(f, g).then(fst()) = f` 与 `pair(f, g).then(snd()) = g`。"
 
-#: manual/api/hom.md:363
+#: manual/api/hom.md:364
 msgid "`h.to_add_group()` upgrades an additive monoid homomorphism between groups to an additive group homomorphism."
 msgstr "`h.to_add_group()` 把群之间的加法幺半群同态升级为加法群同态。"
 
-#: manual/api/hom.md:370
+#: manual/api/hom.md:371
 msgid "No new obligation: $f(-x) + f(x) = f(-x + x) = f(0) = 0$, so $f(-x) = -f(x)$."
 msgstr "没有新的义务：$f(-x) + f(x) = f(-x + x) = f(0) = 0$，所以 $f(-x) = -f(x)$。"
 
-#: manual/api/hom.md:374
+#: manual/api/hom.md:375
 msgid "`h.to_ring()` upgrades a semiring homomorphism between rings to a ring homomorphism."
 msgstr "`h.to_ring()` 把环之间的半环同态升级为环同态。"
 
-#: manual/api/hom.md:381
+#: manual/api/hom.md:382
 msgid "No new obligation, by the same computation as `to_add_group`."
 msgstr "没有新的义务，计算与 `to_add_group` 相同。"
 
-#: manual/api/hom.md:385
+#: manual/api/hom.md:386
 msgid "`Hom::from_integer()` is the canonical map ℤ → `R` of `FromInteger`, as a certificate."
 msgstr "`Hom::from_integer()` 是 `FromInteger` 给出的典范映射 ℤ → `R`，以证书形式提供。"
 
-#: manual/api/hom.md:392
+#: manual/api/hom.md:393
 msgid "It holds on every input; upgrade with `to_ring` when `R` is a ring. `Float` and `Double` targets satisfy it only up to rounding. For a fixed-width source, lift first with `Section::of_integral`."
 msgstr "它对每个输入都成立；当 `R` 是环时用 `to_ring` 升级。`Float` 与 `Double` 目标只在舍入意义下满足它。对定宽源，先用 `Section::of_integral` 提升。"
 
-#: manual/api/hom.md:404
-#: manual/design/hom.md:39
+#: manual/api/hom.md:405
+#: manual/design/hom.md:43
 msgid "Sections"
 msgstr "截面"
 
-#: manual/api/hom.md:406
+#: manual/api/hom.md:407
 msgid "A section lifts a quotient `Q` back into `A` along a homomorphism `proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism, but it preserves every operation up to the kernel of `proj`, and exactly whenever the result is itself a representative."
 msgstr "截面沿同态 `proj : A -> Q` 把商 `Q` 提升回 `A`，满足 `proj(lift(q)) == q`。提升本身不是同态，但它在 `proj` 的核的意义下保持每个运算，并且当结果本身是代表元时严格保持。"
 
-#: manual/api/hom.md:411
+#: manual/api/hom.md:412
 msgid "The section law rejects lifts that leave the class of their argument. It does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are both sections of `BigInt -> Int`, and only the second preserves the signed order."
 msgstr "截面律会拒绝离开参数所在类的提升，但不规定选哪个代表元：`[0, 2^32)` 与 `[-2^31, 2^31)` 都是 `BigInt -> Int` 的截面，只有后者保持有符号序。"
 
-#: manual/api/hom.md:418
+#: manual/api/hom.md:419
 msgid "`Section[S, Q, A]` is a lift of the quotient `Q` back into `A` along the projection `proj : A -> Q`."
 msgstr "`Section[S, Q, A]` 沿投影 `proj : A -> Q` 把商 `Q` 提升回 `A`。"
 
-#: manual/api/hom.md:433
+#: manual/api/hom.md:434
 msgid "`Section::postulate(proj, lift)` trusts `lift` as a section of `proj` and creates a proof obligation."
 msgstr "`Section::postulate(proj, lift)` 把 `lift` 当作 `proj` 的截面加以信任，并产生一个证明义务。"
 
-#: manual/api/hom.md:440
+#: manual/api/hom.md:441
 msgid "The caller promises `proj.apply(lift(q)) == q` for every `q`; `proj` carries its own `Hom` obligation."
 msgstr "调用者承诺对每个 `q` 有 `proj.apply(lift(q)) == q`；`proj` 自带其 `Hom` 义务。"
 
-#: manual/api/hom.md:453
+#: manual/api/hom.md:454
 msgid "`Section::of_integral()` is the canonical section of an integral type."
 msgstr "`Section::of_integral()` 是整数类型的典范截面。"
 
-#: manual/api/hom.md:459
+#: manual/api/hom.md:460
 msgid "`proj` is `FromInteger::from_integer` and `lift` is `Integral::normalize`. The obligation sits on those instances. Use `to_ring` when `Z` is a ring."
 msgstr "`proj` 为 `FromInteger::from_integer`，`lift` 为 `Integral::normalize`。义务落在这些实例上。当 `Z` 是环时使用 `to_ring`。"
 
-#: manual/api/hom.md:464
+#: manual/api/hom.md:465
 msgid "`s.lift(q)` is the chosen representative of `q`; `s.proj()` is the projection onto the quotient."
 msgstr "`s.lift(q)` 是 `q` 的选定代表元；`s.proj()` 是到商的投影。"
 
-#: manual/api/hom.md:474
+#: manual/api/hom.md:475
 msgid "`s.normalize(a)` is `lift(proj(a))`, the normal form of `a`."
 msgstr "`s.normalize(a)` 即 `lift(proj(a))`，`a` 的范式。"
 
-#: manual/api/hom.md:480
+#: manual/api/hom.md:481
 msgid "Two values are congruent exactly when their normal forms are equal."
 msgstr "两个值同余当且仅当它们的范式相等。"
 
-#: manual/api/hom.md:484
+#: manual/api/hom.md:485
 msgid "`s.is_representative(a)` tells whether `a` is the chosen representative of its class, that is `normalize(a) == a`."
 msgstr "`s.is_representative(a)` 判断 `a` 是否为其类的选定代表元，即 `normalize(a) == a`。"
 
-#: manual/api/hom.md:491
+#: manual/api/hom.md:492
 msgid "On such results the lift agrees exactly with the operations of `A`."
 msgstr "在这样的结果上，提升与 `A` 的运算完全一致。"
 
-#: manual/api/hom.md:507
+#: manual/api/hom.md:508
 msgid "`s.then(next)` lifts `Q` into `A` with `s`, then `A` into `B` with `next`."
 msgstr "`s.then(next)` 先用 `s` 把 `Q` 提升到 `A`，再用 `next` 把 `A` 提升到 `B`。"
 
-#: manual/api/hom.md:513
+#: manual/api/hom.md:514
 msgid "The projection is `next.proj` followed by `s.proj`. No new obligation: with $s, t$ the two lifts and $\\pi_s, \\pi_t$ their projections, $\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$."
 msgstr "投影是先 `next.proj` 后 `s.proj`。没有新的义务：设 $s, t$ 为两个提升、$\\pi_s, \\pi_t$ 为它们的投影，则 $\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$。"
 
-#: manual/api/hom.md:519
+#: manual/api/hom.md:520
 msgid "These inference rules change the signature of the projection; the lift is unchanged."
 msgstr "这些推理规则改变投影的签名；提升保持不变。"
 
-#: manual/api/hom.md:528
+#: manual/api/hom.md:529
 msgid "They follow `Hom::forget`, `Hom::to_add_group` and `Hom::to_ring`."
 msgstr "它们沿用 `Hom::forget`、`Hom::to_add_group` 与 `Hom::to_ring`。"
 
-#: manual/api/hom.md:532
+#: manual/api/hom.md:533
 msgid "`s.check(samples)` tests the section law `proj(lift(q)) == q` on every sample."
 msgstr "`s.check(samples)` 在每个样本上测试截面定律 `proj(lift(q)) == q`。"
 
-#: manual/api/hom.md:541
+#: manual/api/hom.md:542
 msgid "`s.check_ops(quotient, cover, samples)` tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation over all tuples drawn from `samples`."
 msgstr "`s.check_ops(quotient, cover, samples)` 对每个运算、在由 `samples` 组成的所有元组上测试 `proj(op_A(xs.map(lift))) == op_Q(xs)`。"
 
-#: manual/api/hom.md:549
+#: manual/api/hom.md:550
 msgid "This exercises `proj` as a homomorphism on representatives. Aborts when the two dictionaries do not list the same operations."
 msgstr "这把 `proj` 作为代表元上的同态来检验。当两个字典列出的运算不同时中止。"
 
-#: manual/api/hom.md:560
+#: manual/api/hom.md:561
 msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate; it is listed on the [core API](core.md)."
 msgstr "`lift_to(x)` 把整数值提升后映入任意 `FromInteger` 目标，不发放证书；它列在 [core API](core.md) 中。"
 
-#: manual/api/hom.md:563
+#: manual/api/hom.md:564
 msgid "Reduct witnesses"
 msgstr "约化见证"
 
-#: manual/api/hom.md:567
+#: manual/api/hom.md:568
 msgid "`Reduct[S, T]` witnesses that every `S`-structure is also a `T`-structure, so an `S`-homomorphism is also a `T`-homomorphism."
 msgstr "`Reduct[S, T]` 见证每个 `S`-结构也是 `T`-结构，因此 `S`-同态也是 `T`-同态。"
 
-#: manual/api/hom.md:576
+#: manual/api/hom.md:577
 msgid "Only this package constructs `Reduct` values."
 msgstr "`Reduct` 只能由本包构造。"
 
-#: manual/api/hom.md:580
+#: manual/api/hom.md:581
 msgid "These constants are the inclusions between the built-in signatures."
 msgstr "这些常量是内置签名之间的包含关系。"
 
-#: manual/api/hom.md:592
+#: manual/api/hom.md:593
 msgid "`Reduct::refl()` is the trivial inclusion of `S` in itself; `r.then(r2)` composes inclusions."
 msgstr "`Reduct::refl()` 是 `S` 到自身的平凡包含；`r.then(r2)` 复合包含关系。"
 
-#: manual/api/hom.md:608
+#: manual/api/hom.md:609
 msgid "Law checks"
 msgstr "定律检查"
 
-#: manual/api/hom.md:612
+#: manual/api/hom.md:613
 msgid "`h.check(src, dst, samples)` tests the homomorphism law with exact equality on every operation of `S`."
 msgstr "`h.check(src, dst, samples)` 在 `S` 的每个运算上以精确相等测试同态定律。"
 
-#: manual/api/hom.md:619
+#: manual/api/hom.md:620
 msgid "Requires `B : Eq`. It is `check_by` with `==`."
 msgstr "要求 `B : Eq`。它就是以 `==` 为关系的 `check_by`。"
 
-#: manual/api/hom.md:623
+#: manual/api/hom.md:624
 msgid "`h.check_by(src, dst, samples, rel)` tests `rel(f(op_A(xs)), op_B(f(xs)))` for every operation over all tuples drawn from `samples`."
 msgstr "`h.check_by(src, dst, samples, rel)` 对每个运算、在由 `samples` 组成的所有元组上测试 `rel(f(op_A(xs)), op_B(f(xs)))`。"
 
-#: manual/api/hom.md:630
+#: manual/api/hom.md:631
 msgid "`rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets. An operation of arity `n` is tested on `samples.length()^n` tuples. Aborts when `src` and `dst` do not list the same operations."
 msgstr "`rel` 决定保持的强度：严格同态用相等，次可加映射等宽松同态用 `<=`，映到浮点目标的近似同态用容差。元数为 `n` 的运算在 `samples.length()^n` 个元组上测试。当 `src` 与 `dst` 列出的运算不同时中止。"
 
-#: manual/api/hom.md:648
+#: manual/api/hom.md:649
 msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so a lift into ℤ is a section, not a homomorphism. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
 msgstr "定宽整数源类型（`Int`、`Int64`、`UInt` 等）是 ℤ/2^k，而不是整数环。从它们到 `BigInt` 不存在半环同态，因此提升到 ℤ 是截面而不是同态。同样的论证排除了 `Int -> Int64` 这类拓宽，而 `Int64 -> Int` 这类截断是环同态。"
 
-#: manual/api/hom.md:653
+#: manual/api/hom.md:654
 msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
 msgstr "推理规则按严格同态来复合证书。只满足松弛（`<=`）或容差定律的映射，复合之后必须重新检验。"
 
-#: manual/api/hom.md:656
+#: manual/api/hom.md:657
 msgid "`Float` and `Double` targets satisfy the laws only up to rounding; use `check_by` with a tolerance. See the embedding notes in the [core API](core.md)."
 msgstr "`Float` 与 `Double` 目标只在舍入误差内满足同态律，应使用 `check_by` 加容差。参见 [core API](core.md) 的嵌入说明。"
 
-#: manual/api/hom.md:664
+#: manual/api/hom.md:665
 msgid "`Hom::from_nat()` certifies `NatHomomorphism::from_nat`."
 msgstr "`Hom::from_nat()` 为 `NatHomomorphism::from_nat` 发放证书。"
 
-#: manual/api/hom.md:671
+#: manual/api/hom.md:672
 msgid "It is not a homomorphism for fixed-width sources. Replacement: `Hom::from_integer` with `Section::of_integral`, or `lift_to` when no certificate is needed."
 msgstr "对定宽源它不是同态。替代方案：`Hom::from_integer` 配合 `Section::of_integral`，不需要证书时用 `lift_to`。"
 
-#: manual/api/hom.md:677
+#: manual/api/hom.md:678
 msgid "`Hom::from_integral()` certifies `IntegralHomomorphism::from_integral`."
 msgstr "`Hom::from_integral()` 为 `IntegralHomomorphism::from_integral` 发放证书。"
 
-#: manual/api/hom.md:684
+#: manual/api/hom.md:685
 msgid "Deprecated for the same reason, with the same replacement."
 msgstr "因同样的理由弃用，替代方案相同。"
 
@@ -1074,7 +1075,7 @@ msgid "**Why not through a decimal string.** Earlier versions printed the `BigIn
 msgstr "**为什么不经过十进制字符串。** 早期版本把 `BigInt` 打印成十进制，再把结果解析为 `Double`。这在有限范围内是正确舍入的，但解析器拒绝达到或超过溢出阈值的值，于是转换会 abort，而不是返回 $\\pm\\infty$；十进制转换在部分后端上耗时与长度成平方关系；而且 `Float` 被舍入了两次。"
 
 #: manual/design/core.md:410
-#: manual/design/hom.md:143
+#: manual/design/hom.md:147
 msgid "Alternatives rejected"
 msgstr "被否决的方案"
 
@@ -1095,7 +1096,7 @@ msgid "A separate division-ring trait: no shipped type needs it, and code that m
 msgstr "单独的除环 trait：没有随包类型需要它，而必须在无交换律下工作的代码可以要求 `Ring + Inverse + Div`。"
 
 #: manual/design/core.md:423
-#: manual/design/hom.md:159
+#: manual/design/hom.md:163
 msgid "Boundaries"
 msgstr "边界"
 
@@ -1160,134 +1161,138 @@ msgid "The signature is a phantom type `S` on the certificate, while the algebra
 msgstr "签名以幽灵类型 `S` 出现在类型上，代数以字典 `Algebra[S, A]` 的形式作为值传递，两者分离：证书说明\"保持什么\"，字典用于检查。"
 
 #: manual/design/hom.md:35
+msgid "Custom operations supplied to `Algebra::make` must have nonnegative arity. Law checking enumerates argument tuples recursively, so rejecting invalid arities at construction prevents nontermination before a certificate is checked."
+msgstr "传给 `Algebra::make` 的自定义运算的元数必须非负。法则检查会递归枚举参数元组，因此在构造时拒绝无效元数可避免证书检查前不终止。"
+
+#: manual/design/hom.md:39
 msgid "Signature inclusions are `Reduct[S, T]` witnesses only this package can build."
 msgstr "签名之间的包含关系用只有本包能构造的 `Reduct[S, T]` 见证表示。"
 
-#: manual/design/hom.md:36
+#: manual/design/hom.md:40
 msgid "The strength of preservation is the relation `rel` chosen at check time, so strict, lax and approximate homomorphisms share one API."
 msgstr "保持强度由检查时的关系 `rel` 决定，严格、lax 与近似同态共用一套 API。"
 
-#: manual/design/hom.md:41
+#: manual/design/hom.md:45
 msgid "The [hom tutorial](../tutorial/hom.md) uses `Section` without this mathematics."
 msgstr "[hom 教程](../tutorial/hom.md)在不涉及这些数学的情况下使用 `Section`。"
 
-#: manual/design/hom.md:44
+#: manual/design/hom.md:48
 msgid "Definition"
 msgstr "定义"
 
-#: manual/design/hom.md:46
+#: manual/design/hom.md:50
 msgid "Let `π : A -> Q` be a surjective homomorphism, for example the reduction `BigInt -> Int`. A section is a map `s : Q -> A` with `π(s(q)) = q` for every `q`: it picks one element of every class `π⁻¹(q)`. By the first isomorphism theorem `Q` is the quotient `A / ker π`, so a section is a choice of representatives for a quotient algebra."
 msgstr "设 `π : A -> Q` 是满同态，例如约化 `BigInt -> Int`。截面是满足对每个 `q` 都有 `π(s(q)) = q` 的映射 `s : Q -> A`：它从每个类 `π⁻¹(q)` 中选出一个元素。由第一同构定理，`Q` 就是商 `A / ker π`，所以截面就是为商代数选取代表元。"
 
-#: manual/design/hom.md:52
+#: manual/design/hom.md:56
 msgid "What a section preserves"
 msgstr "截面保持什么"
 
-#: manual/design/hom.md:54
+#: manual/design/hom.md:58
 msgid "For every operation `ω` and arguments `x`:"
 msgstr "对每个运算 `ω` 与参数 `x`："
 
-#: manual/design/hom.md:56
+#: manual/design/hom.md:60
 msgid "`s(ω(x))` and `ω(s(x))` are congruent modulo `ker π`. Apply `π` to both: `π(s(ω(x))) = ω(x)` by the section law, and `π(ω(s(x))) = ω(π(s(x))) = ω(x)` because `π` is a homomorphism."
 msgstr "`s(ω(x))` 与 `ω(s(x))` 模 `ker π` 同余。对两者作用 `π`：由截面律 `π(s(ω(x))) = ω(x)`；由于 `π` 是同态，`π(ω(s(x))) = ω(π(s(x))) = ω(x)`。"
 
-#: manual/design/hom.md:59
+#: manual/design/hom.md:63
 msgid "`s(ω(x)) = ω(s(x))` exactly when `ω(s(x))` lies in the image of `s`. If `ω(s(x)) = s(y)`, then `y = π(s(y)) = π(ω(s(x))) = ω(x)` by the same computation, so `ω(s(x)) = s(ω(x))`. Conversely `s(ω(x))` is always in the image."
 msgstr "`s(ω(x)) = ω(s(x))` 当且仅当 `ω(s(x))` 位于 `s` 的像中。若 `ω(s(x)) = s(y)`，则由同样的计算 `y = π(s(y)) = π(ω(s(x))) = ω(x)`，所以 `ω(s(x)) = s(ω(x))`。反过来，`s(ω(x))` 总在像中。"
 
-#: manual/design/hom.md:64
+#: manual/design/hom.md:68
 msgid "The same two steps in display form, for an $n$-ary operation $\\omega$ and $x = (x_1, \\dots, x_n)$ with $s(x) = (s(x_1), \\dots, s(x_n))$:"
 msgstr "同样两步的公式形式：对 $n$ 元运算 $\\omega$ 与 $x = (x_1, \\dots, x_n)$，记 $s(x) = (s(x_1), \\dots, s(x_n))$："
 
-#: manual/design/hom.md:76
+#: manual/design/hom.md:80
 msgid "so $s(\\omega_Q(x)) - \\omega_A(s(x)) \\in \\ker \\pi$ whenever $A$ has subtraction. If $\\omega_A(s(x)) = s(y)$ for some $y$, applying $\\pi$ gives $y = \\omega_Q(x)$, hence $\\omega_A(s(x)) = s(\\omega_Q(x))$."
 msgstr "因此只要 $A$ 有减法，就有 $s(\\omega_Q(x)) - \\omega_A(s(x)) \\in \\ker \\pi$。若对某个 $y$ 有 $\\omega_A(s(x)) = s(y)$，两边作用 $\\pi$ 得 $y = \\omega_Q(x)$，从而 $\\omega_A(s(x)) = s(\\omega_Q(x))$。"
 
-#: manual/design/hom.md:80
+#: manual/design/hom.md:84
 msgid "So `Section::check` only tests the section law; `check_ops` tests that `π` is a homomorphism on lifted arguments, and point 2 follows. For `Int`, the image of `s` is `[-2^31, 2^31)`, and \"the result is in the image\" means \"the result did not wrap around\"."
 msgstr "因此 `Section::check` 只检验截面律；`check_ops` 检验 `π` 在提升后的参数上是同态，第 2 点随之成立。对 `Int` 而言，`s` 的像是 `[-2^31, 2^31)`，“结果在像中”就是“结果没有回绕”。"
 
-#: manual/design/hom.md:85
+#: manual/design/hom.md:89
 msgid "The carry"
 msgstr "进位"
 
-#: manual/design/hom.md:87
+#: manual/design/hom.md:91
 msgid "For addition on `Int` the difference in point 1 is `s(a) + s(b) - s(a + b) = c(a, b)·2^32` with `c(a, b) ∈ {-1, 0, 1}`, the carry. Expanding `s(a) + s(b) + s(e)` in two ways gives"
 msgstr "对 `Int` 的加法，第 1 点中的差为 `s(a) + s(b) - s(a + b) = c(a, b)·2^32`，其中 `c(a, b) ∈ {-1, 0, 1}`，即进位。把 `s(a) + s(b) + s(e)` 按两种方式展开得到"
 
-#: manual/design/hom.md:95
+#: manual/design/hom.md:99
 msgid "The identity comes from associativity. Write $m = 2^{32}$ and $s(a) + s(b) = s(a + b) + c(a, b)\\,m$, then group the sum of three lifts both ways:"
 msgstr "这个恒等式来自结合律。记 $m = 2^{32}$ 且 $s(a) + s(b) = s(a + b) + c(a, b)\\,m$，然后把三个提升之和按两种方式结合："
 
-#: manual/design/hom.md:108
+#: manual/design/hom.md:112
 msgid "Both sides are equal in ℤ, so the coefficients of $m$ agree. The bound on $c$ follows from the range of the representatives: $s(a) + s(b) \\in [-2^{32}, 2^{32} - 2]$ and $s(a + b) \\in [-2^{31}, 2^{31})$, so $c(a, b)\\,m$ lies strictly between $-3 \\cdot 2^{31}$ and $3 \\cdot 2^{31}$, and $c(a, b) \\in \\{-1, 0, 1\\}$."
 msgstr "两边在 ℤ 中相等，所以 $m$ 的系数相同。$c$ 的界来自代表元的范围：$s(a) + s(b) \\in [-2^{32}, 2^{32} - 2]$ 且 $s(a + b) \\in [-2^{31}, 2^{31})$，所以 $c(a, b)\\,m$ 严格介于 $-3 \\cdot 2^{31}$ 与 $3 \\cdot 2^{31}$ 之间，从而 $c(a, b) \\in \\{-1, 0, 1\\}$。"
 
-#: manual/design/hom.md:114
+#: manual/design/hom.md:118
 msgid "So `c` is a 2-cocycle describing ℤ as an extension of ℤ/2^32 by 2^32ℤ. That extension does not split, because ℤ has no element of finite order, so no choice of representatives makes `s` a homomorphism. Directly: an additive section $\\sigma : \\mathbb{Z}/m \\to \\mathbb{Z}$ would give $m\\,\\sigma(1) = \\sigma(m \\cdot 1) = \\sigma(0) = 0$, so $\\sigma(1) = 0$, contradicting $\\pi(\\sigma(1)) = 1$. For multiplication the difference is the high word of the product."
 msgstr "所以 `c` 是一个 2-上闭链，把 ℤ 描述为 ℤ/2^32 被 2^32ℤ 的扩张。该扩张不分裂，因为 ℤ 没有有限阶元素，所以任何代表元选择都不能让 `s` 成为同态。直接地说：一个可加截面 $\\sigma : \\mathbb{Z}/m \\to \\mathbb{Z}$ 会给出 $m\\,\\sigma(1) = \\sigma(m \\cdot 1) = \\sigma(0) = 0$，于是 $\\sigma(1) = 0$，与 $\\pi(\\sigma(1)) = 1$ 矛盾。对乘法而言，偏差是乘积的高位字。"
 
-#: manual/design/hom.md:122
+#: manual/design/hom.md:126
 msgid "Normal forms"
 msgstr "范式"
 
-#: manual/design/hom.md:124
+#: manual/design/hom.md:128
 msgid "`n = s ∘ π : A -> A` is a normal form: `n(n(a)) = n(a)`, `a` and `n(a)` are congruent, and `a`, `b` are congruent exactly when `n(a) = n(b)`. The quotient operations are computed on representatives as `s(ω_Q(x)) = n(ω_A(s(x)))`: compute in `A`, then normalize. Wrapped `Int` arithmetic is this computation for `A = ℤ`. Because `Section::normalize` is built from `s` and `π`, it cannot give two congruent values different normal forms."
 msgstr "`n = s ∘ π : A -> A` 是一个范式：`n(n(a)) = n(a)`，`a` 与 `n(a)` 同余，且 `a`、`b` 同余当且仅当 `n(a) = n(b)`。商上的运算在代表元上按 `s(ω_Q(x)) = n(ω_A(s(x)))` 计算：先在 `A` 中计算，再化为范式。回绕的 `Int` 运算正是 `A = ℤ` 时的这种计算。由于 `Section::normalize` 由 `s` 与 `π` 构造，它不可能给两个同余的值不同的范式。"
 
-#: manual/design/hom.md:132
+#: manual/design/hom.md:136
 msgid "Why `Section` is not a `Hom`"
 msgstr "为什么 `Section` 不是 `Hom`"
 
-#: manual/design/hom.md:134
+#: manual/design/hom.md:138
 msgid "A section is injective and agrees with the operations on its image, so it is easy to mistake for a homomorphism and compose it as one. Keeping it in a separate certificate makes the difference visible in the types: `Section` carries `π` as a `Hom`, and only promises `π(s(q)) = q`."
 msgstr "截面是单射，并且在它的像上与运算一致，所以很容易被误认为同态并按同态来复合。把它放在单独的证书里，就能在类型上看出区别：`Section` 把 `π` 作为 `Hom` 携带，只承诺 `π(s(q)) = q`。"
 
-#: manual/design/hom.md:139
+#: manual/design/hom.md:143
 msgid "The law does not fix which representatives are chosen. `[0, 2^32)` and `[-2^31, 2^31)` both give sections of `BigInt -> Int`; only the second preserves the signed order of `Int`. Such properties need their own checks."
 msgstr "定律并不规定选哪些代表元。`[0, 2^32)` 与 `[-2^31, 2^31)` 都给出 `BigInt -> Int` 的截面，只有后者保持 `Int` 的有符号序。这类性质需要单独检验。"
 
-#: manual/design/hom.md:145
+#: manual/design/hom.md:149
 msgid "A homomorphism trait `Hom[A, B]` implemented by types: it needs two type parameters, which MoonBit traits do not have, and it would allow only one homomorphism per pair of types, while a pair usually has several, such as the identity and conjugation on the complex numbers."
 msgstr "由类型实现的同态 trait `Hom[A, B]`：它需要两个类型参数，而 MoonBit 的 trait 没有；而且它对每对类型只允许一个同态，而一对类型通常有多个同态，例如复数上的恒等映射与共轭。"
 
-#: manual/design/hom.md:149
+#: manual/design/hom.md:153
 msgid "Plain functions `(A) -> B` without a certificate: nothing would separate checked homomorphisms from arbitrary conversions, and composition would not record where the obligations came from."
 msgstr "不带证书的普通函数 `(A) -> B`：无法把已检查的同态与任意转换区分开，复合也不会记录义务来自何处。"
 
-#: manual/design/hom.md:152
+#: manual/design/hom.md:156
 msgid "Treating representative lifts such as `Int -> BigInt` as homomorphisms: the cocycle argument above shows that they are not, so they get their own certificate, `Section`."
 msgstr "把 `Int -> BigInt` 这样的代表元提升当作同态：上文的上闭链论证表明它们不是，所以它们有自己的证书 `Section`。"
 
-#: manual/design/hom.md:155
+#: manual/design/hom.md:159
 msgid "Recording the check relation (strict, lax, tolerance) in the type: it would multiply the inference rules for each strength. The relation is chosen at check time instead, and the boundaries below state the cost."
 msgstr "在类型中记录检查关系（严格、宽松、容差）：这会让推理规则按强度成倍增加。改为在检查时选择关系，其代价在下文的边界中说明。"
 
-#: manual/design/hom.md:161
+#: manual/design/hom.md:165
 msgid "Only single-sorted signatures. Multi-sorted structures such as modules (scalars plus vectors) are out of scope for this subsystem."
 msgstr "只覆盖单类别签名。模这类多类别结构（标量加向量）不在本子系统内。"
 
-#: manual/design/hom.md:163
+#: manual/design/hom.md:167
 msgid "Without higher-kinded types, functorial lifts (polynomials, matrices, ...) belong to their own packages and are not generalized here."
 msgstr "没有 HKT，因此函子提升（多项式、矩阵等）由各自的包提供，不在本包内泛化。"
 
-#: manual/design/hom.md:165
+#: manual/design/hom.md:169
 msgid "Laws are tested, not proven. The certificate guarantees traceable origin, not that the laws hold."
 msgstr "同态律不被证明，只被测试。证书保证的是\"来源可追溯\"，不是\"定律成立\"。"
 
-#: manual/design/hom.md:167
+#: manual/design/hom.md:171
 msgid "Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get this from trait coherence; dictionaries from `Algebra::make` only by convention."
 msgstr "`then` 的可靠性依赖于每个载体上只有一个 `S`-代数。内置标签由 trait 的一致性保证这一点；`Algebra::make` 构造的字典只能靠约定。"
 
-#: manual/design/hom.md:170
+#: manual/design/hom.md:174
 msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
 msgstr "证书不记录 `check_by` 所用的关系，因此松弛映射与近似映射会被当作严格同态来复合。"
 
-#: manual/design/hom.md:172
+#: manual/design/hom.md:176
 msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are sections, so they agree with the operations only while arithmetic does not wrap."
 msgstr "定宽整数是 ℤ/2^k，不是 ℤ 或 ℕ。从它们到 ℤ 的映射是截面，所以只在运算不回绕时与运算一致。"
 
-#: manual/design/hom.md:175
+#: manual/design/hom.md:179
 msgid "The section law does not fix which representatives are chosen, so properties such as order preservation need their own checks."
 msgstr "截面律不规定选哪些代表元，因此保序之类的性质需要单独检验。"
 
@@ -1667,7 +1672,7 @@ msgid "Higher-level Luna Flow packages state their requirements with these trait
 msgstr "更高层的 Luna Flow 包用这些 trait 表述其需求，因此实现了它们的类型可以传给这些包的泛型代码。保持实例诚实：只有当你的类型满足某个 trait 的定律时才实现它，这些定律列在 [core API](../api/core.md) 中。"
 
 #: manual/tutorial/core.md:226
-#: manual/tutorial/hom.md:187
+#: manual/tutorial/hom.md:189
 msgid "Common pitfalls"
 msgstr "常见陷阱"
 
@@ -1708,7 +1713,7 @@ msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHom
 msgstr "优先使用 `lift_to`、`FromNat` 与 `FromInteger`，而不是已废弃的 `NatHomomorphism` 与 `IntegralHomomorphism`。"
 
 #: manual/tutorial/core.md:248
-#: manual/tutorial/hom.md:201
+#: manual/tutorial/hom.md:203
 msgid "Next steps"
 msgstr "下一步"
 
@@ -1801,44 +1806,51 @@ msgid "`Hom` and `check` work for any signature with one carrier, as long as bot
 msgstr "只要两侧字典按相同顺序列出相同的运算，`Hom` 与 `check` 就适用于任何单载体的签名。每个标签与载体只保留一个字典：针对同一标签的不同含义检验过的证书不能复合。"
 
 #: manual/tutorial/hom.md:178
+msgid "Operation arities must be nonnegative; `Algebra::make` aborts otherwise."
+msgstr "运算元数必须非负；否则 `Algebra::make` 会中止。"
+
+#: manual/tutorial/hom.md:180
 msgid "Maps that are not determined by the types"
 msgstr "不由类型决定的映射"
 
-#: manual/tutorial/hom.md:180
+#: manual/tutorial/hom.md:182
 msgid "The canonical map out of ℤ is unique, so it lives in the `FromInteger` trait. Most other homomorphisms are not unique: a type can have several structure-preserving maps to itself, such as the identity and complex conjugation on the complex numbers. Write such maps as explicit `Hom` values, never as trait instances, so that the choice stays visible at the call site."
 msgstr "从 ℤ 出发的典范映射是唯一的，所以它放在 `FromInteger` trait 中。其他大多数同态并不唯一：一个类型可以有多个到自身的保结构映射，例如复数上的恒等映射与复共轭。把这样的映射写成显式的 `Hom` 值，而不要写成 trait 实例，这样选择在调用处始终可见。"
 
-#: manual/tutorial/hom.md:189
+#: manual/tutorial/hom.md:191
 msgid "Use `Hom::from_integer` for the conversion out of `BigInt` into a number type; it holds for every input."
 msgstr "从 `BigInt` 转成数值类型时使用 `Hom::from_integer`；它对所有输入成立。"
 
-#: manual/tutorial/hom.md:191
+#: manual/tutorial/hom.md:193
 msgid "Use `Section::of_integral` to check conversions out of machine integers, and `lift_to` when you only need the value. Do not wrap a widening such as `Int -> Int64` in `Hom::postulate`: it is not a homomorphism."
 msgstr "用 `Section::of_integral` 检查从机器整数出发的转换，只需要值时用 `lift_to`。不要把 `Int -> Int64` 这样的扩宽包进 `Hom::postulate`：它不是同态。"
 
-#: manual/tutorial/hom.md:194
+#: manual/tutorial/hom.md:196
 msgid "Include edge values in `check` samples: 0, 1, negatives, and values close to overflow for fixed-width types."
 msgstr "`check` 的样本要包含边界值，例如 0、1、负数，以及定宽类型接近溢出的值。"
 
-#: manual/tutorial/hom.md:196
+#: manual/tutorial/hom.md:198
 msgid "A map checked with `<=` or a tolerance is still composed as if it were exact. Check the composite again."
 msgstr "用 `<=` 或容差检查的映射在复合时仍被当作精确映射。请再次检查复合结果。"
 
-#: manual/tutorial/hom.md:198
+#: manual/tutorial/hom.md:200
 msgid "Checks of binary operations test every pair of samples, so a few dozen samples already mean thousands of evaluations."
 msgstr "二元运算的检查会测试样本的每一对，所以几十个样本就意味着数千次求值。"
 
-#: manual/tutorial/hom.md:203
+#: manual/tutorial/hom.md:205
 msgid "The [hom API](../api/hom.md) lists every constructor, rule and check."
 msgstr "[hom API](../api/hom.md) 列出了每个构造器、规则和检查。"
 
-#: manual/tutorial/hom.md:204
+#: manual/tutorial/hom.md:206
 msgid "The [hom design](../design/hom.md) proves what a section preserves and why a lift into ℤ cannot be a homomorphism."
 msgstr "[hom 设计](../design/hom.md) 证明了截面保持什么，以及为什么到 ℤ 的提升不可能是同态。"
 
-#: manual/tutorial/hom.md:206
+#: manual/tutorial/hom.md:208
 msgid "The [core tutorial](core.md) covers the traits that the built-in signatures are derived from."
 msgstr "[core 教程](core.md) 介绍了内置签名所依据的 trait。"
+
+#~ msgid "It aborts if any operation has a negative arity."
+#~ msgstr "如果任何运算的元数为负数，它会中止。"
 
 #~ msgid "These traits live in `src/structure.mbt`."
 #~ msgstr "这些定义在 `src/structure.mbt` 中。"

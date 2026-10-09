@@ -129,6 +129,7 @@ pub struct Algebra[S, A] {
 ### `Algebra::make`
 
 `Algebra::make(ops)` builds a dictionary for a custom signature tag.
+It aborts if any operation has a negative arity.
 
 ```mbti
 pub fn[S, A] Algebra::make(Array[Op[A]]) -> Algebra[S, A]
