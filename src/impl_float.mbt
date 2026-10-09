@@ -44,15 +44,6 @@ pub impl NatHomomorphism for Float
 pub impl IntegralHomomorphism for Float
 
 ///|
-fn float_from_bigint(a : BigInt) -> Float {
-  Float::from_double(
-    @string.from_str(BigInt::to_string(a)) catch {
-      _ => abort("BigInt decimal conversion failed")
-    },
-  )
-}
-
-///|
 pub impl NatHomomorphism for Float with fn[S : Nat] from_nat(a : S) -> Float {
   float_from_bigint(Integral::normalize(a))
 }
