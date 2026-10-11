@@ -1,23 +1,26 @@
 ///|
-pub impl AddMonoid for Float
+pub impl AddMonoidOps for Float
 
 ///|
-pub impl MulMonoid for Float
+pub impl MulMonoidOps for Float
 
 ///|
-pub impl AddGroup for Float
+pub impl AddGroupOps for Float
 
 ///|
-pub impl MulGroup for Float
+pub impl MulGroupOps for Float
 
 ///|
-pub impl Semiring for Float
+pub impl SemiringOps for Float
 
 ///|
-pub impl Ring for Float
+pub impl RingOps for Float
 
 ///|
-pub impl Field for Float
+pub impl FieldOps for Float
+
+///|
+pub impl RoundedArithmetic for Float
 
 ///|
 pub impl FromNat for Float
@@ -72,12 +75,12 @@ pub impl Zero for Float with fn zero() -> Float {
 }
 
 ///|
-pub impl Num for Float with fn abs(a) -> Float {
+pub impl NumOps for Float with fn abs(a) -> Float {
   Float::abs(a)
 }
 
 ///|
-pub impl Num for Float with fn signum(a) -> Float {
+pub impl NumOps for Float with fn signum(a) -> Float {
   if a < 0.0 {
     -1.0
   } else if a > 0.0 {

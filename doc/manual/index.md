@@ -1,6 +1,6 @@
 # luna-generic
 
-This manual documents the intended `v0.4.0` release of `Luna-Flow/luna-generic`.
+This manual documents the planned `v0.5.0` API of `Luna-Flow/luna-generic`.
 
 ## Overview
 
@@ -8,7 +8,7 @@ This manual documents the intended `v0.4.0` release of `Luna-Flow/luna-generic`.
 
 The current release candidate centers on three changes:
 
-- `FromNat` and `FromInteger` describe the unique homomorphisms out of ℕ and ℤ as target-side traits.
+- `FromNat` and `FromInteger` provide conversion operations; exact preservation requires a separate law certificate.
 - `Integral` is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of its canonical map.
 - `lift_to` and `Section` keep the choice of a representative apart from homomorphisms.
 
@@ -35,10 +35,11 @@ certificate subsystem, `Hom` and `Section`, has its own pages as `hom`.
 
 - `AddMonoid`, `MulMonoid`
 - `AddGroup`, `MulGroup`
-- `Semiring`, `Ring`, `Field` (commutative, $0 \ne 1$: $ab = ba$)
+- `Semiring`, `Ring`, `Field` exact structures with explicit Law certificates
+- `AddMonoidOps`, `SemiringOps`, `RingOps`, `FieldOps`, `NumOps` operation bundles
 - `FromNat`, `FromInteger`
 - `Integral`, `Nat`
-- `Num`
+- `RoundedArithmetic` for rounded floating operations
 - Deprecated: `NatHomomorphism`, `IntegralHomomorphism`
 
 ## Exported operations and default types
@@ -51,22 +52,23 @@ certificate subsystem, `Hom` and `Section`, has its own pages as `hom`.
 - `Integral` covers signed integers, unsigned integers, and `BigInt`
 - `Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, and `UInt64`
 - Fixed-width integers are ℤ/2^k; `FromInteger::from_integer` reduces modulo 2^k
-- `Integral::normalize` picks the representative of a value as a `BigInt`, and `from_integer(normalize(x)) == x`
+- `Integral::normalize` picks the representative of a value as a `BigInt`; `IntegralTh` records the round-trip law
 - Unsigned integer instances stop at `Semiring`
 
 ## Conversions
 
-- `FromInteger::from_integer` is the canonical map out of ℤ: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`
+- `FromInteger::from_integer` converts out of `BigInt`: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`
 - `lift_to(x)` lifts to the representative and maps it into the target; it is a function, not a homomorphism
 - `NatHomomorphism::from_nat` and `IntegralHomomorphism::from_integral` are deprecated in favour of `FromNat`, `FromInteger` and `lift_to`
 
 ## Generalized homomorphisms
 
-- `Hom[S, A, B]`: a certificate for maps preserving the signature `S`, built only through `Hom::postulate` (which creates a proof obligation), the canonical map `Hom::from_integer`, or inference rules
+- `Hom[S, A, B]`: a certificate for maps preserving `S`, bound to source and target runtime Models; checked composition returns `ModelMismatch`
 - `Section[S, Q, A]`: a certificate that a lift picks one representative per class of a quotient; `Section::of_integral` is the canonical one for integral types
 - Signature tags: `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
 - Algebra dictionaries `Algebra[S, A]`, operations `Op[A]`, the product type `Prod[A, B]` and reduct witnesses `Reduct[S, T]`
 - `Hom::check` / `Hom::check_by` test the homomorphism laws on samples with strict, lax or approximate strength
+- `Hom::check_models` / `Hom::check_models_by` add exact runtime Model identity checks to finite diagnostics
 - See the [hom API](api/hom.md), [tutorial](tutorial/hom.md) and [design](design/hom.md)
 
 ## Where to read next

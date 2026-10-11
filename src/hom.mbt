@@ -2,11 +2,12 @@
 //
 // A `Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of
 // the signature `S`. The certificate cannot be forged outside this package:
-// the only public trust entry is `Hom::postulate`, which hands the proof
-// obligation to the caller. The canonical map `Hom::from_integer` and the
-// canonical sections `Section::of_integral` are the other leaves; their
-// obligation sits on the `FromInteger` and `Integral` instances. Every other constructor here is an inference rule that
-// preserves the certificate, so obligations only appear at the leaves.
+// `Hom::postulate` hands the map-preservation obligation to the caller. Law
+// assumptions enter separately through `Law::postulate` and
+// `LawfulModel::postulate`. Canonical conversion operations do not by
+// themselves create strict Hom certificates. Every other constructor here is
+// an inference rule that preserves the certificate, so obligations only
+// appear at the leaves.
 
 ///|
 /// Signature tag: `0` and `+`.
@@ -41,26 +42,18 @@ pub(all) struct Op[A] {
 /// An interpretation of the signature `S` on the carrier `A`.
 ///
 /// Two algebras of the same `S` must list the same operations in the same
-/// order; `Hom::check_by` aborts when they do not.
+/// order. `Hom::check_by` returns `false` when they do not.
 #warnings("-unused_type_variable")
 pub struct Algebra[S, A] {
   priv ops : Array[Op[A]]
 }
 
 ///|
-/// Builds an algebra for a custom signature tag.
-///
-/// Certificates assume one `S`-algebra per carrier: every `Algebra[S, A]`
-/// passed to `check` for the same `S` and `A` must interpret the operations
-/// the same way. `Hom::then` chains certificates through the middle carrier,
-/// so two different algebras on it (say `max` and `min` both tagged `S`)
-/// would compose into a map that preserves neither. Operation arities must be
-/// nonnegative.
-pub fn[S, A] Algebra::make(ops : Array[Op[A]]) -> Algebra[S, A] {
-  guard valid_operation_arities(ops) else {
-    abort("Algebra: operation arity must be nonnegative")
-  }
-  { ops, }
+pub fn[S, A] Algebra::make(
+  ops : Array[Op[A]],
+) -> Result[Algebra[S, A], ModelConstructionError] {
+  guard valid_operation_arities(ops) else { return Err(InvalidArity) }
+  Ok({ ops, })
 }
 
 ///|
@@ -74,27 +67,27 @@ fn[A] valid_operation_arities(ops : Array[Op[A]]) -> Bool {
 }
 
 ///|
-pub fn[A : AddMonoid] Algebra::add_monoid() -> Algebra[AddMonoidSig, A] {
+pub fn[A : AddMonoidOps] Algebra::add_monoid() -> Algebra[AddMonoidSig, A] {
   { ops: [op_zero(), op_add()], }
 }
 
 ///|
-pub fn[A : MulMonoid] Algebra::mul_monoid() -> Algebra[MulMonoidSig, A] {
+pub fn[A : MulMonoidOps] Algebra::mul_monoid() -> Algebra[MulMonoidSig, A] {
   { ops: [op_one(), op_mul()], }
 }
 
 ///|
-pub fn[A : AddGroup] Algebra::add_group() -> Algebra[AddGroupSig, A] {
+pub fn[A : AddGroupOps] Algebra::add_group() -> Algebra[AddGroupSig, A] {
   { ops: [op_zero(), op_add(), op_neg()], }
 }
 
 ///|
-pub fn[A : Semiring] Algebra::semiring() -> Algebra[SemiringSig, A] {
+pub fn[A : SemiringOps] Algebra::semiring() -> Algebra[SemiringSig, A] {
   { ops: [op_zero(), op_one(), op_add(), op_mul()], }
 }
 
 ///|
-pub fn[A : Ring] Algebra::ring() -> Algebra[RingSig, A] {
+pub fn[A : RingOps] Algebra::ring() -> Algebra[RingSig, A] {
   { ops: [op_zero(), op_one(), op_add(), op_mul(), op_neg()], }
 }
 
@@ -103,9 +96,9 @@ pub fn[A : Ring] Algebra::ring() -> Algebra[RingSig, A] {
 pub fn[S, A, B] Algebra::prod(
   a : Algebra[S, A],
   b : Algebra[S, B],
-) -> Algebra[S, Prod[A, B]] {
-  ensure_same_signature(a.ops, b.ops)
-  {
+) -> Result[Algebra[S, Prod[A, B]], ModelMismatch] {
+  guard same_signature(a.ops, b.ops) else { return Err(ModelMismatch) }
+  Ok({
     ops: a.ops.mapi((i, oa) => {
       let ob = b.ops[i]
       {
@@ -117,7 +110,7 @@ pub fn[S, A, B] Algebra::prod(
         },
       }
     }),
-  }
+  })
 }
 
 ///|
@@ -146,18 +139,17 @@ fn[A : Neg] op_neg() -> Op[A] {
 }
 
 ///|
-fn[A, B] ensure_same_signature(a : Array[Op[A]], b : Array[Op[B]]) -> Unit {
-  guard a.length() == b.length() else {
-    abort("Algebra: signatures have different numbers of operations")
+fn[A, B] same_signature(a : Array[Op[A]], b : Array[Op[B]]) -> Bool {
+  if a.length() != b.length() {
+    return false
   }
   for i, oa in a {
     let ob = b[i]
-    guard oa.name == ob.name && oa.arity == ob.arity else {
-      abort(
-        "Algebra: operation mismatch at index \{i}: \{oa.name}/\{oa.arity} vs \{ob.name}/\{ob.arity}",
-      )
+    if oa.name != ob.name || oa.arity != ob.arity {
+      return false
     }
   }
+  true
 }
 
 ///|
@@ -198,19 +190,65 @@ pub impl[A : One, B : One] One for Prod[A, B] with fn one() {
 }
 
 ///|
-pub impl[A : AddMonoid, B : AddMonoid] AddMonoid for Prod[A, B]
+pub impl[A : AddMonoidOps, B : AddMonoidOps] AddMonoidOps for Prod[A, B]
 
 ///|
-pub impl[A : MulMonoid, B : MulMonoid] MulMonoid for Prod[A, B]
+pub impl[A : MulMonoidOps, B : MulMonoidOps] MulMonoidOps for Prod[A, B]
 
 ///|
-pub impl[A : AddGroup, B : AddGroup] AddGroup for Prod[A, B]
+pub impl[A : AddGroupOps, B : AddGroupOps] AddGroupOps for Prod[A, B]
 
 ///|
-pub impl[A : Semiring, B : Semiring] Semiring for Prod[A, B]
+pub impl[A : SemiringOps, B : SemiringOps] SemiringOps for Prod[A, B]
 
 ///|
-pub impl[A : Ring, B : Ring] Ring for Prod[A, B]
+pub impl[A : RingOps, B : RingOps] RingOps for Prod[A, B]
+
+///|
+pub impl[A : AddMonoid, B : AddMonoid] AddMonoid for Prod[A, B] with fn add_monoid_law() {
+  Law::product_add_monoid(
+    AddMonoid::add_monoid_law(),
+    AddMonoid::add_monoid_law(),
+  )
+}
+
+///|
+pub impl[A : MulMonoid, B : MulMonoid] MulMonoid for Prod[A, B] with fn mul_monoid_law() {
+  Law::product_mul_monoid(
+    MulMonoid::mul_monoid_law(),
+    MulMonoid::mul_monoid_law(),
+  )
+}
+
+///|
+pub impl[A : AddGroup, B : AddGroup] AddGroup for Prod[A, B] with fn add_group_law() {
+  Law::product_add_group(AddGroup::add_group_law(), AddGroup::add_group_law())
+}
+
+///|
+pub impl[A : Semiring, B : Semiring] Semiring for Prod[A, B] with fn semiring_law() {
+  Law::product_semiring(Semiring::semiring_law(), Semiring::semiring_law())
+}
+
+///|
+pub impl[A : Ring, B : Ring] Ring for Prod[A, B] with fn ring_law() {
+  Law::product_ring(Ring::ring_law(), Ring::ring_law())
+}
+
+///|
+pub extend Prod with AddMonoid::{add_monoid_law}
+
+///|
+pub extend Prod with MulMonoid::{mul_monoid_law}
+
+///|
+pub extend Prod with AddGroup::{add_group_law}
+
+///|
+pub extend Prod with Semiring::{semiring_law}
+
+///|
+pub extend Prod with Ring::{ring_law}
 
 ///|
 pub extend Prod with Eq::{equal, not_equal}
@@ -237,53 +275,205 @@ pub extend Prod with Zero::{zero}
 pub extend Prod with One::{one}
 
 ///|
-/// Witness that every `S`-structure is also a `T`-structure, so an
-/// `S`-homomorphism is also a `T`-homomorphism. Only this package creates
-/// witnesses.
+struct OperationShape {
+  name : String
+  arity : Int
+}
+
+///|
+/// A kernel-owned projection between operation signatures. Its path records
+/// the mapping itself; composing two reducts preserves both mapping markers.
 #warnings("-unused_type_variable")
 pub struct Reduct[S, T] {
-  priv _witness : Unit
+  priv markers : Array[String]
+  priv source_ops : Array[OperationShape]
+  priv indices : Array[Int]
+  priv target_label : String
 }
 
 ///|
 pub let semiring_to_add_monoid : Reduct[SemiringSig, AddMonoidSig] = {
-  _witness: (),
+  markers: ["semiring-to-add-monoid"],
+  source_ops: [
+    { name: "0", arity: 0, },
+    { name: "1", arity: 0, },
+    { name: "+", arity: 2, },
+    { name: "*", arity: 2, },
+  ],
+  indices: [0, 2],
+  target_label: "AddMonoidSig",
 }
 
 ///|
 pub let semiring_to_mul_monoid : Reduct[SemiringSig, MulMonoidSig] = {
-  _witness: (),
+  markers: ["semiring-to-mul-monoid"],
+  source_ops: [
+    { name: "0", arity: 0, },
+    { name: "1", arity: 0, },
+    { name: "+", arity: 2, },
+    { name: "*", arity: 2, },
+  ],
+  indices: [1, 3],
+  target_label: "MulMonoidSig",
 }
 
 ///|
-pub let ring_to_semiring : Reduct[RingSig, SemiringSig] = { _witness: (), }
+pub let ring_to_semiring : Reduct[RingSig, SemiringSig] = {
+  markers: ["ring-to-semiring"],
+  source_ops: [
+    { name: "0", arity: 0, },
+    { name: "1", arity: 0, },
+    { name: "+", arity: 2, },
+    { name: "*", arity: 2, },
+    { name: "neg", arity: 1, },
+  ],
+  indices: [0, 1, 2, 3],
+  target_label: "SemiringSig",
+}
 
 ///|
-pub let ring_to_add_group : Reduct[RingSig, AddGroupSig] = { _witness: (), }
+pub let ring_to_add_group : Reduct[RingSig, AddGroupSig] = {
+  markers: ["ring-to-add-group"],
+  source_ops: [
+    { name: "0", arity: 0, },
+    { name: "1", arity: 0, },
+    { name: "+", arity: 2, },
+    { name: "*", arity: 2, },
+    { name: "neg", arity: 1, },
+  ],
+  indices: [0, 2, 4],
+  target_label: "AddGroupSig",
+}
 
 ///|
 pub let add_group_to_add_monoid : Reduct[AddGroupSig, AddMonoidSig] = {
-  _witness: (),
+  markers: ["add-group-to-add-monoid"],
+  source_ops: [
+    { name: "0", arity: 0, },
+    { name: "+", arity: 2, },
+    { name: "neg", arity: 1, },
+  ],
+  indices: [0, 1],
+  target_label: "AddMonoidSig",
 }
 
 ///|
 pub fn[S] Reduct::refl() -> Reduct[S, S] {
-  { _witness: (), }
+  { markers: [], source_ops: [], indices: [], target_label: "", }
 }
 
 ///|
-#warnings("-unused_value")
 pub fn[S, T, U] Reduct::then(
   self : Reduct[S, T],
-  _next : Reduct[T, U],
+  next : Reduct[T, U],
 ) -> Reduct[S, U] {
-  { _witness: (), }
+  let markers = append_strings(self.markers, next.markers)
+  let indices = if self.markers.length() == 0 {
+    next.indices
+  } else if next.markers.length() == 0 {
+    self.indices
+  } else {
+    next.indices.map(index => self.indices[index])
+  }
+  let source_ops = if self.markers.length() == 0 {
+    next.source_ops
+  } else {
+    self.source_ops
+  }
+  let target_label = if next.target_label == "" {
+    self.target_label
+  } else {
+    next.target_label
+  }
+  { markers, source_ops, indices, target_label, }
+}
+
+///|
+fn append_strings(left : Array[String], right : Array[String]) -> Array[String] {
+  let out = []
+  for value in left {
+    out.push(value)
+  }
+  for value in right {
+    out.push(value)
+  }
+  out
+}
+
+///|
+fn[S, T, A] project_algebra(
+  algebra : Algebra[S, A],
+  reduct : Reduct[S, T],
+) -> Result[Algebra[T, A], ModelConstructionError] {
+  if algebra.ops.length() != reduct.source_ops.length() {
+    return Err(InvalidOperationTable)
+  }
+  for i, shape in reduct.source_ops {
+    let op = algebra.ops[i]
+    if op.name != shape.name || op.arity != shape.arity {
+      return Err(InvalidOperationTable)
+    }
+  }
+  Ok({ ops: reduct.indices.map(index => algebra.ops[index]), })
+}
+
+///|
+fn[S, T, A] Model::key_after_reduct(
+  self : Model[S, A],
+  reduct : Reduct[S, T],
+) -> ModelKey {
+  key_after_reduct(self.key, reduct)
+}
+
+///|
+fn[S, T] key_after_reduct(key : ModelKey, reduct : Reduct[S, T]) -> ModelKey {
+  if reduct.markers.length() == 0 {
+    return key
+  }
+  match key {
+    Canonical(_) => Canonical(reduct.target_label)
+    Custom(id, path) => Custom(id, append_strings(path, reduct.markers))
+  }
+}
+
+///|
+/// Applies a kernel reduct to this operation table. An invalid source table
+/// returns InvalidOperationTable; custom model identity and lineage are kept.
+pub fn[S, T, A] Model::forget(
+  self : Model[S, A],
+  reduct : Reduct[S, T],
+) -> Result[Model[T, A], ModelConstructionError] {
+  if reduct.markers.length() == 0 {
+    return Ok({
+      algebra: { ops: self.algebra.ops, },
+      key: self.key,
+      product_origin: self.product_origin,
+    })
+  }
+  match project_algebra(self.algebra, reduct) {
+    Ok(algebra) =>
+      Ok({
+        algebra,
+        key: self.key_after_reduct(reduct),
+        product_origin: match self.product_origin {
+          None => None
+          Some(origin) =>
+            Some({
+              left: key_after_reduct(origin.left, reduct),
+              right: key_after_reduct(origin.right, reduct),
+            })
+        },
+      })
+    Err(error) => Err(error)
+  }
 }
 
 ///|
 /// A map `A -> B` certified to preserve every operation of `S`.
-#warnings("-unused_type_variable")
+#warnings("-unused_field")
 pub struct Hom[S, A, B] {
+  priv source : Model[S, A]
+  priv target : Model[S, B]
   priv f : (A) -> B
 }
 
@@ -296,17 +486,25 @@ pub struct Hom[S, A, B] {
 ///
 /// The obligation is always strict equality. A map that only passes a lax
 /// (`<=`) or tolerance check is still composed as a strict homomorphism by
-/// `then`, `pair` and the other rules, so do not compose such certificates
-/// without checking the result again.
-pub fn[S, A, B] Hom::postulate(f : (A) -> B) -> Hom[S, A, B] {
-  trust(f)
+/// `then_checked`, `pair` and the other rules, so do not compose such
+/// certificates without checking the result again.
+pub fn[S, A, B] Hom::postulate(
+  source : Model[S, A],
+  target : Model[S, B],
+  f : (A) -> B,
+) -> Hom[S, A, B] {
+  { source, target, f, }
 }
 
 ///|
 /// Kernel-internal certificate constructor. Keeping it separate from
-/// `Hom::postulate` means a search for `postulate` lists only user obligations.
-fn[S, A, B] trust(f : (A) -> B) -> Hom[S, A, B] {
-  { f, }
+/// `Hom::postulate` keeps the map-preservation assumption visible to audits.
+fn[S, A, B] trust(
+  source : Model[S, A],
+  target : Model[S, B],
+  f : (A) -> B,
+) -> Hom[S, A, B] {
+  { source, target, f, }
 }
 
 ///|
@@ -315,19 +513,22 @@ pub fn[S, A, B] Hom::apply(self : Hom[S, A, B], x : A) -> B {
 }
 
 ///|
-pub fn[S, A] Hom::id() -> Hom[S, A, A] {
-  trust(x => x)
+pub fn[S, A] Hom::id(model : Model[S, A]) -> Hom[S, A, A] {
+  { source: model, target: model, f: x => x, }
 }
 
 ///|
-/// Composition: first `self`, then `next`.
-pub fn[S, A, B, C] Hom::then(
+/// Composition: first `self`, then `next`, when their middle Models match.
+pub fn[S, A, B, C] Hom::then_checked(
   self : Hom[S, A, B],
   next : Hom[S, B, C],
-) -> Hom[S, A, C] {
+) -> Result[Hom[S, A, C], ModelMismatch] {
+  guard same_model_key(self.target.key, next.source.key) else {
+    return Err(ModelMismatch)
+  }
   let f = self.f
   let g = next.f
-  trust(x => g(f(x)))
+  Ok({ source: self.source, target: next.target, f: x => g(f(x)), })
 }
 
 ///|
@@ -335,82 +536,137 @@ pub fn[S, A, B, C] Hom::then(
 pub fn[S, T, A, B] Hom::forget(
   self : Hom[S, A, B],
   _reduct : Reduct[S, T],
-) -> Hom[T, A, B] {
-  trust(self.f)
+) -> Result[Hom[T, A, B], ModelConstructionError] {
+  match (self.source.forget(_reduct), self.target.forget(_reduct)) {
+    (Ok(source), Ok(target)) => Ok({ source, target, f: self.f, })
+    (Err(error), _) => Err(error)
+    (_, Err(error)) => Err(error)
+  }
 }
 
 ///|
 /// Pairing into the product: `x => { fst: f(x), snd: g(x) }`.
 pub fn[S, A, B, C] Hom::pair(
+  product : Model[S, Prod[B, C]],
   f : Hom[S, A, B],
   g : Hom[S, A, C],
-) -> Hom[S, A, Prod[B, C]] {
-  let f = f.f
-  let g = g.f
-  trust(x => { fst: f(x), snd: g(x), })
+) -> Result[Hom[S, A, Prod[B, C]], ModelMismatch] {
+  guard same_model_key(f.source.key, g.source.key) else {
+    return Err(ModelMismatch)
+  }
+  match product.product_origin {
+    Some(origin) => {
+      guard same_model_key(origin.left, f.target.key) else {
+        return Err(ModelMismatch)
+      }
+      guard same_model_key(origin.right, g.target.key) else {
+        return Err(ModelMismatch)
+      }
+    }
+    None => return Err(ModelMismatch)
+  }
+  let ff = f.f
+  let gg = g.f
+  Ok({ source: f.source, target: product, f: x => { fst: ff(x), snd: gg(x), }, })
 }
 
 ///|
-pub fn[S, A, B] Hom::fst() -> Hom[S, Prod[A, B], A] {
-  trust(p => p.fst)
+pub fn[S, A, B] Hom::fst(
+  product : Model[S, Prod[A, B]],
+  left : Model[S, A],
+) -> Result[Hom[S, Prod[A, B], A], ModelMismatch] {
+  match product.product_origin {
+    Some(origin) => {
+      guard same_model_key(origin.left, left.key) else {
+        return Err(ModelMismatch)
+      }
+      Ok({ source: product, target: left, f: p => p.fst, })
+    }
+    None => Err(ModelMismatch)
+  }
 }
 
 ///|
-pub fn[S, A, B] Hom::snd() -> Hom[S, Prod[A, B], B] {
-  trust(p => p.snd)
+pub fn[S, A, B] Hom::snd(
+  product : Model[S, Prod[A, B]],
+  right : Model[S, B],
+) -> Result[Hom[S, Prod[A, B], B], ModelMismatch] {
+  match product.product_origin {
+    Some(origin) => {
+      guard same_model_key(origin.right, right.key) else {
+        return Err(ModelMismatch)
+      }
+      Ok({ source: product, target: right, f: p => p.snd, })
+    }
+    None => Err(ModelMismatch)
+  }
+}
+
+///|
+/// Exact canonical map from BigInt into a lawful semiring model.
+pub fn[R : FromInteger] Hom::from_integer_exact(
+  target : LawfulModel[IntegerHomomorphismTh, SemiringSig, R],
+) -> Hom[SemiringSig, BigInt, R] {
+  ignore(target.law())
+  {
+    source: Model::semiring(),
+    target: target.model(),
+    f: x => FromInteger::from_integer(x),
+  }
 }
 
 ///|
 /// A monoid homomorphism between groups preserves negation.
 #warnings("-unused_trait_bound")
-pub fn[A : AddGroup, B : AddGroup] Hom::to_add_group(
+pub fn[A, B] Hom::to_add_group(
   self : Hom[AddMonoidSig, A, B],
-) -> Hom[AddGroupSig, A, B] {
-  trust(self.f)
+  source : LawfulModel[AddGroupTh, AddGroupSig, A],
+  target : LawfulModel[AddGroupTh, AddGroupSig, B],
+) -> Result[Hom[AddGroupSig, A, B], ModelMismatch] {
+  let source_model = source.model()
+  let target_model = target.model()
+  ignore(source.law())
+  ignore(target.law())
+  guard same_model_key(
+    key_after_reduct(source_model.key, add_group_to_add_monoid),
+    self.source.key,
+  ) else {
+    return Err(ModelMismatch)
+  }
+  guard same_model_key(
+    key_after_reduct(target_model.key, add_group_to_add_monoid),
+    self.target.key,
+  ) else {
+    return Err(ModelMismatch)
+  }
+  Ok(trust(source_model, target_model, self.f))
 }
 
 ///|
 /// A semiring homomorphism between rings preserves negation.
 #warnings("-unused_trait_bound")
-pub fn[A : Ring, B : Ring] Hom::to_ring(
+pub fn[A, B] Hom::to_ring(
   self : Hom[SemiringSig, A, B],
-) -> Hom[RingSig, A, B] {
-  trust(self.f)
-}
-
-///|
-/// The canonical map ℤ -> `R` given by `FromInteger`, as a certificate. It is
-/// the unique semiring map out of ℤ, so it holds on every input; use
-/// `Hom::to_ring` when `R` is a ring. `Float` and `Double` targets only satisfy
-/// it up to rounding.
-///
-/// For a fixed-width source, first lift with `Section::of_integral`: the
-/// composite is not a homomorphism unless the target modulus divides the
-/// source modulus.
-pub fn[R : FromInteger] Hom::from_integer() -> Hom[SemiringSig, BigInt, R] {
-  trust(x => FromInteger::from_integer(x))
-}
-
-///|
-/// Deprecated: certifies `NatHomomorphism::from_nat`, which is not a
-/// homomorphism for fixed-width sources. Use `Hom::from_integer` together
-/// with `Section::of_integral`, or `lift_to` when no certificate is needed.
-#deprecated("Use `Hom::from_integer` with `Section::of_integral`, or `lift_to`.")
-pub fn[N : Nat, R : NatHomomorphism] Hom::from_nat() -> Hom[SemiringSig, N, R] {
-  trust(x => NatHomomorphism::from_nat(x))
-}
-
-///|
-/// Deprecated: certifies `IntegralHomomorphism::from_integral`, which is not a
-/// homomorphism for fixed-width sources. Use `Hom::from_integer` together
-/// with `Section::of_integral`, or `lift_to` when no certificate is needed.
-#deprecated("Use `Hom::from_integer` with `Section::of_integral`, or `lift_to`.")
-pub fn[Z : Integral, R : IntegralHomomorphism] Hom::from_integral() -> Hom[
-  SemiringSig,
-  Z,
-  R,
-] {
-  trust(x => IntegralHomomorphism::from_integral(x))
+  source : LawfulModel[RingTh, RingSig, A],
+  target : LawfulModel[RingTh, RingSig, B],
+) -> Result[Hom[RingSig, A, B], ModelMismatch] {
+  let source_model = source.model()
+  let target_model = target.model()
+  ignore(source.law())
+  ignore(target.law())
+  guard same_model_key(
+    key_after_reduct(source_model.key, ring_to_semiring),
+    self.source.key,
+  ) else {
+    return Err(ModelMismatch)
+  }
+  guard same_model_key(
+    key_after_reduct(target_model.key, ring_to_semiring),
+    self.target.key,
+  ) else {
+    return Err(ModelMismatch)
+  }
+  Ok(trust(source_model, target_model, self.f))
 }
 
 ///|
@@ -439,7 +695,9 @@ pub fn[S, A, B] Hom::check_by(
   samples : Array[A],
   rel : (B, B) -> Bool,
 ) -> Bool {
-  ensure_same_signature(src.ops, dst.ops)
+  if !same_signature(src.ops, dst.ops) {
+    return false
+  }
   let f = self.f
   for i, op in src.ops {
     let target = dst.ops[i]
@@ -450,6 +708,43 @@ pub fn[S, A, B] Hom::check_by(
     }
   }
   true
+}
+
+///|
+/// Checks a Hom against the exact runtime Models bound to its endpoints.
+/// Unlike the Algebra-only diagnostic, this rejects unrelated operation
+/// interpretations before evaluating any finite samples.
+pub fn[S, A, B : Eq] Hom::check_models(
+  self : Hom[S, A, B],
+  source : Model[S, A],
+  target : Model[S, B],
+  samples : Array[A],
+) -> Result[Bool, ModelMismatch] {
+  guard same_model_key(self.source.key, source.key) else {
+    return Err(ModelMismatch)
+  }
+  guard same_model_key(self.target.key, target.key) else {
+    return Err(ModelMismatch)
+  }
+  Ok(self.check(source.algebra, target.algebra, samples))
+}
+
+///|
+/// Checks a Hom against exact runtime Models with a caller-supplied relation.
+pub fn[S, A, B] Hom::check_models_by(
+  self : Hom[S, A, B],
+  source : Model[S, A],
+  target : Model[S, B],
+  samples : Array[A],
+  rel : (B, B) -> Bool,
+) -> Result[Bool, ModelMismatch] {
+  guard same_model_key(self.source.key, source.key) else {
+    return Err(ModelMismatch)
+  }
+  guard same_model_key(self.target.key, target.key) else {
+    return Err(ModelMismatch)
+  }
+  Ok(self.check_by(source.algebra, target.algebra, samples, rel))
 }
 
 ///|

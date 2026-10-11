@@ -9,49 +9,53 @@ their own incompatible capability layers.
 
 ## Main design decisions
 
-- The trait graph is layered and intentionally small.
-- Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` are kept
-  separate from operational traits such as `Zero`, `One`, `Inverse`, and
-  `Conjugate`.
+- The operation capability graph and the exact law layer are separate.
+  Bundles such as `RingOps` and `FieldOps` compose primitive operations;
+  exact structures return opaque `Law[Theory, Self]` certificates.
+- Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` do
+  not inherit exact laws through a supertrait chain. Each law has a distinct
+  theory tag and an explicit certificate method.
 - Conversions are split into two halves that meet at ℤ, represented by
-  `BigInt`. The target side is the canonical map ℤ -> `R` (`FromInteger`),
-  which is unique and always a homomorphism. The source side is
-  `Integral::normalize`, which picks a representative and is a homomorphism
-  only for ℤ itself. `lift_to` composes them and promises nothing about
-  operations.
+  `BigInt`. The target side is an operation `FromInteger`; it does not by
+  itself claim to be a homomorphism. The source side is
+  `Integral::normalize`, which picks a representative. `lift_to` composes
+  the operations and promises nothing about preservation.
 - The halves are single-parameter traits because every conversion factors
   through ℤ, the initial ring: no trait has to relate two types.
-- `Integral` extends `FromInteger` with the law
-  `from_integer(normalize(x)) == x`, which makes an integral type a quotient
-  of ℤ with chosen representatives. `FromInteger` takes a `BigInt` rather than
-  a generic integral source, so the traits do not refer to each other.
+- `Integral` combines semiring operations and `FromInteger`, and returns an
+  explicit `IntegralTh` certificate for
+  `from_integer(normalize(x)) == x`. This makes an integral type a quotient
+  of ℤ with chosen representatives. `FromInteger` takes a `BigInt` rather
+  than a generic integral source, so the traits do not refer to each other.
 - Unsigned types stop before additive inverse, so the abstraction stays
   mathematically honest.
-- `Field` means a commutative field. Its laws, like those of every structural
-  trait, are a contract on the implementor, not something the compiler
-  checks.
+- `Field` means a commutative field. `FieldTh` is a contract returned by the
+  implementor; neither the compiler nor finite tests prove its equations.
 
 ## Mathematical background
 
-Each structural trait is the signature of an algebraic structure, and the
-structure's axioms are the laws an instance promises. With $x, y, z$ ranging
-over the carrier:
+Operation bundles state which operations are available. Exact structure
+certificates state which equations are assumed. With $x, y, z$ ranging over
+the carrier:
 
-| Trait | Structure | Laws added to its supertraits |
+| Law trait | Theory tag | Equations represented |
 | --- | --- | --- |
-| `AddMonoid` | monoid $(A, +, 0)$ | $(x+y)+z = x+(y+z)$, $0+x = x+0 = x$ |
-| `MulMonoid` | monoid $(A, \cdot, 1)$ | $(xy)z = x(yz)$, $1x = x1 = x$ |
-| `AddGroup` | group $(A, +, 0, -)$ | $x + (-x) = (-x) + x = 0$ |
-| `MulGroup` | group $(A, \cdot, 1, {}^{-1})$ | $x x^{-1} = x^{-1} x = 1$ |
-| `Semiring` | semiring | $x+y = y+x$, $x(y+z) = xy+xz$, $(x+y)z = xz+yz$, $0x = x0 = 0$ |
-| `Ring` | ring | the `AddGroup` laws |
-| `Field` | field | $0 \ne 1$, $xy = yx$, $x x^{-1} = 1$ for $x \neq 0$, $x/y = x y^{-1}$ |
+| `AddMonoid` | `AddMonoidTh` | $(x+y)+z = x+(y+z)$, $0+x = x+0 = x$ |
+| `MulMonoid` | `MulMonoidTh` | $(xy)z = x(yz)$, $1x = x1 = x$ |
+| `AddGroup` | `AddGroupTh` | $x + (-x) = (-x) + x = 0$ |
+| `MulGroup` | `MulGroupTh` | inverse laws for nonzero elements |
+| `Semiring` | `SemiringTh` | distributivity, additive commutativity, and zero absorption |
+| `Ring` | `RingTh` | ring laws, including additive inverses |
+| `CommRing` | `CommRingTh` | ring laws and commutative multiplication |
+| `IntegralDomain` | `IntegralDomainTh` | commutative ring laws and no zero divisors |
+| `Field` | `FieldTh` | $0 \ne 1$, $xy = yx$, inverse and division laws |
+| `OrderedField` | `OrderedFieldTh` | ordered-field laws |
 
-The supertrait graph mirrors the inclusions between the structures: every
-ring is a semiring, every semiring is both an additive and a multiplicative
-monoid, and so on. A function bounded by `T : Ring` may use exactly the
-consequences of the ring axioms, which is what makes the generic code
-correct for every instance.
+The operation bundle graph describes available methods only. Kernel-owned
+weakening functions expose proven implications between law tags, such as
+`FieldTh -> RingTh` and `RingTh -> SemiringTh`; there is no
+`RingTh -> CommRingTh` rule. A generic bound on operations does not imply
+any exact equations.
 
 A homomorphism $\varphi : A \to B$ of such structures preserves every
 operation of the signature:
@@ -132,9 +136,11 @@ with $\hat\varphi$ on negatives too, and $\hat\varphi$ is unique.[^initial]
 the category of semirings and ℤ that of rings. ℤ is the Grothendieck group of
 the additive monoid ℕ, which is the construction used above.
 
-Because the map depends only on `R`, it is a property of the target and fits
-a single-parameter trait: `FromNat::from_natural` and
-`FromInteger::from_integer`.
+Because the mathematical map depends only on `R`, its operation can use a
+single-parameter trait: `FromNat::from_natural` and
+`FromInteger::from_integer`. These conversion operations do not themselves
+carry the exact homomorphism law; a strict certificate needs an explicit
+target-bound law premise.
 
 ### Fixed-width integers
 
@@ -297,13 +303,12 @@ only arises for infinite types.
 a field. Over the reals, Frobenius' theorem (1877) adds that the only
 finite-dimensional associative division algebras are ℝ, ℂ and ℍ.
 
-### Floating-point instances
+### Floating-point operation instances
 
-`Float` and `Double` implement `Field` up to rounding. Their multiplication
-is commutative exactly, $\mathrm{fl}(ab) = \mathrm{fl}(ba)$, because IEEE 754
-rounds the exact product, which does not depend on the order. Associativity
-and distributivity hold only approximately, and `0` has no inverse: `inv`
-aborts on it.
+`Float` and `Double` implement field operations and the `RoundedArithmetic`
+marker. They have no exact `FieldTh` certificate: associativity and
+distributivity hold only approximately, and `0` has no inverse. Their `inv`
+operation aborts on zero.
 
 ### Rounding ℤ into `Float` and `Double`
 

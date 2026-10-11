@@ -1,38 +1,44 @@
 ///|
-pub impl AddMonoid for UInt
+pub impl AddMonoidOps for UInt
 
 ///|
-pub impl AddMonoid for UInt16
+pub impl AddMonoidOps for UInt16
 
 ///|
-pub impl AddMonoid for UInt64
+pub impl AddMonoidOps for UInt64
 
 ///|
-pub impl MulMonoid for UInt
+pub impl MulMonoidOps for UInt
 
 ///|
-pub impl MulMonoid for UInt16
+pub impl MulMonoidOps for UInt16
 
 ///|
-pub impl MulMonoid for UInt64
+pub impl MulMonoidOps for UInt64
 
 ///|
-pub impl Semiring for UInt
+pub impl SemiringOps for UInt
 
 ///|
-pub impl Semiring for UInt16
+pub impl SemiringOps for UInt16
 
 ///|
-pub impl Semiring for UInt64
+pub impl SemiringOps for UInt64
 
 ///|
-pub impl Integral for UInt
+pub impl Integral for UInt with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
-pub impl Integral for UInt16
+pub impl Integral for UInt16 with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
-pub impl Integral for UInt64
+pub impl Integral for UInt64 with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
 pub impl Integral for UInt with fn normalize(a) -> BigInt {
@@ -99,15 +105,6 @@ pub impl FromInteger for UInt16 with fn from_integer(n) -> UInt16 {
 pub impl FromInteger for UInt64 with fn from_integer(n) -> UInt64 {
   n.to_uint64()
 }
-
-///|
-pub impl Nat for UInt
-
-///|
-pub impl Nat for UInt16
-
-///|
-pub impl Nat for UInt64
 
 ///|
 pub impl One for UInt with fn one() -> UInt {

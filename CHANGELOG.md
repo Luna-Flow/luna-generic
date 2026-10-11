@@ -6,9 +6,25 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 
 ## Unreleased
 
+### Changed
+
+- **Breaking:** split operation-only bundles (AddMonoidOps, RingOps, FieldOps, and NumOps) from exact law-bearing traits. Law-bearing traits now require an explicit opaque Law certificate, and Num is removed.
+- **Breaking:** remove the automatic exact Semiring, Ring, and Field instances for Float and Double; retain rounded operation capabilities through RoundedArithmetic.
+- **Breaking:** Algebra::make and Model::make return Result and report negative operation arity as InvalidArity rather than aborting.
+- **Breaking:** replace `Hom::from_integer`, `Hom::from_nat` and `Hom::from_integral` with the model-bound `Hom::from_integer_exact`; runtime identity, pairing, projection, reduct and law upgrades are checked with `Result`.
+- **Breaking:** make runtime `ModelKey` identity opaque and remove `Model::key`; compare Models only with `Model::same_identity` ([#20](https://github.com/Luna-Flow/luna-generic/issues/20)).
+
+### Added
+
+- Opaque theory certificates and kernel-owned weakening rules.
+- The runtime Model / LawfulModel types and checked custom Model construction.
+- The RoundedArithmetic marker for floating-point operation implementations.
+- A pinned-source classification of all 128 entries in the G2 field-bound inventory.
+- Model-bound finite diagnostics through `Hom::check_models` and `Hom::check_models_by` ([#20](https://github.com/Luna-Flow/luna-generic/issues/20)).
+
 ### Fixed
 
-- `Algebra::make` aborts immediately when a custom operation has negative arity, preventing recursive law checks from overflowing the stack ([#16](https://github.com/Luna-Flow/luna-generic/issues/16)).
+- `Algebra::make` rejects negative arity before any runtime identity is allocated; this prevents recursive law checks from overflowing the stack ([#16](https://github.com/Luna-Flow/luna-generic/issues/16)).
 - `from_integer`, `from_natural` and `lift_to` into `Float` and `Double` (and the deprecated `from_nat` and `from_integral`) no longer abort on huge integers. They now round directly from the bits of the `BigInt`, to nearest with ties to even, and return ±inf when the rounded value overflows, that is for |n| ≥ 2^128 − 2^103 (`Float`) and |n| ≥ 2^1024 − 2^970 (`Double`), as IEEE 754 requires. `Float` is rounded once at 24 bits rather than through `Double`, which was one ulp off for values such as 2^53 + 2^29 + 1. The conversion no longer goes through a decimal string ([#13](https://github.com/Luna-Flow/luna-generic/issues/13)).
 
 ### Documentation

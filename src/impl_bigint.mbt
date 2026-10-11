@@ -1,20 +1,22 @@
 ///|
-pub impl AddMonoid for BigInt
+pub impl AddMonoidOps for BigInt
 
 ///|
-pub impl MulMonoid for BigInt
+pub impl MulMonoidOps for BigInt
 
 ///|
-pub impl AddGroup for BigInt
+pub impl AddGroupOps for BigInt
 
 ///|
-pub impl Semiring for BigInt
+pub impl SemiringOps for BigInt
 
 ///|
-pub impl Ring for BigInt
+pub impl RingOps for BigInt
 
 ///|
-pub impl Integral for BigInt
+pub impl Integral for BigInt with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
 pub impl Integral for BigInt with fn normalize(a) -> BigInt {
@@ -66,7 +68,7 @@ pub impl Zero for BigInt with fn zero() -> BigInt {
 }
 
 ///|
-pub impl Num for BigInt with fn abs(a) -> BigInt {
+pub impl NumOps for BigInt with fn abs(a) -> BigInt {
   if a < BigInt::from_int(0) {
     -a
   } else {
@@ -75,7 +77,7 @@ pub impl Num for BigInt with fn abs(a) -> BigInt {
 }
 
 ///|
-pub impl Num for BigInt with fn signum(a) -> BigInt {
+pub impl NumOps for BigInt with fn signum(a) -> BigInt {
   if a < BigInt::from_int(0) {
     BigInt::from_int(-1)
   } else if a > BigInt::from_int(0) {

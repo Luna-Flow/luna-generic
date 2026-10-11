@@ -1,56 +1,62 @@
 ///|
-pub impl AddMonoid for Int
+pub impl AddMonoidOps for Int
 
 ///|
-pub impl AddMonoid for Int16
+pub impl AddMonoidOps for Int16
 
 ///|
-pub impl AddMonoid for Int64
+pub impl AddMonoidOps for Int64
 
 ///|
-pub impl MulMonoid for Int
+pub impl MulMonoidOps for Int
 
 ///|
-pub impl MulMonoid for Int16
+pub impl MulMonoidOps for Int16
 
 ///|
-pub impl MulMonoid for Int64
+pub impl MulMonoidOps for Int64
 
 ///|
-pub impl AddGroup for Int
+pub impl AddGroupOps for Int
 
 ///|
-pub impl AddGroup for Int16
+pub impl AddGroupOps for Int16
 
 ///|
-pub impl AddGroup for Int64
+pub impl AddGroupOps for Int64
 
 ///|
-pub impl Semiring for Int
+pub impl SemiringOps for Int
 
 ///|
-pub impl Semiring for Int16
+pub impl SemiringOps for Int16
 
 ///|
-pub impl Semiring for Int64
+pub impl SemiringOps for Int64
 
 ///|
-pub impl Ring for Int
+pub impl RingOps for Int
 
 ///|
-pub impl Ring for Int16
+pub impl RingOps for Int16
 
 ///|
-pub impl Ring for Int64
+pub impl RingOps for Int64
 
 ///|
-pub impl Integral for Int
+pub impl Integral for Int with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
-pub impl Integral for Int16
+pub impl Integral for Int16 with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
-pub impl Integral for Int64
+pub impl Integral for Int64 with fn integral_law() {
+  Law::postulate()
+}
 
 ///|
 pub impl Integral for Int with fn normalize(a) -> BigInt {
@@ -149,22 +155,22 @@ pub impl Zero for Int64 with fn zero() -> Int64 {
 }
 
 ///|
-pub impl Num for Int with fn abs(a) -> Int {
+pub impl NumOps for Int with fn abs(a) -> Int {
   Int::abs(a)
 }
 
 ///|
-pub impl Num for Int16 with fn abs(a) -> Int16 {
+pub impl NumOps for Int16 with fn abs(a) -> Int16 {
   Int16::abs(a)
 }
 
 ///|
-pub impl Num for Int64 with fn abs(a) -> Int64 {
+pub impl NumOps for Int64 with fn abs(a) -> Int64 {
   Int64::abs(a)
 }
 
 ///|
-pub impl Num for Int with fn signum(a) -> Int {
+pub impl NumOps for Int with fn signum(a) -> Int {
   if a == 0 {
     0
   } else if a < 0 {
@@ -175,7 +181,7 @@ pub impl Num for Int with fn signum(a) -> Int {
 }
 
 ///|
-pub impl Num for Int16 with fn signum(a) -> Int16 {
+pub impl NumOps for Int16 with fn signum(a) -> Int16 {
   if a == 0 {
     (0 : Int16)
   } else if a < 0 {
@@ -186,7 +192,7 @@ pub impl Num for Int16 with fn signum(a) -> Int16 {
 }
 
 ///|
-pub impl Num for Int64 with fn signum(a) -> Int64 {
+pub impl NumOps for Int64 with fn signum(a) -> Int64 {
   if a == 0L {
     0L
   } else if a < 0L {

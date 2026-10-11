@@ -5,14 +5,12 @@ using @luna-generic {type Section}
 /// `Int` is ℤ/2^32: reduction is the canonical ring hom out of ℤ, and
 /// sign extension picks the representative in [-2^31, 2^31).
 fn int_section() -> Section[RingSig, Int, BigInt] {
-  Section::postulate(Hom::postulate(x => x.to_int()), x => BigInt::from_int(x))
+  Section::postulate(ring_hom(x => x.to_int()), x => BigInt::from_int(x))
 }
 
 ///|
 fn int64_section() -> Section[RingSig, Int64, BigInt] {
-  Section::postulate(Hom::postulate(x => x.to_int64()), x => {
-    BigInt::from_int64(x)
-  })
+  Section::postulate(ring_hom(x => x.to_int64()), x => BigInt::from_int64(x))
 }
 
 ///|
@@ -26,9 +24,7 @@ test "Int is a quotient of BigInt with sign-extending representatives" {
   assert_true(s.check(edge_ints))
   assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), edge_ints))
   // The same map is not a homomorphism: 2147483647 + 1 wraps in Int only.
-  let as_hom : Hom[RingSig, Int, BigInt] = Hom::postulate(x => {
-    BigInt::from_int(x)
-  })
+  let as_hom : Hom[RingSig, Int, BigInt] = ring_hom(x => BigInt::from_int(x))
   assert_false(as_hom.check(Algebra::ring(), Algebra::ring(), edge_ints))
 }
 
@@ -62,7 +58,7 @@ test "normal forms decide congruence" {
 ///|
 test "widening Int to Int64 is a section of truncation" {
   // Not a ring hom, but a perfectly good lift.
-  let truncate : Hom[RingSig, Int64, Int] = Hom::postulate(x => x.to_int())
+  let truncate : Hom[RingSig, Int64, Int] = ring_hom(x => x.to_int())
   let s = Section::postulate(truncate, x => x.to_int64())
   assert_true(s.check(edge_ints))
   assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), edge_ints))
@@ -70,9 +66,9 @@ test "widening Int to Int64 is a section of truncation" {
 
 ///|
 test "sections compose" {
-  let truncate : Hom[RingSig, Int64, Int] = Hom::postulate(x => x.to_int())
+  let truncate : Hom[RingSig, Int64, Int] = ring_hom(x => x.to_int())
   let widen = Section::postulate(truncate, x => x.to_int64())
-  let s = widen.then(int64_section())
+  let s = widen.then(int64_section()).unwrap()
   assert_true(s.check(edge_ints))
   assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), edge_ints))
   for x in edge_ints {
@@ -82,7 +78,7 @@ test "sections compose" {
 
 ///|
 test "sections forget along reducts" {
-  let s = int_section().forget(@luna-generic.ring_to_add_group)
+  let s = int_section().forget(@luna-generic.ring_to_add_group).unwrap()
   let _ : Section[AddGroupSig, Int, BigInt] = s
   assert_true(
     s.check_ops(Algebra::add_group(), Algebra::add_group(), edge_ints),
@@ -91,7 +87,7 @@ test "sections forget along reducts" {
 
 ///|
 test "lifts that leave the class are rejected" {
-  let reduce : Hom[RingSig, BigInt, Int] = Hom::postulate(x => x.to_int())
+  let reduce : Hom[RingSig, BigInt, Int] = ring_hom(x => x.to_int())
   // Dropping the sign: lift(-3) = 3 is not in the class of -3.
   let by_abs = Section::postulate(reduce, x => BigInt::from_int(x.abs()))
   assert_false(by_abs.check(edge_ints))
@@ -107,7 +103,7 @@ test "lifts that leave the class are rejected" {
 test "the law does not choose the representatives" {
   // [0, 2^32) is another set of representatives. It passes the law, but it
   // does not preserve the signed order of Int: -1 < 0 lifts to 2^32 - 1 > 0.
-  let reduce : Hom[RingSig, BigInt, Int] = Hom::postulate(x => x.to_int())
+  let reduce : Hom[RingSig, BigInt, Int] = ring_hom(x => x.to_int())
   let unsigned = Section::postulate(reduce, x => {
     BigInt::from_uint(x.reinterpret_as_uint())
   })
@@ -153,7 +149,12 @@ test "every integer type is a quotient of BigInt" {
 
 ///|
 test "signed canonical sections upgrade to rings" {
-  let s : Section[RingSig, Int, BigInt] = Section::of_integral().to_ring()
+  let s : Section[RingSig, Int, BigInt] = Section::of_integral()
+    .to_ring(
+      @luna-generic.LawfulModel::ring(),
+      @luna-generic.LawfulModel::ring(),
+    )
+    .unwrap()
   assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), edge_ints))
   for x in edge_ints {
     assert_eq(s.lift(x), int_section().lift(x))
@@ -175,7 +176,7 @@ test "fixed-width canonical maps reduce modulo 2^k" {
 ///|
 test "lift_to is a hom exactly when the target modulus divides" {
   // ℤ/2^64 -> ℤ/2^32 is the truncation, a ring hom even across wrapping.
-  let truncate : Hom[RingSig, Int64, Int] = Hom::postulate(x => {
+  let truncate : Hom[RingSig, Int64, Int] = ring_hom(x => {
     @luna-generic.lift_to(x)
   })
   let samples = [
@@ -189,9 +190,7 @@ test "lift_to is a hom exactly when the target modulus divides" {
   ]
   assert_true(truncate.check(Algebra::ring(), Algebra::ring(), samples))
   // ℤ/2^32 -> ℤ/2^64 is not.
-  let widen : Hom[RingSig, Int, Int64] = Hom::postulate(x => {
-    @luna-generic.lift_to(x)
-  })
+  let widen : Hom[RingSig, Int, Int64] = ring_hom(x => @luna-generic.lift_to(x))
   assert_false(widen.check(Algebra::ring(), Algebra::ring(), [1, 2147483647]))
 }
 

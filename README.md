@@ -2,28 +2,33 @@
 
 General algebraic traits and default numeric instances for Luna projects.
 
-## v0.4.0 - Canonical Maps and Representative Lifts
+## Unreleased - Foundation Layer Split
 
-This documentation tracks the intended `v0.4.0` release content.
+This documentation tracks the next breaking release. The previous `v0.4.0`
+surface remains documented in the changelog below.
 
 ### Package Positioning
 
 - `luna-generic` provides lightweight algebraic traits for additive, multiplicative, ring-like, field-like, and numeric behavior.
 - The package ships default instances for signed integers, unsigned integers, `BigInt`, `Float`, and `Double`.
-- Conversions between number types separate the canonical homomorphism out of ℤ from the choice of a representative for a machine integer.
+- Conversions between number types separate the explicit exact homomorphism out of ℤ from the choice of a representative for a machine integer.
 
-### What Defines v0.4.0
+### What Defines v0.5.0
 
 - `FromNat` and `FromInteger` are target-side traits for the unique homomorphisms ℕ -> `Self` and ℤ -> `Self`, taking a `BigInt` argument.
-- `Integral` now extends `Semiring + FromInteger`: an integral type is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of the canonical map, `from_integer(normalize(x)) == x`. This is a breaking change for external `Integral` instances.
+- Operation bundles (`AddMonoidOps`, `SemiringOps`, `RingOps`, `FieldOps` and `NumOps`) carry capabilities without claiming laws. Exact structure traits return opaque `Law` certificates and require an explicit law method.
+- `Float` and `Double` implement operation bundles and `RoundedArithmetic`; they do not implement exact `Semiring`, `Ring` or `Field` laws.
+- `Integral` now extends `SemiringOps + FromInteger` and requires explicit `IntegralTh` and `IntegerHomomorphismTh` law methods. An integral type is ℤ or a quotient ℤ/2^k, and `normalize` picks a representative.
 - `lift_to` lifts an integral value to its representative and maps it into any `FromInteger` target. It is a function, not a homomorphism.
 - `Section[S, Q, A]` certifies representative lifts of quotient algebras; `Section::of_integral` is the canonical one for every integral type.
-- `Hom::from_integer` certifies the canonical map out of ℤ.
-- `NatHomomorphism`, `IntegralHomomorphism`, `Hom::from_nat` and `Hom::from_integral` are deprecated: they compose a lift with a canonical map, which is not a homomorphism for fixed-width sources.
+- `Hom::from_integer_exact` certifies the canonical map out of ℤ only with a target `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]`.
+- `NatHomomorphism` and `IntegralHomomorphism` remain deprecated operations. `Hom::from_nat`, `Hom::from_integral` and the old `Hom::from_integer` are removed; use `FromNat`, `FromInteger`, `Section` and `lift_to` for ordinary conversions.
 
 ### Public Surface
 
-- Traits: `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field` (commutative, `0 != 1`), `FromNat`, `FromInteger`, `Integral`, `Nat`, `Num`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
+- Traits: operation bundles (`AddMonoidOps`, `MulMonoidOps`, `AddGroupOps`, `MulGroupOps`, `SemiringOps`, `RingOps`, `FieldOps`, `NumOps`), exact structures (`AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `CommRing`, `IntegralDomain`, `Field`, `OrderedField`), `FromNat`, `FromInteger`, `Integral`, `Nat`, and the deprecated `NatHomomorphism`, `IntegralHomomorphism`
+- Certificates and runtime models: `Law`, `LawfulModel`, `Model`, `ModelConstructionError`, `ModelMismatch`, and `RoundedArithmetic`
+- Model identities are opaque and compared with `Model::same_identity`; model-bound finite checks use `Hom::check_models` and `Hom::check_models_by`
 - Operations: `One`, `Zero`, `Inverse`, `Conjugate`
 - Functions: `lift_to`
 - Generalized homomorphisms: `Hom`, `Section`, `Algebra`, `Op`, `Prod`, `Reduct`, and the signature tags `AddMonoidSig`, `MulMonoidSig`, `AddGroupSig`, `SemiringSig`, `RingSig`
@@ -35,13 +40,13 @@ This documentation tracks the intended `v0.4.0` release content.
 - `Nat` covers the integral types with non-negative representatives: `UInt`, `UInt16`, `UInt64`
 - Fixed-width integers are ℤ/2^k: their canonical map from ℤ reduces modulo 2^k, and `normalize` picks the representative in the type's range
 - `Byte` is intentionally excluded from both traits
-- Unsigned integer instances stop at `Semiring` and do not implement `AddGroup`, `Ring`, or `Num`
+- Unsigned integer instances stop at `SemiringOps` and do not implement `AddGroupOps`, `RingOps`, or `NumOps`
 
 ### Conversion Guidance
 
 - `FromInteger::from_integer` is exact for `BigInt`, reduces modulo 2^k for fixed-width integers, and rounds for `Float` and `Double`
 - `lift_to(x)` turns a machine integer into another number type without promising to preserve operations; it is a homomorphism only when the target modulus divides the source modulus, as for `Int64 -> Int`
-- Use `Section::of_integral` and `Hom::from_integer` when the laws need to be certified and checked
+- Use `Section::of_integral` and `Hom::from_integer_exact` when the exact integer-homomorphism law is available; use `FromInteger::from_integer` as an ordinary rounded operation otherwise
 
 ### Documentation
 

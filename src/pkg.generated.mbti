@@ -25,19 +25,31 @@ pub let semiring_to_mul_monoid : Reduct[SemiringSig, MulMonoidSig]
 pub enum AddGroupSig {
 }
 
+pub enum AddGroupTh {
+}
+
 pub enum AddMonoidSig {
+}
+
+pub enum AddMonoidTh {
 }
 
 pub struct Algebra[S, A] {
   // private fields
 }
-pub fn[A : AddGroup] Algebra::add_group() -> Self[AddGroupSig, A]
-pub fn[A : AddMonoid] Algebra::add_monoid() -> Self[AddMonoidSig, A]
-pub fn[S, A] Algebra::make(Array[Op[A]]) -> Self[S, A]
-pub fn[A : MulMonoid] Algebra::mul_monoid() -> Self[MulMonoidSig, A]
-pub fn[S, A, B] Algebra::prod(Self[S, A], Self[S, B]) -> Self[S, Prod[A, B]]
-pub fn[A : Ring] Algebra::ring() -> Self[RingSig, A]
-pub fn[A : Semiring] Algebra::semiring() -> Self[SemiringSig, A]
+pub fn[A : AddGroupOps] Algebra::add_group() -> Self[AddGroupSig, A]
+pub fn[A : AddMonoidOps] Algebra::add_monoid() -> Self[AddMonoidSig, A]
+pub fn[S, A] Algebra::make(Array[Op[A]]) -> Result[Self[S, A], ModelConstructionError]
+pub fn[A : MulMonoidOps] Algebra::mul_monoid() -> Self[MulMonoidSig, A]
+pub fn[S, A, B] Algebra::prod(Self[S, A], Self[S, B]) -> Result[Self[S, Prod[A, B]], ModelMismatch]
+pub fn[A : RingOps] Algebra::ring() -> Self[RingSig, A]
+pub fn[A : SemiringOps] Algebra::semiring() -> Self[SemiringSig, A]
+
+pub enum CommRingTh {
+}
+
+pub enum FieldTh {
+}
 
 pub struct Hom[S, A, B] {
   // private fields
@@ -45,22 +57,91 @@ pub struct Hom[S, A, B] {
 pub fn[S, A, B] Hom::apply(Self[S, A, B], A) -> B
 pub fn[S, A, B : Eq] Hom::check(Self[S, A, B], Algebra[S, A], Algebra[S, B], Array[A]) -> Bool
 pub fn[S, A, B] Hom::check_by(Self[S, A, B], Algebra[S, A], Algebra[S, B], Array[A], (B, B) -> Bool) -> Bool
-pub fn[S, T, A, B] Hom::forget(Self[S, A, B], Reduct[S, T]) -> Self[T, A, B]
-pub fn[R : FromInteger] Hom::from_integer() -> Self[SemiringSig, @bigint.BigInt, R]
-#deprecated
-pub fn[Z : Integral, R : IntegralHomomorphism] Hom::from_integral() -> Self[SemiringSig, Z, R]
-#deprecated
-pub fn[N : Nat, R : NatHomomorphism] Hom::from_nat() -> Self[SemiringSig, N, R]
-pub fn[S, A, B] Hom::fst() -> Self[S, Prod[A, B], A]
-pub fn[S, A] Hom::id() -> Self[S, A, A]
-pub fn[S, A, B, C] Hom::pair(Self[S, A, B], Self[S, A, C]) -> Self[S, A, Prod[B, C]]
-pub fn[S, A, B] Hom::postulate((A) -> B) -> Self[S, A, B]
-pub fn[S, A, B] Hom::snd() -> Self[S, Prod[A, B], B]
-pub fn[S, A, B, C] Hom::then(Self[S, A, B], Self[S, B, C]) -> Self[S, A, C]
-pub fn[A : AddGroup, B : AddGroup] Hom::to_add_group(Self[AddMonoidSig, A, B]) -> Self[AddGroupSig, A, B]
-pub fn[A : Ring, B : Ring] Hom::to_ring(Self[SemiringSig, A, B]) -> Self[RingSig, A, B]
+pub fn[S, A, B : Eq] Hom::check_models(Self[S, A, B], Model[S, A], Model[S, B], Array[A]) -> Result[Bool, ModelMismatch]
+pub fn[S, A, B] Hom::check_models_by(Self[S, A, B], Model[S, A], Model[S, B], Array[A], (B, B) -> Bool) -> Result[Bool, ModelMismatch]
+pub fn[S, T, A, B] Hom::forget(Self[S, A, B], Reduct[S, T]) -> Result[Self[T, A, B], ModelConstructionError]
+pub fn[R : FromInteger] Hom::from_integer_exact(LawfulModel[IntegerHomomorphismTh, SemiringSig, R]) -> Self[SemiringSig, @bigint.BigInt, R]
+pub fn[S, A, B] Hom::fst(Model[S, Prod[A, B]], Model[S, A]) -> Result[Self[S, Prod[A, B], A], ModelMismatch]
+pub fn[S, A] Hom::id(Model[S, A]) -> Self[S, A, A]
+pub fn[S, A, B, C] Hom::pair(Model[S, Prod[B, C]], Self[S, A, B], Self[S, A, C]) -> Result[Self[S, A, Prod[B, C]], ModelMismatch]
+pub fn[S, A, B] Hom::postulate(Model[S, A], Model[S, B], (A) -> B) -> Self[S, A, B]
+pub fn[S, A, B] Hom::snd(Model[S, Prod[A, B]], Model[S, B]) -> Result[Self[S, Prod[A, B], B], ModelMismatch]
+pub fn[S, A, B, C] Hom::then_checked(Self[S, A, B], Self[S, B, C]) -> Result[Self[S, A, C], ModelMismatch]
+pub fn[A, B] Hom::to_add_group(Self[AddMonoidSig, A, B], LawfulModel[AddGroupTh, AddGroupSig, A], LawfulModel[AddGroupTh, AddGroupSig, B]) -> Result[Self[AddGroupSig, A, B], ModelMismatch]
+pub fn[A, B] Hom::to_ring(Self[SemiringSig, A, B], LawfulModel[RingTh, RingSig, A], LawfulModel[RingTh, RingSig, B]) -> Result[Self[RingSig, A, B], ModelMismatch]
+
+pub enum IntegerHomomorphismTh {
+}
+
+pub enum IntegralDomainTh {
+}
+
+pub enum IntegralTh {
+}
+
+pub struct Law[Th, A] {
+  // private fields
+}
+pub fn[A] Law::add_group_to_add_monoid(Self[AddGroupTh, A]) -> Self[AddMonoidTh, A]
+pub fn[A] Law::field_to_comm_ring(Self[FieldTh, A]) -> Self[CommRingTh, A]
+pub fn[A] Law::field_to_integral_domain(Self[FieldTh, A]) -> Self[IntegralDomainTh, A]
+pub fn[A] Law::field_to_ring(Self[FieldTh, A]) -> Self[RingTh, A]
+pub fn[A] Law::field_to_semiring(Self[FieldTh, A]) -> Self[SemiringTh, A]
+pub fn[A] Law::ordered_field_to_field(Self[OrderedFieldTh, A]) -> Self[FieldTh, A]
+pub fn[Th, A] Law::postulate() -> Self[Th, A]
+pub fn[A, B] Law::product_add_group(Self[AddGroupTh, A], Self[AddGroupTh, B]) -> Self[AddGroupTh, Prod[A, B]]
+pub fn[A, B] Law::product_add_monoid(Self[AddMonoidTh, A], Self[AddMonoidTh, B]) -> Self[AddMonoidTh, Prod[A, B]]
+pub fn[A, B] Law::product_mul_monoid(Self[MulMonoidTh, A], Self[MulMonoidTh, B]) -> Self[MulMonoidTh, Prod[A, B]]
+pub fn[A, B] Law::product_ring(Self[RingTh, A], Self[RingTh, B]) -> Self[RingTh, Prod[A, B]]
+pub fn[A, B] Law::product_semiring(Self[SemiringTh, A], Self[SemiringTh, B]) -> Self[SemiringTh, Prod[A, B]]
+pub fn[A] Law::ring_to_add_group(Self[RingTh, A]) -> Self[AddGroupTh, A]
+pub fn[A] Law::ring_to_semiring(Self[RingTh, A]) -> Self[SemiringTh, A]
+pub fn[A] Law::semiring_to_add_monoid(Self[SemiringTh, A]) -> Self[AddMonoidTh, A]
+pub fn[A] Law::semiring_to_mul_monoid(Self[SemiringTh, A]) -> Self[MulMonoidTh, A]
+
+pub struct LawfulModel[Th, S, A] {
+  // private fields
+}
+pub fn[A : AddGroup] LawfulModel::add_group() -> Self[AddGroupTh, AddGroupSig, A]
+pub fn[R : Integral] LawfulModel::integer_homomorphism() -> Self[IntegerHomomorphismTh, SemiringSig, R]
+pub fn[Th, S, A] LawfulModel::postulate(Model[S, A]) -> Self[Th, S, A]
+pub fn[A : Ring] LawfulModel::ring() -> Self[RingTh, RingSig, A]
+
+pub struct Model[S, A] {
+  // private fields
+}
+pub fn[A : AddGroupOps] Model::add_group() -> Self[AddGroupSig, A]
+pub fn[A : AddMonoidOps] Model::add_monoid() -> Self[AddMonoidSig, A]
+pub fn[S, A] Model::algebra(Self[S, A]) -> Algebra[S, A]
+pub fn[S, T, A] Model::forget(Self[S, A], Reduct[S, T]) -> Result[Self[T, A], ModelConstructionError]
+pub fn[S, A] Model::make(Array[Op[A]]) -> Result[Self[S, A], ModelConstructionError]
+pub fn[A : MulMonoidOps] Model::mul_monoid() -> Self[MulMonoidSig, A]
+pub fn[S, A, B] Model::prod(Self[S, A], Self[S, B]) -> Result[Self[S, Prod[A, B]], ModelMismatch]
+pub fn[A : RingOps] Model::ring() -> Self[RingSig, A]
+pub fn[S, A] Model::same_identity(Self[S, A], Self[S, A]) -> Bool
+pub fn[A : SemiringOps] Model::semiring() -> Self[SemiringSig, A]
+
+pub enum ModelConstructionError {
+  InvalidArity
+  InvalidOperationTable
+}
+
+type ModelKey
+
+pub enum ModelMismatch {
+  ModelMismatch
+}
+
+pub enum MulGroupTh {
+}
 
 pub enum MulMonoidSig {
+}
+
+pub enum MulMonoidTh {
+}
+
+pub enum NatTh {
 }
 
 pub(all) struct Op[A] {
@@ -69,30 +150,47 @@ pub(all) struct Op[A] {
   eval : (Array[A]) -> A
 }
 
+type OperationShape
+
+pub enum OrderedFieldTh {
+}
+
 pub(all) struct Prod[A, B] {
   fst : A
   snd : B
 } derive(Eq, @debug.Debug)
 pub fn[A : Add, B : Add] Prod::add(Self[A, B], Self[A, B]) -> Self[A, B]
+pub fn[A : AddGroup, B : AddGroup] Prod::add_group_law() -> Law[AddGroupTh, Self[A, B]]
+pub fn[A : AddMonoid, B : AddMonoid] Prod::add_monoid_law() -> Law[AddMonoidTh, Self[A, B]]
 pub fn[A : Eq, B : Eq] Prod::equal(Self[A, B], Self[A, B]) -> Bool
 pub fn[A : Mul, B : Mul] Prod::mul(Self[A, B], Self[A, B]) -> Self[A, B]
+pub fn[A : MulMonoid, B : MulMonoid] Prod::mul_monoid_law() -> Law[MulMonoidTh, Self[A, B]]
 pub fn[A : Neg, B : Neg] Prod::neg(Self[A, B]) -> Self[A, B]
 pub fn[A : Eq, B : Eq] Prod::not_equal(Self[A, B], Self[A, B]) -> Bool
 pub fn[A : One, B : One] Prod::one() -> Self[A, B]
+pub fn[A : Ring, B : Ring] Prod::ring_law() -> Law[RingTh, Self[A, B]]
+pub fn[A : Semiring, B : Semiring] Prod::semiring_law() -> Law[SemiringTh, Self[A, B]]
 pub fn[A : Sub, B : Sub] Prod::sub(Self[A, B], Self[A, B]) -> Self[A, B]
 pub fn[A : @debug.Debug, B : @debug.Debug] Prod::to_repr(Self[A, B]) -> @debug.Repr
 pub fn[A : Zero, B : Zero] Prod::zero() -> Self[A, B]
 pub impl[A : AddGroup, B : AddGroup] AddGroup for Prod[A, B]
+pub impl[A : AddGroupOps, B : AddGroupOps] AddGroupOps for Prod[A, B]
 pub impl[A : AddMonoid, B : AddMonoid] AddMonoid for Prod[A, B]
+pub impl[A : AddMonoidOps, B : AddMonoidOps] AddMonoidOps for Prod[A, B]
 pub impl[A : MulMonoid, B : MulMonoid] MulMonoid for Prod[A, B]
+pub impl[A : MulMonoidOps, B : MulMonoidOps] MulMonoidOps for Prod[A, B]
 pub impl[A : One, B : One] One for Prod[A, B]
 pub impl[A : Ring, B : Ring] Ring for Prod[A, B]
+pub impl[A : RingOps, B : RingOps] RingOps for Prod[A, B]
 pub impl[A : Semiring, B : Semiring] Semiring for Prod[A, B]
+pub impl[A : SemiringOps, B : SemiringOps] SemiringOps for Prod[A, B]
 pub impl[A : Zero, B : Zero] Zero for Prod[A, B]
 pub impl[A : Add, B : Add] Add for Prod[A, B]
 pub impl[A : Mul, B : Mul] Mul for Prod[A, B]
 pub impl[A : Neg, B : Neg] Neg for Prod[A, B]
 pub impl[A : Sub, B : Sub] Sub for Prod[A, B]
+
+type ProductOrigin
 
 pub struct Reduct[S, T] {
   // private fields
@@ -103,38 +201,53 @@ pub fn[S, T, U] Reduct::then(Self[S, T], Self[T, U]) -> Self[S, U]
 pub enum RingSig {
 }
 
+pub enum RingTh {
+}
+
 pub struct Section[S, Q, A] {
   // private fields
 }
 pub fn[S, Q : Eq, A] Section::check(Self[S, Q, A], Array[Q]) -> Bool
 pub fn[S, Q : Eq, A] Section::check_ops(Self[S, Q, A], Algebra[S, Q], Algebra[S, A], Array[Q]) -> Bool
-pub fn[S, T, Q, A] Section::forget(Self[S, Q, A], Reduct[S, T]) -> Self[T, Q, A]
+pub fn[S, T, Q, A] Section::forget(Self[S, Q, A], Reduct[S, T]) -> Result[Self[T, Q, A], ModelConstructionError]
 pub fn[S, Q, A : Eq] Section::is_representative(Self[S, Q, A], A) -> Bool
 pub fn[S, Q, A] Section::lift(Self[S, Q, A], Q) -> A
 pub fn[S, Q, A] Section::normalize(Self[S, Q, A], A) -> A
 pub fn[Z : Integral] Section::of_integral() -> Self[SemiringSig, Z, @bigint.BigInt]
 pub fn[S, Q, A] Section::postulate(Hom[S, A, Q], (Q) -> A) -> Self[S, Q, A]
 pub fn[S, Q, A] Section::proj(Self[S, Q, A]) -> Hom[S, A, Q]
-pub fn[S, Q, A, B] Section::then(Self[S, Q, A], Self[S, A, B]) -> Self[S, Q, B]
-pub fn[Q : AddGroup, A : AddGroup] Section::to_add_group(Self[AddMonoidSig, Q, A]) -> Self[AddGroupSig, Q, A]
-pub fn[Q : Ring, A : Ring] Section::to_ring(Self[SemiringSig, Q, A]) -> Self[RingSig, Q, A]
+pub fn[S, Q, A, B] Section::then(Self[S, Q, A], Self[S, A, B]) -> Result[Self[S, Q, B], ModelMismatch]
+pub fn[Q, A] Section::to_add_group(Self[AddMonoidSig, Q, A], LawfulModel[AddGroupTh, AddGroupSig, Q], LawfulModel[AddGroupTh, AddGroupSig, A]) -> Result[Self[AddGroupSig, Q, A], ModelMismatch]
+pub fn[Q, A] Section::to_ring(Self[SemiringSig, Q, A], LawfulModel[RingTh, RingSig, Q], LawfulModel[RingTh, RingSig, A]) -> Result[Self[RingSig, Q, A], ModelMismatch]
 
 pub enum SemiringSig {
+}
+
+pub enum SemiringTh {
 }
 
 // Type aliases
 
 // Traits
-pub(open) trait AddGroup : AddMonoid + Neg + Sub {
+pub(open) trait AddGroup : AddGroupOps {
+  fn add_group_law() -> Law[AddGroupTh, Self]
 }
 pub impl AddGroup for Int
 pub impl AddGroup for Int16
 pub impl AddGroup for Int64
-pub impl AddGroup for Float
-pub impl AddGroup for Double
 pub impl AddGroup for @bigint.BigInt
 
-pub(open) trait AddMonoid : Add + Zero {
+pub(open) trait AddGroupOps : AddMonoidOps + Neg + Sub {
+}
+pub impl AddGroupOps for Int
+pub impl AddGroupOps for Int16
+pub impl AddGroupOps for Int64
+pub impl AddGroupOps for Float
+pub impl AddGroupOps for Double
+pub impl AddGroupOps for @bigint.BigInt
+
+pub(open) trait AddMonoid : AddMonoidOps {
+  fn add_monoid_law() -> Law[AddMonoidTh, Self]
 }
 pub impl AddMonoid for Int
 pub impl AddMonoid for Int16
@@ -142,18 +255,40 @@ pub impl AddMonoid for Int64
 pub impl AddMonoid for UInt
 pub impl AddMonoid for UInt16
 pub impl AddMonoid for UInt64
-pub impl AddMonoid for Float
-pub impl AddMonoid for Double
 pub impl AddMonoid for @bigint.BigInt
+
+pub(open) trait AddMonoidOps : Add + Zero {
+}
+pub impl AddMonoidOps for Int
+pub impl AddMonoidOps for Int16
+pub impl AddMonoidOps for Int64
+pub impl AddMonoidOps for UInt
+pub impl AddMonoidOps for UInt16
+pub impl AddMonoidOps for UInt64
+pub impl AddMonoidOps for Float
+pub impl AddMonoidOps for Double
+pub impl AddMonoidOps for @bigint.BigInt
+
+pub(open) trait CommRing : RingOps {
+  fn comm_ring_law() -> Law[CommRingTh, Self]
+}
+pub impl CommRing for Int
+pub impl CommRing for Int16
+pub impl CommRing for Int64
+pub impl CommRing for @bigint.BigInt
 
 pub(open) trait Conjugate {
   fn conjugate(Self) -> Self
 }
 
-pub(open) trait Field : Ring + Inverse + Div {
+pub(open) trait Field : FieldOps {
+  fn field_law() -> Law[FieldTh, Self]
 }
-pub impl Field for Float
-pub impl Field for Double
+
+pub(open) trait FieldOps : RingOps + Inverse + Div {
+}
+pub impl FieldOps for Float
+pub impl FieldOps for Double
 
 pub(open) trait FromInteger : FromNat {
   fn from_integer(@bigint.BigInt) -> Self
@@ -181,7 +316,9 @@ pub impl FromNat for Float
 pub impl FromNat for Double
 pub impl FromNat for @bigint.BigInt
 
-pub(open) trait Integral : Semiring + FromInteger {
+pub(open) trait Integral : SemiringOps + FromInteger {
+  fn integral_law() -> Law[IntegralTh, Self]
+  fn integer_homomorphism_law() -> Law[IntegerHomomorphismTh, Self]
   fn normalize(Self) -> @bigint.BigInt
 }
 pub impl Integral for Int
@@ -191,6 +328,11 @@ pub impl Integral for UInt
 pub impl Integral for UInt16
 pub impl Integral for UInt64
 pub impl Integral for @bigint.BigInt
+
+pub(open) trait IntegralDomain : RingOps {
+  fn integral_domain_law() -> Law[IntegralDomainTh, Self]
+}
+pub impl IntegralDomain for @bigint.BigInt
 
 #deprecated
 pub(open) trait IntegralHomomorphism : NatHomomorphism {
@@ -206,12 +348,17 @@ pub(open) trait Inverse {
 pub impl Inverse for Float
 pub impl Inverse for Double
 
-pub(open) trait MulGroup : MulMonoid + Inverse + Div {
+pub(open) trait MulGroup : MulGroupOps {
+  fn mul_group_law() -> Law[MulGroupTh, Self]
 }
-pub impl MulGroup for Float
-pub impl MulGroup for Double
 
-pub(open) trait MulMonoid : Mul + One {
+pub(open) trait MulGroupOps : MulMonoidOps + Inverse + Div {
+}
+pub impl MulGroupOps for Float
+pub impl MulGroupOps for Double
+
+pub(open) trait MulMonoid : MulMonoidOps {
+  fn mul_monoid_law() -> Law[MulMonoidTh, Self]
 }
 pub impl MulMonoid for Int
 pub impl MulMonoid for Int16
@@ -219,11 +366,22 @@ pub impl MulMonoid for Int64
 pub impl MulMonoid for UInt
 pub impl MulMonoid for UInt16
 pub impl MulMonoid for UInt64
-pub impl MulMonoid for Float
-pub impl MulMonoid for Double
 pub impl MulMonoid for @bigint.BigInt
 
+pub(open) trait MulMonoidOps : Mul + One {
+}
+pub impl MulMonoidOps for Int
+pub impl MulMonoidOps for Int16
+pub impl MulMonoidOps for Int64
+pub impl MulMonoidOps for UInt
+pub impl MulMonoidOps for UInt16
+pub impl MulMonoidOps for UInt64
+pub impl MulMonoidOps for Float
+pub impl MulMonoidOps for Double
+pub impl MulMonoidOps for @bigint.BigInt
+
 pub(open) trait Nat : Integral {
+  fn nat_law() -> Law[NatTh, Self]
 }
 pub impl Nat for UInt
 pub impl Nat for UInt16
@@ -237,16 +395,16 @@ pub impl NatHomomorphism for Float
 pub impl NatHomomorphism for Double
 pub impl NatHomomorphism for @bigint.BigInt
 
-pub(open) trait Num : Ring {
+pub(open) trait NumOps : RingOps {
   fn abs(Self) -> Self
   fn signum(Self) -> Self
 }
-pub impl Num for Int
-pub impl Num for Int16
-pub impl Num for Int64
-pub impl Num for Float
-pub impl Num for Double
-pub impl Num for @bigint.BigInt
+pub impl NumOps for Int
+pub impl NumOps for Int16
+pub impl NumOps for Int64
+pub impl NumOps for Float
+pub impl NumOps for Double
+pub impl NumOps for @bigint.BigInt
 
 pub(open) trait One {
   fn one() -> Self
@@ -261,16 +419,34 @@ pub impl One for Float
 pub impl One for Double
 pub impl One for @bigint.BigInt
 
-pub(open) trait Ring : Semiring + Neg + Sub {
+pub(open) trait OrderedField : FieldOps + Compare {
+  fn ordered_field_law() -> Law[OrderedFieldTh, Self]
+}
+
+pub(open) trait Ring : RingOps {
+  fn ring_law() -> Law[RingTh, Self]
 }
 pub impl Ring for Int
 pub impl Ring for Int16
 pub impl Ring for Int64
-pub impl Ring for Float
-pub impl Ring for Double
 pub impl Ring for @bigint.BigInt
 
-pub(open) trait Semiring : AddMonoid + MulMonoid {
+pub(open) trait RingOps : SemiringOps + Neg + Sub {
+}
+pub impl RingOps for Int
+pub impl RingOps for Int16
+pub impl RingOps for Int64
+pub impl RingOps for Float
+pub impl RingOps for Double
+pub impl RingOps for @bigint.BigInt
+
+pub(open) trait RoundedArithmetic {
+}
+pub impl RoundedArithmetic for Float
+pub impl RoundedArithmetic for Double
+
+pub(open) trait Semiring : SemiringOps {
+  fn semiring_law() -> Law[SemiringTh, Self]
 }
 pub impl Semiring for Int
 pub impl Semiring for Int16
@@ -278,9 +454,19 @@ pub impl Semiring for Int64
 pub impl Semiring for UInt
 pub impl Semiring for UInt16
 pub impl Semiring for UInt64
-pub impl Semiring for Float
-pub impl Semiring for Double
 pub impl Semiring for @bigint.BigInt
+
+pub(open) trait SemiringOps : AddMonoidOps + MulMonoidOps {
+}
+pub impl SemiringOps for Int
+pub impl SemiringOps for Int16
+pub impl SemiringOps for Int64
+pub impl SemiringOps for UInt
+pub impl SemiringOps for UInt16
+pub impl SemiringOps for UInt64
+pub impl SemiringOps for Float
+pub impl SemiringOps for Double
+pub impl SemiringOps for @bigint.BigInt
 
 pub(open) trait Zero {
   fn zero() -> Self
