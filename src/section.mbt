@@ -41,8 +41,11 @@ pub fn[S, Q, A] Section::postulate(
 /// The obligation sits on those instances: `Z::from_integer(normalize(x)) ==
 /// x` for every `x`. Use `to_ring` when `Z` is a ring.
 pub fn[Z : Integral] Section::of_integral() -> Section[SemiringSig, Z, BigInt] {
+  let integral_law : Law[IntegralTh, Z] = Integral::integral_law()
+  ignore(integral_law)
+  let lawful_target : LawfulModel[IntegerHomomorphismTh, SemiringSig, Z] = LawfulModel::integer_homomorphism()
   {
-    proj: trust(x => FromInteger::from_integer(x)),
+    proj: Hom::from_integer_exact(lawful_target),
     lift: x => Integral::normalize(x),
   }
 }
@@ -81,10 +84,13 @@ pub fn[S, Q, A : Eq] Section::is_representative(
 pub fn[S, Q, A, B] Section::then(
   self : Section[S, Q, A],
   next : Section[S, A, B],
-) -> Section[S, Q, B] {
+) -> Result[Section[S, Q, B], ModelMismatch] {
   let inner = self.lift
   let outer = next.lift
-  { proj: next.proj.then(self.proj), lift: q => outer(inner(q)), }
+  match next.proj.then_checked(self.proj) {
+    Ok(proj) => Ok({ proj, lift: q => outer(inner(q)), })
+    Err(error) => Err(error)
+  }
 }
 
 ///|
@@ -93,24 +99,37 @@ pub fn[S, Q, A, B] Section::then(
 pub fn[S, T, Q, A] Section::forget(
   self : Section[S, Q, A],
   reduct : Reduct[S, T],
-) -> Section[T, Q, A] {
-  { proj: self.proj.forget(reduct), lift: self.lift, }
+) -> Result[Section[T, Q, A], ModelConstructionError] {
+  match self.proj.forget(reduct) {
+    Ok(proj) => Ok({ proj, lift: self.lift, })
+    Err(error) => Err(error)
+  }
 }
 
 ///|
 /// Upgrades the projection along `Hom::to_add_group`.
-pub fn[Q : AddGroup, A : AddGroup] Section::to_add_group(
+pub fn[Q, A] Section::to_add_group(
   self : Section[AddMonoidSig, Q, A],
-) -> Section[AddGroupSig, Q, A] {
-  { proj: self.proj.to_add_group(), lift: self.lift, }
+  quotient : LawfulModel[AddGroupTh, AddGroupSig, Q],
+  cover : LawfulModel[AddGroupTh, AddGroupSig, A],
+) -> Result[Section[AddGroupSig, Q, A], ModelMismatch] {
+  match self.proj.to_add_group(cover, quotient) {
+    Ok(proj) => Ok({ proj, lift: self.lift, })
+    Err(error) => Err(error)
+  }
 }
 
 ///|
 /// Upgrades the projection along `Hom::to_ring`.
-pub fn[Q : Ring, A : Ring] Section::to_ring(
+pub fn[Q, A] Section::to_ring(
   self : Section[SemiringSig, Q, A],
-) -> Section[RingSig, Q, A] {
-  { proj: self.proj.to_ring(), lift: self.lift, }
+  quotient : LawfulModel[RingTh, RingSig, Q],
+  cover : LawfulModel[RingTh, RingSig, A],
+) -> Result[Section[RingSig, Q, A], ModelMismatch] {
+  match self.proj.to_ring(cover, quotient) {
+    Ok(proj) => Ok({ proj, lift: self.lift, })
+    Err(error) => Err(error)
+  }
 }
 
 ///|
@@ -138,7 +157,9 @@ pub fn[S, Q : Eq, A] Section::check_ops(
   cover : Algebra[S, A],
   samples : Array[Q],
 ) -> Bool {
-  ensure_same_signature(quotient.ops, cover.ops)
+  if !same_signature(quotient.ops, cover.ops) {
+    return false
+  }
   for i, op in quotient.ops {
     let lifted = cover.ops[i]
     for args in tuples(samples, op.arity) {

@@ -7,8 +7,9 @@ map `A -> B` that carries a certificate stating it preserves every operation
 of the signature `S`. A `Section[S, Q, A]` certifies a lift that picks one
 representative per class of a quotient. Neither certificate can be forged
 outside this package. The unproven leaves are `Hom::postulate`,
-`Section::postulate`, and the canonical `Hom::from_integer` and
-`Section::of_integral`, whose obligation sits on trait instances.
+`Section::postulate`, `Law::postulate`, and `LawfulModel::postulate`.
+`Hom::from_integer_exact` consumes an explicit integer-homomorphism law;
+`Section::of_integral` obtains that law from `Integral`.
 
 Source: `src/hom.mbt`, `src/section.mbt`. The mathematics is in the
 [hom design](../design/hom.md).
@@ -16,10 +17,12 @@ Source: `src/hom.mbt`, `src/section.mbt`. The mathematics is in the
 The examples on this page assume this declaration:
 
 ```moonbit
-using @luna-generic {
+using @lf_alg {
   type Hom,
   type Section,
   type Algebra,
+  type Model,
+  type LawfulModel,
   type Op,
   type Prod,
   type Reduct,
@@ -94,12 +97,109 @@ pub enum RingSig {
 ## Algebra dictionaries
 
 Two dictionaries of the same `S` must list the same operations (name and
-arity) in the same order; otherwise `Algebra::prod` and `Hom::check_by` abort.
+arity) in the same order. `Algebra::prod` returns `Err(SignatureMismatch)` when
+they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return
+`false` for dictionaries with different operation signatures. These checks
+do not verify the Hom endpoint Model identities; `check_models` and
+`check_models_by` do that for the exact stored Models.
 
-Certificates assume one `S`-algebra per carrier: every dictionary of the same
-`S` on the same carrier must interpret the operations the same way. `then`
-composes through the middle carrier, so two different `Algebra::make`
-dictionaries on it would compose into a map that preserves neither.
+### `Model`
+
+`Model[S, A]` binds an operation dictionary to one runtime identity. Two
+models with the same signature and carrier remain distinct when they were
+constructed separately, even if their operations happen to compare equal.
+The identity representation is opaque: callers cannot construct or mutate a
+`ModelKey`, and `Model::same_identity` is the only public identity operation.
+
+```mbti
+pub struct Model[S, A] {
+  // private fields
+}
+
+pub enum ModelConstructionError {
+  InvalidArity
+  InvalidOperationTable
+}
+
+pub fn[S, A] Model::make(Array[Op[A]]) -> Result[Model[S, A], ModelConstructionError]
+pub fn[S, A] Model::same_identity(Model[S, A], Model[S, A]) -> Bool
+```
+
+Negative operation arity returns `Err(InvalidArity)` before allocating an
+identity. Successful custom Models use process-local `UInt64` identities.
+Construction is not thread-safe: callers must serialize it when using native
+threads. If the counter reaches `UInt64::max`, construction aborts with an
+internal-invariant failure before incrementing; it never wraps or reuses an
+identity. This exhaustion case is physically unreachable in supported use.
+
+Canonical factories use one stable identity per signature and carrier type
+implementation. Repeated calls for the same canonical interpretation return
+Models with the same identity.
+
+```mbti
+pub fn[A : AddGroupOps] Model::add_group() -> Model[AddGroupSig, A]
+pub fn[A : MulMonoidOps] Model::mul_monoid() -> Model[MulMonoidSig, A]
+pub fn[A : SemiringOps] Model::semiring() -> Model[SemiringSig, A]
+```
+
+### Construction errors and mismatch diagnostics
+
+`ModelConstructionError` reports invalid arity or an operation table that a
+kernel reduct cannot project. `ModelMismatch` has three payload-free variants:
+`IdentityMismatch` (two Models that must be the same interpretation are not),
+`SignatureMismatch` (two operation lists differ in name, arity or order) and
+`NotProductModel` (a product-only operation received a Model not built by
+`Model::prod`). Both error types derive `Eq` and `Debug`, so callers can
+compare errors or inspect their debug representation.
+
+```mbti
+pub fn ModelConstructionError::equal(ModelConstructionError, ModelConstructionError) -> Bool
+pub fn ModelConstructionError::not_equal(ModelConstructionError, ModelConstructionError) -> Bool
+pub fn ModelConstructionError::to_repr(ModelConstructionError) -> @debug.Repr
+pub fn ModelMismatch::equal(ModelMismatch, ModelMismatch) -> Bool
+pub fn ModelMismatch::not_equal(ModelMismatch, ModelMismatch) -> Bool
+pub fn ModelMismatch::to_repr(ModelMismatch) -> @debug.Repr
+```
+
+### `LawfulModel::add_group`
+
+This canonical convenience binds the `AddGroupTh` certificate and canonical
+additive-group Model for `A`.
+
+```mbti
+pub fn[A : AddGroup] LawfulModel::add_group() -> LawfulModel[AddGroupTh, AddGroupSig, A]
+```
+
+### `Model::algebra`, `Model::prod`, `Model::forget`
+
+`Model::algebra()` returns the model's operation dictionary. `Model::prod`
+returns a fresh product identity with the two component identities recorded;
+reuse that value for pairing and projections. `Model::forget` projects a
+kernel mapping and returns `InvalidOperationTable` for incompatible tables.
+
+```mbti
+pub fn[S, A] Model::algebra(Model[S, A]) -> Algebra[S, A]
+pub fn[S, A, B] Model::prod(Model[S, A], Model[S, B]) -> Result[Model[S, Prod[A, B]], ModelMismatch]
+pub fn[S, T, A] Model::forget(Model[S, A], Reduct[S, T]) -> Result[Model[T, A], ModelConstructionError]
+```
+
+`Algebra::make` and `Model::make` validate nonnegative arity only, even for
+built-in phantom signature tags. An empty table is allowed. Finite checks
+over empty operation lists return true vacuously and establish no law.
+`LawfulModel::postulate` can explicitly trust a rounded carrier; a small
+sample may pass while a larger one fails. The caller owns that assumption.
+
+`ModelMismatch` separates three failures. `IdentityMismatch` is reported when
+runtime Model identities differ in checked composition, pairing, projections,
+strict upgrades and model-bound checks. `SignatureMismatch` is reported only
+by `Algebra::prod` and `Model::prod` for different operation lists.
+`NotProductModel` is reported by `Hom::pair`, `Hom::fst` and `Hom::snd` when
+the supplied product Model was not built by `Model::prod`; it takes
+precedence over identity checks in those functions. The variants carry no
+payload and expose no Model structure; `Model::same_identity` remains the only
+public identity operation. An invalid projected operation table is still
+`ModelConstructionError::InvalidOperationTable`. Both error types implement
+`Eq` and `Debug`; match their variants to handle failures.
 
 ### `Op`
 
@@ -128,11 +228,11 @@ pub struct Algebra[S, A] {
 
 ### `Algebra::make`
 
-`Algebra::make(ops)` builds a dictionary for a custom signature tag.
-It aborts if any operation has a negative arity.
+`Algebra::make(ops)` builds a dictionary for a custom signature tag. It
+returns `Err(InvalidArity)` if any operation has a negative arity.
 
 ```mbti
-pub fn[S, A] Algebra::make(Array[Op[A]]) -> Algebra[S, A]
+pub fn[S, A] Algebra::make(Array[Op[A]]) -> Result[Algebra[S, A], ModelConstructionError]
 ```
 
 Keep one dictionary per tag and carrier, as explained above.
@@ -143,7 +243,7 @@ enum MaxSig {}
 fn max_int() -> Algebra[MaxSig, Int] {
   Algebra::make([
     Op::{ name: "max", arity: 2, eval: xs => if xs[0] > xs[1] { xs[0] } else { xs[1] } },
-  ])
+  ]).unwrap()
 }
 ```
 
@@ -153,11 +253,11 @@ These functions derive the dictionary of a built-in tag from the structure
 trait instance of `A`.
 
 ```mbti
-pub fn[A : AddMonoid] Algebra::add_monoid() -> Algebra[AddMonoidSig, A]
-pub fn[A : MulMonoid] Algebra::mul_monoid() -> Algebra[MulMonoidSig, A]
-pub fn[A : AddGroup] Algebra::add_group() -> Algebra[AddGroupSig, A]
-pub fn[A : Semiring] Algebra::semiring() -> Algebra[SemiringSig, A]
-pub fn[A : Ring] Algebra::ring() -> Algebra[RingSig, A]
+pub fn[A : AddMonoidOps] Algebra::add_monoid() -> Algebra[AddMonoidSig, A]
+pub fn[A : MulMonoidOps] Algebra::mul_monoid() -> Algebra[MulMonoidSig, A]
+pub fn[A : AddGroupOps] Algebra::add_group() -> Algebra[AddGroupSig, A]
+pub fn[A : SemiringOps] Algebra::semiring() -> Algebra[SemiringSig, A]
+pub fn[A : RingOps] Algebra::ring() -> Algebra[RingSig, A]
 ```
 
 The operations are listed in the order of the tag: for example `0`, `1`,
@@ -167,7 +267,8 @@ and carrier.
 ```moonbit
 test "built-in dictionaries" {
   let int_ring : Algebra[RingSig, Int] = Algebra::ring()
-  let id : Hom[RingSig, Int, Int] = Hom::id()
+  let model : Model[RingSig, Int] = Model::ring()
+  let id : Hom[RingSig, Int, Int] = Hom::id(model)
   assert_true(id.check(int_ring, int_ring, ints))
 }
 ```
@@ -177,11 +278,12 @@ test "built-in dictionaries" {
 `Algebra::prod(a, b)` is the componentwise product algebra on `Prod[A, B]`.
 
 ```mbti
-pub fn[S, A, B] Algebra::prod(Algebra[S, A], Algebra[S, B]) -> Algebra[S, Prod[A, B]]
+pub fn[S, A, B] Algebra::prod(Algebra[S, A], Algebra[S, B]) -> Result[Algebra[S, Prod[A, B]], ModelMismatch]
 ```
 
-Each operation acts on `fst` with `a` and on `snd` with `b`. Aborts when `a`
-and `b` do not list the same operations.
+Each operation acts on `fst` with `a` and on `snd` with `b`. The actual
+signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects
+different operation lists with `SignatureMismatch` without aborting.
 
 ## Product type
 
@@ -239,6 +341,20 @@ test "prod" {
 }
 ```
 
+### Product law methods
+
+`Prod::add_monoid_law`, `Prod::mul_monoid_law`, `Prod::add_group_law`,
+`Prod::semiring_law`, and `Prod::ring_law` derive the corresponding law from
+both components. An operation-only component does not provide these methods.
+
+```mbti
+pub fn[A : AddMonoid, B : AddMonoid] Prod::add_monoid_law() -> Law[AddMonoidTh, Prod[A, B]]
+pub fn[A : MulMonoid, B : MulMonoid] Prod::mul_monoid_law() -> Law[MulMonoidTh, Prod[A, B]]
+pub fn[A : AddGroup, B : AddGroup] Prod::add_group_law() -> Law[AddGroupTh, Prod[A, B]]
+pub fn[A : Semiring, B : Semiring] Prod::semiring_law() -> Law[SemiringTh, Prod[A, B]]
+pub fn[A : Ring, B : Ring] Prod::ring_law() -> Law[RingTh, Prod[A, B]]
+```
+
 ## Homomorphisms
 
 ### `Hom`
@@ -260,16 +376,18 @@ f(\omega_A(x_1, \dots, x_n)) = \omega_B(f(x_1), \dots, f(x_n)).
 $$
 
 Only this package constructs `Hom` values. The leaves are
-`Hom::postulate` and `Hom::from_integer`; every other constructor is an
-inference rule.
+`Hom::postulate` and `Hom::from_integer_exact`; the latter requires a
+`LawfulModel[IntegerHomomorphismTh, SemiringSig, R]`. Every other constructor
+is an inference rule or a checked runtime transformation.
 
 ### `Hom::postulate`
 
-`Hom::postulate(f)` trusts `f` as an `S`-homomorphism without proof and
-creates a proof obligation.
+`Hom::postulate(source, target, f)` trusts `f` as an `S`-homomorphism without
+proof and creates a proof obligation. The two Models bind the operation
+interpretations used by the certificate.
 
 ```mbti
-pub fn[S, A, B] Hom::postulate((A) -> B) -> Hom[S, A, B]
+pub fn[S, A, B] Hom::postulate(Model[S, A], Model[S, B], (A) -> B) -> Hom[S, A, B]
 ```
 
 The caller promises that for every operation `op` of `S` and all arguments
@@ -279,7 +397,7 @@ relation. Back every call with a `check` test.
 
 ```moonbit
 fn int64_to_int() -> Hom[RingSig, Int64, Int] {
-  Hom::postulate(x => x.to_int())
+  Hom::postulate(Model::ring(), Model::ring(), x => x.to_int())
 }
 
 test "postulate and check" {
@@ -303,18 +421,20 @@ test "apply" {
 
 ### `Hom::id`
 
-`Hom::id()` is the identity homomorphism.
+`Hom::id(model)` is the identity homomorphism bound to the supplied runtime
+model. Both endpoints use that exact model identity.
 
 ```mbti
-pub fn[S, A] Hom::id() -> Hom[S, A, A]
+pub fn[S, A] Hom::id(Model[S, A]) -> Hom[S, A, A]
 ```
 
-### `Hom::then`
+### `Hom::then_checked`
 
-`h.then(g)` is the composite: first `h`, then `g`.
+`h.then_checked(g)` is the composite when the middle Model identities match.
+It returns `Err(IdentityMismatch)` for different runtime interpretations.
 
 ```mbti
-pub fn[S, A, B, C] Hom::then(Hom[S, A, B], Hom[S, B, C]) -> Hom[S, A, C]
+pub fn[S, A, B, C] Hom::then_checked(Hom[S, A, B], Hom[S, B, C]) -> Result[Hom[S, A, C], ModelMismatch]
 ```
 
 If $f$ and $g$ preserve $\omega$, so does $g \circ f$:
@@ -328,7 +448,7 @@ $$
 `h.forget(r)` forgets structure along a `Reduct[S, T]` witness.
 
 ```mbti
-pub fn[S, T, A, B] Hom::forget(Hom[S, A, B], Reduct[S, T]) -> Hom[T, A, B]
+pub fn[S, T, A, B] Hom::forget(Hom[S, A, B], Reduct[S, T]) -> Result[Hom[T, A, B], ModelConstructionError]
 ```
 
 A map that preserves every operation of `S` preserves the operations of the
@@ -336,24 +456,33 @@ smaller signature `T`.
 
 ### `Hom::pair`, `Hom::fst`, `Hom::snd`
 
-`Hom::pair(f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`; `Hom::fst()` and
-`Hom::snd()` are the projections out of `Prod`.
+`Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The
+explicit product Model must be reused by `Hom::fst(product, left)` and
+`Hom::snd(product, right)`. A Model that was not built by `Model::prod`
+yields `Err(NotProductModel)`; a component or source Model with a different
+identity yields `Err(IdentityMismatch)`.
 
 ```mbti
-pub fn[S, A, B, C] Hom::pair(Hom[S, A, B], Hom[S, A, C]) -> Hom[S, A, Prod[B, C]]
-pub fn[S, A, B] Hom::fst() -> Hom[S, Prod[A, B], A]
-pub fn[S, A, B] Hom::snd() -> Hom[S, Prod[A, B], B]
+pub fn[S, A, B, C] Hom::pair(Model[S, Prod[B, C]], Hom[S, A, B], Hom[S, A, C]) -> Result[Hom[S, A, Prod[B, C]], ModelMismatch]
+pub fn[S, A, B] Hom::fst(Model[S, Prod[A, B]], Model[S, A]) -> Result[Hom[S, Prod[A, B], A], ModelMismatch]
+pub fn[S, A, B] Hom::snd(Model[S, Prod[A, B]], Model[S, B]) -> Result[Hom[S, Prod[A, B], B], ModelMismatch]
 ```
 
-They satisfy `pair(f, g).then(fst()) = f` and `pair(f, g).then(snd()) = g`.
+With the same product Model and component Models, the checked composites
+`Hom::pair(product, f, g).then_checked(Hom::fst(product, left))` and
+`Hom::pair(product, f, g).then_checked(Hom::snd(product, right))` return `f`
+and `g` respectively.
 
 ```moonbit
 test "composition rules" {
   let h = int64_to_int()
-  let low : Hom[RingSig, Int64, Int16] = Hom::postulate(x => Int16::from_int(x.to_int()))
-  let p = Hom::pair(h, low)
-  let back = p.then(Hom::fst())
-  let additive = h.forget(ring_to_add_group)
+  let low : Hom[RingSig, Int64, Int16] = Hom::postulate(
+    Model::ring(), Model::ring(), x => Int16::from_int(x.to_int()),
+  )
+  let product = Model::prod(Model::ring(), Model::ring()).unwrap()
+  let p = Hom::pair(product, h, low).unwrap()
+  let back = p.then_checked(Hom::fst(product, Model::ring()).unwrap()).unwrap()
+  let additive = h.forget(ring_to_add_group).unwrap()
   inspect(back.apply(4294967301L), content="5")
   assert_true(additive.check(Algebra::add_group(), Algebra::add_group(), longs))
 }
@@ -361,44 +490,48 @@ test "composition rules" {
 
 ### `Hom::to_add_group`
 
-`h.to_add_group()` upgrades an additive monoid homomorphism between groups
-to an additive group homomorphism.
+`h.to_add_group(source_law, target_law)` upgrades an additive monoid
+homomorphism after checking the law-bound Models match its endpoints.
 
 ```mbti
-pub fn[A : AddGroup, B : AddGroup] Hom::to_add_group(Hom[AddMonoidSig, A, B]) -> Hom[AddGroupSig, A, B]
+pub fn[A, B] Hom::to_add_group(Hom[AddMonoidSig, A, B], LawfulModel[AddGroupTh, AddGroupSig, A], LawfulModel[AddGroupTh, AddGroupSig, B]) -> Result[Hom[AddGroupSig, A, B], ModelMismatch]
 ```
 
 No new obligation: $f(-x) + f(x) = f(-x + x) = f(0) = 0$, so $f(-x) = -f(x)$.
 
 ### `Hom::to_ring`
 
-`h.to_ring()` upgrades a semiring homomorphism between rings to a ring
-homomorphism.
+`h.to_ring(source_law, target_law)` upgrades a semiring homomorphism after
+checking the law-bound Models match its endpoints.
 
 ```mbti
-pub fn[A : Ring, B : Ring] Hom::to_ring(Hom[SemiringSig, A, B]) -> Hom[RingSig, A, B]
+pub fn[A, B] Hom::to_ring(Hom[SemiringSig, A, B], LawfulModel[RingTh, RingSig, A], LawfulModel[RingTh, RingSig, B]) -> Result[Hom[RingSig, A, B], ModelMismatch]
 ```
 
 No new obligation, by the same computation as `to_add_group`.
 
-### `Hom::from_integer`
+### `Hom::from_integer_exact`
 
-`Hom::from_integer()` is the canonical map ℤ → `R` of `FromInteger`, as a
-certificate.
+`Hom::from_integer_exact(target)` is the canonical map ℤ → `R` only when the
+target Model carries an explicit `IntegerHomomorphismTh` law. This law states
+preservation of zero, one, addition and multiplication; it does not assert
+injectivity.
 
 ```mbti
-pub fn[R : FromInteger] Hom::from_integer() -> Hom[SemiringSig, @bigint.BigInt, R]
+pub fn[R : FromInteger] Hom::from_integer_exact(LawfulModel[IntegerHomomorphismTh, SemiringSig, R]) -> Hom[SemiringSig, @bigint.BigInt, R]
 ```
 
-It holds on every input; upgrade with `to_ring` when `R` is a ring. `Float`
-and `Double` targets satisfy it only up to rounding. For a fixed-width
-source, lift first with `Section::of_integral`.
+Rounded `Float` and `Double` conversions do not provide this law. A caller
+may use `Law::postulate` explicitly, but that assumption is visible in the
+type and trust audit. For a fixed-width source, use `Section::of_integral`.
 
 ```moonbit
-test "from_integer" {
-  let h : Hom[RingSig, BigInt, Int] = Hom::from_integer().to_ring()
+test "from_integer_exact" {
+  let h : Hom[SemiringSig, BigInt, Int] = Hom::from_integer_exact(
+    LawfulModel::integer_homomorphism(),
+  )
   let samples = [0, 1, -1, 2147483647].map(BigInt::from_int)
-  assert_true(h.check(Algebra::ring(), Algebra::ring(), samples))
+  assert_true(h.check(Algebra::semiring(), Algebra::semiring(), samples))
 }
 ```
 
@@ -443,7 +576,9 @@ carries its own `Hom` obligation.
 
 ```moonbit
 test "section postulate" {
-  let truncate : Hom[RingSig, Int64, Int] = Hom::postulate(x => x.to_int())
+  let truncate : Hom[RingSig, Int64, Int] = Hom::postulate(
+    Model::ring(), Model::ring(), x => x.to_int(),
+  )
   let widen = Section::postulate(truncate, x => x.to_int64())
   assert_true(widen.check(ints))
 }
@@ -493,7 +628,9 @@ On such results the lift agrees exactly with the operations of `A`.
 
 ```moonbit
 test "representatives" {
-  let s : Section[RingSig, Int, BigInt] = Section::of_integral().to_ring()
+  let s : Section[RingSig, Int, BigInt] = Section::of_integral()
+    .to_ring(LawfulModel::ring(), LawfulModel::ring())
+    .unwrap()
   let big = BigInt::from_int64(4294967296L)
   inspect(s.lift(-1), content="-1")
   inspect(s.proj().apply(big + BigInt::from_int(5)), content="5")
@@ -508,7 +645,7 @@ test "representatives" {
 `s.then(next)` lifts `Q` into `A` with `s`, then `A` into `B` with `next`.
 
 ```mbti
-pub fn[S, Q, A, B] Section::then(Section[S, Q, A], Section[S, A, B]) -> Section[S, Q, B]
+pub fn[S, Q, A, B] Section::then(Section[S, Q, A], Section[S, A, B]) -> Result[Section[S, Q, B], ModelMismatch]
 ```
 
 The projection is `next.proj` followed by `s.proj`. No new obligation: with
@@ -521,9 +658,9 @@ These inference rules change the signature of the projection; the lift is
 unchanged.
 
 ```mbti
-pub fn[S, T, Q, A] Section::forget(Section[S, Q, A], Reduct[S, T]) -> Section[T, Q, A]
-pub fn[Q : AddGroup, A : AddGroup] Section::to_add_group(Section[AddMonoidSig, Q, A]) -> Section[AddGroupSig, Q, A]
-pub fn[Q : Ring, A : Ring] Section::to_ring(Section[SemiringSig, Q, A]) -> Section[RingSig, Q, A]
+pub fn[S, T, Q, A] Section::forget(Section[S, Q, A], Reduct[S, T]) -> Result[Section[T, Q, A], ModelConstructionError]
+pub fn[Q, A] Section::to_add_group(Section[AddMonoidSig, Q, A], LawfulModel[AddGroupTh, AddGroupSig, Q], LawfulModel[AddGroupTh, AddGroupSig, A]) -> Result[Section[AddGroupSig, Q, A], ModelMismatch]
+pub fn[Q, A] Section::to_ring(Section[SemiringSig, Q, A], LawfulModel[RingTh, RingSig, Q], LawfulModel[RingTh, RingSig, A]) -> Result[Section[RingSig, Q, A], ModelMismatch]
 ```
 
 They follow `Hom::forget`, `Hom::to_add_group` and `Hom::to_ring`.
@@ -547,12 +684,14 @@ drawn from `samples`.
 pub fn[S, Q : Eq, A] Section::check_ops(Section[S, Q, A], Algebra[S, Q], Algebra[S, A], Array[Q]) -> Bool
 ```
 
-This exercises `proj` as a homomorphism on representatives. Aborts when the
-two dictionaries do not list the same operations.
+This exercises `proj` as a homomorphism on representatives. It returns
+`false` when the two dictionaries do not list the same operations.
 
 ```moonbit
 test "section checks" {
-  let s : Section[RingSig, Int, BigInt] = Section::of_integral().to_ring()
+  let s : Section[RingSig, Int, BigInt] = Section::of_integral()
+    .to_ring(LawfulModel::ring(), LawfulModel::ring())
+    .unwrap()
   assert_true(s.check(ints))
   assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), ints))
 }
@@ -601,7 +740,7 @@ pub fn[S, T, U] Reduct::then(Reduct[S, T], Reduct[T, U]) -> Reduct[S, U]
 ```moonbit
 test "reducts" {
   let r : Reduct[RingSig, AddMonoidSig] = ring_to_add_group.then(add_group_to_add_monoid)
-  let h = int64_to_int().forget(r)
+  let h = int64_to_int().forget(r).unwrap()
   assert_true(h.check(Algebra::add_monoid(), Algebra::add_monoid(), longs))
 }
 ```
@@ -617,7 +756,9 @@ on every operation of `S`.
 pub fn[S, A, B : Eq] Hom::check(Hom[S, A, B], Algebra[S, A], Algebra[S, B], Array[A]) -> Bool
 ```
 
-Requires `B : Eq`. It is `check_by` with `==`.
+Requires `B : Eq`. It is `check_by` with `==`. Both Algebra-only diagnostics
+test only the supplied tables: they do not verify the Hom endpoint Model
+identities. Use `check_models` or `check_models_by` to validate those identities.
 
 ### `Hom::check_by`
 
@@ -631,12 +772,26 @@ pub fn[S, A, B] Hom::check_by(Hom[S, A, B], Algebra[S, A], Algebra[S, B], Array[
 `rel` sets the strength of preservation: equality for strict homomorphisms,
 `<=` for lax ones such as subadditive maps, and a tolerance for approximate
 homomorphisms into floating-point targets. An operation of arity `n` is
-tested on `samples.length()^n` tuples. Aborts when `src` and `dst` do not
-list the same operations.
+tested on `samples.length()^n` tuples. It returns `false` when `src` and `dst`
+do not list the same operations.
+
+### `Hom::check_models`, `Hom::check_models_by`
+
+These diagnostics bind the finite check to the exact source and target Models
+stored in the Hom. They return `Err(IdentityMismatch)` when either endpoint has a
+different runtime identity, then delegate to `check` or `check_by`. They still
+return diagnostics only and never create a certificate.
+
+```mbti
+pub fn[S, A, B : Eq] Hom::check_models(Hom[S, A, B], Model[S, A], Model[S, B], Array[A]) -> Result[Bool, ModelMismatch]
+pub fn[S, A, B] Hom::check_models_by(Hom[S, A, B], Model[S, A], Model[S, B], Array[A], (B, B) -> Bool) -> Result[Bool, ModelMismatch]
+```
 
 ```moonbit
 test "check_by" {
-  let abs : Hom[AddMonoidSig, Double, Double] = Hom::postulate(x => x.abs())
+  let abs : Hom[AddMonoidSig, Double, Double] = Hom::postulate(
+    Model::add_monoid(), Model::add_monoid(), x => x.abs(),
+  )
   let samples = [0.0, 1.5, -2.0, 3.25]
   // |x + y| <= |x| + |y|: subadditive, a lax homomorphism
   assert_true(abs.check_by(Algebra::add_monoid(), Algebra::add_monoid(), samples, (l, r) => l <= r))
@@ -654,32 +809,13 @@ test "check_by" {
 - The inference rules compose certificates as strict homomorphisms. A map that
   only satisfies a lax (`<=`) or tolerance law must be checked again after
   composition.
-- `Float` and `Double` targets satisfy the laws only up to rounding; use
-  `check_by` with a tolerance. See the embedding notes in the
-  [core API](core.md).
+- `Float` and `Double` provide rounded operations without exact law
+  certificates; use `check_by` with a tolerance for approximate maps. See the
+  embedding notes in the [core API](core.md).
 
-## Deprecated
+## Removed conversion constructors
 
-### `Hom::from_nat`
-
-`Hom::from_nat()` certifies `NatHomomorphism::from_nat`.
-
-```mbti
-#deprecated
-pub fn[N : Nat, R : NatHomomorphism] Hom::from_nat() -> Hom[SemiringSig, N, R]
-```
-
-It is not a homomorphism for fixed-width sources. Replacement:
-`Hom::from_integer` with `Section::of_integral`, or `lift_to` when no
-certificate is needed.
-
-### `Hom::from_integral`
-
-`Hom::from_integral()` certifies `IntegralHomomorphism::from_integral`.
-
-```mbti
-#deprecated
-pub fn[Z : Integral, R : IntegralHomomorphism] Hom::from_integral() -> Hom[SemiringSig, Z, R]
-```
-
-Deprecated for the same reason, with the same replacement.
+`Hom::from_nat`, `Hom::from_integral` and the old `Hom::from_integer` are not
+part of the 0.5.0 API. Use `FromNat` / `FromInteger` for ordinary values,
+`Section::of_integral` for representative lifts, and
+`Hom::from_integer_exact` only with an explicit integer-homomorphism law.

@@ -11,7 +11,7 @@ this way is in the [hom design](../design/hom.md).
 [core tutorial](core.md). The examples on this page use this declaration:
 
 ```moonbit
-using @luna-generic {
+using @lf_alg {
   type Hom,
   type Section,
   type Algebra,
@@ -19,6 +19,9 @@ using @luna-generic {
   type AddMonoidSig,
   type SemiringSig,
   type RingSig,
+  type Model,
+  type LawfulModel,
+  trait FromInteger,
   ring_to_add_group,
   lift_to,
 }
@@ -28,7 +31,7 @@ The smallest useful program declares one homomorphism and checks it:
 
 ```moonbit
 fn int64_to_int() -> Hom[RingSig, Int64, Int] {
-  Hom::postulate(x => x.to_int())
+  Hom::postulate(Model::ring(), Model::ring(), x => x.to_int())
 }
 
 test "quick start" {
@@ -49,7 +52,9 @@ when values wrap around, so the check passes on extreme samples. Widening
 
 ```moonbit
 test "widening is not a homomorphism" {
-  let widen : Hom[RingSig, Int, Int64] = Hom::postulate(x => x.to_int64())
+  let widen : Hom[RingSig, Int, Int64] = Hom::postulate(
+    Model::ring(), Model::ring(), x => x.to_int64(),
+  )
   let samples = [0, 1, -1, 2147483647]
   assert_false(widen.check(Algebra::ring(), Algebra::ring(), samples))
 }
@@ -59,15 +64,24 @@ Every `Hom::postulate` is a promise you make. Searching the repository for
 `postulate` lists all of them, and each one should have a matching `check`
 test.
 
+When a Hom is tied to runtime Models, use `check_models` or
+`check_models_by` to validate the exact endpoint identities before running a
+finite diagnostic. A different source or target Model returns
+`Err(IdentityMismatch)`; the successful result is still a diagnostic, not a new
+certificate.
+
 ### Building from smaller homomorphisms
 
 ```moonbit
 test "composition" {
   let h = int64_to_int()
-  let low : Hom[RingSig, Int64, Int16] = Hom::postulate(x => Int16::from_int(x.to_int()))
-  let p = Hom::pair(h, low) // Int64 -> Prod[Int, Int16]
-  let back = p.then(Hom::fst()) // same as h
-  let additive = h.forget(ring_to_add_group)
+  let low : Hom[RingSig, Int64, Int16] = Hom::postulate(
+    Model::ring(), Model::ring(), x => Int16::from_int(x.to_int()),
+  )
+  let product = Model::prod(Model::ring(), Model::ring()).unwrap()
+  let p = Hom::pair(product, h, low).unwrap() // Int64 -> Prod[Int, Int16]
+  let back = p.then_checked(Hom::fst(product, Model::ring()).unwrap()).unwrap()
+  let additive = h.forget(ring_to_add_group).unwrap()
   inspect(p.apply(65537L).snd, content="1")
   inspect(back.apply(4294967301L), content="5")
   inspect(additive.apply(-1L), content="-1")
@@ -88,7 +102,9 @@ original value:
 
 ```moonbit
 test "section" {
-  let s : Section[RingSig, Int, BigInt] = Section::of_integral().to_ring()
+  let s : Section[RingSig, Int, BigInt] = Section::of_integral()
+    .to_ring(LawfulModel::ring(), LawfulModel::ring())
+    .unwrap()
   let samples = [0, 1, -1, 2147483647, -2147483648]
   assert_true(s.check(samples))
   assert_true(s.check_ops(Algebra::ring(), Algebra::ring(), samples))
@@ -104,7 +120,9 @@ exactly when the result is such a value:
 
 ```moonbit
 test "representatives" {
-  let s : Section[RingSig, Int, BigInt] = Section::of_integral().to_ring()
+  let s : Section[RingSig, Int, BigInt] = Section::of_integral()
+    .to_ring(LawfulModel::ring(), LawfulModel::ring())
+    .unwrap()
   inspect(s.is_representative(s.lift(7) + s.lift(1)), content="true") // no wrap-around
   inspect(s.is_representative(s.lift(2147483647) + s.lift(1)), content="false") // Int wrapped
 }
@@ -124,7 +142,9 @@ test "lift_to" {
 
 ```moonbit
 test "lax homomorphism" {
-  let abs : Hom[AddMonoidSig, Double, Double] = Hom::postulate(x => x.abs())
+  let abs : Hom[AddMonoidSig, Double, Double] = Hom::postulate(
+    Model::add_monoid(), Model::add_monoid(), x => x.abs(),
+  )
   let samples = [0.0, 1.5, -2.0, 3.25]
   // |x + y| <= |x| + |y|: subadditive, a lax homomorphism
   assert_true(abs.check_by(Algebra::add_monoid(), Algebra::add_monoid(), samples, (l, r) => l <= r))
@@ -137,7 +157,9 @@ small value while the rounding error stays proportional to `|x| + |y|`:
 
 ```moonbit
 test "approximate homomorphism" {
-  let h : Hom[SemiringSig, BigInt, Float] = Hom::from_integer()
+  let h : Hom[SemiringSig, BigInt, Float] = Hom::postulate(
+    Model::semiring(), Model::semiring(), x => FromInteger::from_integer(x),
+  )
   let close = (l : Float, r : Float) => {
     (l - r).abs() <= (1.0e-6 : Float) * ((1.0 : Float) + r.abs())
   }
@@ -160,12 +182,19 @@ enum MaxSig {}
 fn max_int() -> Algebra[MaxSig, Int] {
   Algebra::make([
     Op::{ name: "max", arity: 2, eval: xs => if xs[0] > xs[1] { xs[0] } else { xs[1] } },
-  ])
+  ]).unwrap()
+}
+
+fn max_model() -> Model[MaxSig, Int] {
+  Model::make([
+    Op::{ name: "max", arity: 2, eval: xs => if xs[0] > xs[1] { xs[0] } else { xs[1] } },
+  ]).unwrap()
 }
 
 test "custom signature" {
   // doubling is monotone, so it preserves max (as long as it does not wrap)
-  let double : Hom[MaxSig, Int, Int] = Hom::postulate(x => 2 * x)
+  let model = max_model()
+  let double : Hom[MaxSig, Int, Int] = Hom::postulate(model, model, x => 2 * x)
   assert_true(double.check(max_int(), max_int(), [-5, 0, 3, 1000]))
 }
 ```
@@ -175,7 +204,8 @@ dictionaries list the same operations in the same order. Keep one dictionary
 per tag and carrier: certificates checked against different meanings of the
 same tag do not compose.
 
-Operation arities must be nonnegative; `Algebra::make` aborts otherwise.
+Operation arities must be nonnegative; `Algebra::make` returns
+`Err(InvalidArity)` otherwise.
 
 ### Maps that are not determined by the types
 
@@ -188,8 +218,9 @@ call site.
 
 ## Common pitfalls
 
-- Use `Hom::from_integer` for the conversion out of `BigInt` into a number
-  type; it holds for every input.
+- Use `Hom::from_integer_exact` only with a target carrying
+  `IntegerHomomorphismTh`. For rounded targets, use `FromInteger::from_integer`
+  as an ordinary operation or postulate a Hom explicitly with the model.
 - Use `Section::of_integral` to check conversions out of machine integers,
   and `lift_to` when you only need the value. Do not wrap a widening such
   as `Int -> Int64` in `Hom::postulate`: it is not a homomorphism.

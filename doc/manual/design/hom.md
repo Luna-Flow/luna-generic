@@ -18,25 +18,32 @@ obligations auditable and testable.
 
 - LCF-style certificates: `Hom[S, A, B]` has private fields and is only
   constructed inside this package.
-- The only public trust entry is `Hom::postulate`. Kernel rules use the
-  package-private `trust`, so searching for `postulate` lists exactly the
-  user-level obligations. (`assume` is a reserved word in MoonBit, hence the
-  name.) `Section::postulate` is the trust entry for sections, and the
-  canonical `Hom::from_integer` and `Section::of_integral` are the other
-  leaves: their obligation sits on the trait instances.
+- `Hom::postulate`, `Section::postulate`, `Law::postulate` and
+  `LawfulModel::postulate` are explicit trust entries. Kernel rules use the
+  package-private `trust`; searching for `postulate` therefore exposes every
+  user-level assumption. `Hom::from_integer_exact` requires an opaque
+  `IntegerHomomorphismTh` bound to its target Model, while
+  `Section::of_integral` obtains that law from `Integral`.
 - A lift from a quotient back to its cover is a `Section`, not a `Hom`. It
   carries the projection as a `Hom` and only promises `proj(lift(q)) == q`;
   agreement with the operations on representatives follows from that law.
   Keeping the two apart stops a representative lift, such as `Int -> BigInt`,
   from being composed as if it were a homomorphism.
-- The signature is a phantom type `S` on the certificate, while the algebra is
-  passed as a dictionary value `Algebra[S, A]`: the certificate says what is
-  preserved, the dictionary is used for checking.
+- The signature is a phantom type `S` on the certificate, while strict
+  `Hom` values carry source and target `Model` identities. The model binds the
+  operation table to the certificate; `then_checked`, pairing and projections
+  return a `ModelMismatch` variant instead of silently composing different
+  interpretations. Algebra-only `check` and `check_by` remain finite
+  diagnostics and never create certificates; `check_models` and
+  `check_models_by` add endpoint identity validation before delegating to those
+  finite checks.
 - Custom operations supplied to `Algebra::make` must have nonnegative arity.
   Law checking enumerates argument tuples recursively, so rejecting invalid
   arities at construction prevents nontermination before a certificate is
   checked.
-- Signature inclusions are `Reduct[S, T]` witnesses only this package can build.
+- Signature inclusions are `Reduct[S, T]` witnesses only this package can
+  build. Built-in reducts project operation tables and preserve custom
+  lineage; `Reduct::refl` leaves the table and identity unchanged.
 - The strength of preservation is the relation `rel` chosen at check time, so
   strict, lax and approximate homomorphisms share one API.
 
@@ -168,9 +175,15 @@ preserves the signed order of `Int`. Such properties need their own checks.
   belong to their own packages and are not generalized here.
 - Laws are tested, not proven. The certificate guarantees traceable origin,
   not that the laws hold.
-- Soundness of `then` relies on one `S`-algebra per carrier. Built-in tags get
-  this from trait coherence; dictionaries from `Algebra::make` only by
-  convention.
+- Runtime `Hom` endpoints carry `Model` identities, so `then_checked`, pairing,
+  projections and strict upgrades reject different operation interpretations
+  with `IdentityMismatch`, or `NotProductModel` for a product operation on a
+  Model not built by `Model::prod`; `Algebra::prod` and `Model::prod` report
+  `SignatureMismatch`. `check_models` and `check_models_by` validate those
+  endpoint identities and return `Result[Bool, ModelMismatch]`; the
+  Algebra-only checks remain finite diagnostics over supplied dictionaries.
+- Model identity keys are opaque and package-owned. Callers compare Models
+  with `Model::same_identity` and cannot inspect or mutate lineage paths.
 - The certificate does not record the relation used by `check_by`, so lax and
   approximate maps compose as if they were strict.
 - Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are

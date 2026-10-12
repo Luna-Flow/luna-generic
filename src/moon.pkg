@@ -1,4 +1,8 @@
 import {
+  "moonbitlang/core/ref",
+}
+
+import {
   "moonbitlang/core/test",
   "moonbitlang/core/double",
   "moonbitlang/core/float",

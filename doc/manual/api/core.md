@@ -22,10 +22,10 @@ import {
 ```
 
 The examples on this page bring the names into scope with one `using`
-declaration, so they can be written without the `@luna-generic.` prefix:
+declaration, so they can be written without the `@lf_alg.` prefix:
 
 ```moonbit
-using @luna-generic {
+using @lf_alg {
   trait AddMonoid,
   trait MulMonoid,
   trait AddGroup,
@@ -33,7 +33,15 @@ using @luna-generic {
   trait Semiring,
   trait Ring,
   trait Field,
-  trait Num,
+  trait AddMonoidOps,
+  trait MulMonoidOps,
+  trait AddGroupOps,
+  trait MulGroupOps,
+  trait SemiringOps,
+  trait RingOps,
+  trait FieldOps,
+  trait NumOps,
+  trait RoundedArithmetic,
   trait Zero,
   trait One,
   trait Inverse,
@@ -48,18 +56,16 @@ using @luna-generic {
 
 ## Laws are contracts
 
-Every structural trait below is an empty trait whose methods come from its
-supertraits: MoonBit's `Add`, `Mul`, `Neg`, `Sub` and `Div`, and this
-package's `Zero`, `One` and `Inverse`. The compiler checks that the methods
-exist. It does not check the equations that give a trait its meaning. Those
-equations are listed under each trait; an implementation that breaks them
-compiles, but generic code written against the trait may then compute wrong
-results. Test them on edge values, for example with `Hom::check` from the
-[hom API](hom.md).
+Operation bundles (`AddMonoidOps`, `SemiringOps`, `RingOps`, `FieldOps`,
+and `NumOps`) describe available operations without asserting equations.
+Exact structural traits (`AddMonoid`, `Semiring`, `Ring`, `Field`, and
+the others) require a method returning an opaque `Law[Theory, Self]`.
+Implementations choose an explicit `Law::postulate()` assumption or derive a
+weaker law through a kernel-owned implication. The compiler checks that a
+certificate is returned, not that its equations are true.
 
-`Float` and `Double` satisfy the laws only up to rounding: floating-point
-addition is not associative, so they are approximate instances of the same
-traits.
+`Float` and `Double` implement operation bundles and `RoundedArithmetic`;
+they do not receive exact structural law instances.
 
 ## Operation traits
 
@@ -157,15 +163,17 @@ test "conjugate" {
 
 ## Structural traits
 
-These traits live in `src/structure.mbt`. Each one adds laws to the traits
-it extends; the laws are written for all $x, y, z$ of the type.
+These traits live in `src/structure.mbt`. Each returns an opaque law
+certificate. The equations are contracts represented by that certificate;
+the compiler does not prove them.
 
 ### `AddMonoid`
 
 `AddMonoid` is a type with an associative `+` and the identity `0`.
 
 ```mbti
-pub(open) trait AddMonoid : Add + Zero {
+pub(open) trait AddMonoid : AddMonoidOps {
+  add_monoid_law() -> Law[AddMonoidTh, Self]
 }
 ```
 
@@ -177,7 +185,7 @@ $$
 `AddMonoid` in this package (`Semiring`, `Ring`) requires it to.
 
 ```moonbit
-fn[T : AddMonoid] sum(xs : Array[T]) -> T {
+fn[T : AddMonoidOps] sum(xs : Array[T]) -> T {
   xs.fold(init=Zero::zero(), (acc, x) => acc + x)
 }
 
@@ -192,7 +200,8 @@ test "sum" {
 `MulMonoid` is a type with an associative `*` and the identity `1`.
 
 ```mbti
-pub(open) trait MulMonoid : Mul + One {
+pub(open) trait MulMonoid : MulMonoidOps {
+  mul_monoid_law() -> Law[MulMonoidTh, Self]
 }
 ```
 
@@ -201,7 +210,7 @@ $$
 $$
 
 ```moonbit
-fn[T : MulMonoid] power(x : T, n : Int) -> T {
+fn[T : MulMonoidOps] power(x : T, n : Int) -> T {
   let mut acc : T = One::one()
   for _ in 0..<n {
     acc = acc * x
@@ -220,7 +229,8 @@ test "power" {
 `AddGroup` is an `AddMonoid` where every element has a negative.
 
 ```mbti
-pub(open) trait AddGroup : AddMonoid + Neg + Sub {
+pub(open) trait AddGroup : AddGroupOps {
+  add_group_law() -> Law[AddGroupTh, Self]
 }
 ```
 
@@ -231,7 +241,7 @@ $$
 Unsigned types do not implement it; see the semantic notes below.
 
 ```moonbit
-fn[T : AddGroup] difference(x : T, y : T) -> T {
+fn[T : AddGroupOps] difference(x : T, y : T) -> T {
   x + -y
 }
 
@@ -245,7 +255,8 @@ test "difference" {
 `MulGroup` is a `MulMonoid` with inverses and division.
 
 ```mbti
-pub(open) trait MulGroup : MulMonoid + Inverse + Div {
+pub(open) trait MulGroup : MulGroupOps {
+  mul_group_law() -> Law[MulGroupTh, Self]
 }
 ```
 
@@ -253,16 +264,17 @@ $$
 x \cdot x^{-1} = x^{-1} \cdot x = 1, \qquad x / y = x \cdot y^{-1}.
 $$
 
-Only `Float` and `Double` implement it, and for them the laws hold for
-non-zero elements only: `0` has no inverse.
+`Float` and `Double` implement `MulGroupOps` for executable operations, but
+they do not provide the exact `MulGroup` law certificate: `0` has no inverse
+and floating-point identities are rounded.
 
 ### `Semiring`
 
-`Semiring` combines an additive and a multiplicative monoid that interact
-through distributivity.
+`Semiring` is an exact law contract over semiring operations.
 
 ```mbti
-pub(open) trait Semiring : AddMonoid + MulMonoid {
+pub(open) trait Semiring : SemiringOps {
+  semiring_law() -> Law[SemiringTh, Self]
 }
 ```
 
@@ -271,11 +283,12 @@ x + y = y + x, \qquad x(y + z) = xy + xz, \qquad (x + y)z = xz + yz,
 \qquad 0 \cdot x = x \cdot 0 = 0.
 $$
 
-Every default numeric type implements `Semiring`, including the unsigned
-integers.
+Signed and unsigned integer types and `BigInt` provide an explicit
+`SemiringTh` assumption. `Float` and `Double` provide `SemiringOps`
+without a `Semiring` law instance.
 
 ```moonbit
-fn[T : Semiring] dot(xs : Array[T], ys : Array[T]) -> T {
+fn[T : SemiringOps] dot(xs : Array[T], ys : Array[T]) -> T {
   let mut acc : T = Zero::zero()
   for i, x in xs {
     acc = acc + x * ys[i]
@@ -290,19 +303,21 @@ test "dot" {
 
 ### `Ring`
 
-`Ring` is a `Semiring` whose addition is a group.
+`Ring` is an exact law contract over ring operations. Its operation
+requirements are independent of its certificate.
 
 ```mbti
-pub(open) trait Ring : Semiring + Neg + Sub {
+pub(open) trait Ring : RingOps {
+  ring_law() -> Law[RingTh, Self]
 }
 ```
 
-It satisfies the `Semiring` laws and the `AddGroup` laws. Multiplication
-need not commute. Implemented by the signed integers, `BigInt`, `Float` and
-`Double`.
+The `RingTh` certificate includes the ring axioms; multiplication need not
+commute. The compiler does not prove the equations represented by the returned
+certificate.
 
 ```moonbit
-fn[T : Ring] square_of_difference(x : T, y : T) -> T {
+fn[T : RingOps] square_of_difference(x : T, y : T) -> T {
   (x - y) * (x - y)
 }
 
@@ -313,11 +328,12 @@ test "ring" {
 
 ### `Field`
 
-`Field` is a commutative, nontrivial `Ring`: $0 \ne 1$, and every non-zero
-element has an inverse.
+`Field` is a commutative, nontrivial field law contract over field
+operations: $0 \ne 1$, and every non-zero element has an inverse.
 
 ```mbti
-pub(open) trait Field : Ring + Inverse + Div {
+pub(open) trait Field : FieldOps {
+  field_law() -> Law[FieldTh, Self]
 }
 ```
 
@@ -336,11 +352,12 @@ compiles as a `Field`. Generic code can then give wrong answers; for example,
 it may rewrite $(ab)^{-1}$ as $a^{-1}b^{-1}$. Do not implement `Field` for
 either type. The [core design](../design/core.md) explains the distinction.
 
-`Float` and `Double` implement `Field` up to rounding. Their `inv` aborts on
-`0`, while their `/` follows IEEE 754 and returns an infinity or NaN.
+`Float` and `Double` provide field operations but no `FieldTh` certificate.
+Their `inv` aborts on `0`, while their `/` follows IEEE 754 and returns an
+infinity or NaN.
 
 ```moonbit
-fn[F : Field] mean(xs : Array[F]) -> F {
+fn[F : FieldOps] mean(xs : Array[F]) -> F {
   let mut total : F = Zero::zero()
   let mut count : F = Zero::zero()
   for x in xs {
@@ -355,12 +372,13 @@ test "field" {
 }
 ```
 
-### `Num`
+### `NumOps`
 
-`Num` is a `Ring` with an absolute value and a sign.
+`NumOps` provides absolute value and sign operations without claiming exact
+ring laws. The old `Num` trait is removed.
 
 ```mbti
-pub(open) trait Num : Ring {
+pub(open) trait NumOps : RingOps {
   fn abs(Self) -> Self
   fn signum(Self) -> Self
 }
@@ -372,24 +390,26 @@ $$
 \operatorname{abs}(x) \cdot \operatorname{signum}(x) = x.
 $$
 
-Implemented by the signed integers, `BigInt`, `Float` and `Double`. On a
-fixed-width type the law fails at the most negative value, whose absolute
+Implemented by signed integers, `BigInt`, `Float` and `Double`. On a
+fixed-width type the identity fails at the most negative value, whose absolute
 value wraps back to itself. On `Float` and `Double`, `signum` returns its
-argument for `0.0`, `-0.0` and NaN.
+argument for `0.0`, `-0.0` and NaN. This operation bundle does not imply a
+`RingTh` law.
 
 ```moonbit
-test "num" {
-  inspect(Num::signum(-7), content="-1")
-  inspect(Num::abs(-7) * Num::signum(-7), content="-7")
+test "num operations" {
+  inspect(NumOps::signum(-7), content="-1")
+  inspect(NumOps::abs(-7) * NumOps::signum(-7), content="-7")
 }
 ```
 
-## Canonical maps out of ℕ and ℤ
+## Integer conversions
 
 ### `FromNat`
 
-`FromNat::from_natural(n)` is the unique semiring homomorphism ℕ → `Self`,
-with the natural number given as a `BigInt`.
+`FromNat::from_natural(n)` converts a non-negative `BigInt` value to
+`Self`. The operation alone does not certify that the conversion preserves
+semiring operations.
 
 ```mbti
 pub(open) trait FromNat {
@@ -397,21 +417,16 @@ pub(open) trait FromNat {
 }
 ```
 
-Precondition: $n \ge 0$. The result must be $n \cdot 1 = 1 + \dots + 1$
-($n$ terms), so:
-
-$$
-\varphi(0) = 0, \quad \varphi(1) = 1, \quad \varphi(m + n) = \varphi(m) +
-\varphi(n), \quad \varphi(mn) = \varphi(m)\varphi(n).
-$$
+Precondition: $n \ge 0$. Exact preservation is a separate law claim;
+rounded conversions are ordinary operations only.
 
 Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the
 nearest value, ties to even, as described under `FromInteger` below.
 
 ### `FromInteger`
 
-`FromInteger::from_integer(n)` is the unique ring homomorphism ℤ → `Self`,
-with the integer given as a `BigInt`.
+`FromInteger::from_integer(n)` converts a `BigInt` value to `Self`. It
+does not construct a strict Hom certificate.
 
 ```mbti
 pub(open) trait FromInteger : FromNat {
@@ -419,9 +434,8 @@ pub(open) trait FromInteger : FromNat {
 }
 ```
 
-It satisfies the laws of `from_natural` on all of ℤ and must agree with
-`from_natural` on non-negative arguments. It is defined for every integer,
-also on types without negation: on an unsigned type, `from_integer(-1)` is
+It is defined for every integer, also on types without negation: on an
+unsigned type, `from_integer(-1)` is
 $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width
 integers, rounding for `Float` and `Double`.
 
@@ -552,14 +566,14 @@ test "lift_to" {
 }
 ```
 
-## Shipped instances
+## Shipped capabilities and laws
 
-| Type | Traits |
-| --- | --- |
-| `Int`, `Int16`, `Int64` | `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring`, `Ring`, `Num`, `Zero`, `One`, `FromNat`, `FromInteger`, `Integral` |
-| `UInt`, `UInt16`, `UInt64` | `AddMonoid`, `MulMonoid`, `Semiring`, `Zero`, `One`, `FromNat`, `FromInteger`, `Integral`, `Nat` |
-| `BigInt` | as the signed integers, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism` |
-| `Float`, `Double` | `AddMonoid`, `MulMonoid`, `AddGroup`, `MulGroup`, `Semiring`, `Ring`, `Field`, `Num`, `Zero`, `One`, `Inverse`, `FromNat`, `FromInteger`, plus the deprecated `NatHomomorphism` and `IntegralHomomorphism` |
+| Type | Operation capabilities | Exact law instances |
+| --- | --- | --- |
+| `Int`, `Int16`, `Int64` | `AddMonoidOps`, `MulMonoidOps`, `AddGroupOps`, `SemiringOps`, `RingOps`, `NumOps` | `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring`, `Ring`, `CommRing` |
+| `UInt`, `UInt16`, `UInt64` | `AddMonoidOps`, `MulMonoidOps`, `SemiringOps` | `AddMonoid`, `MulMonoid`, `Semiring`, `Nat` |
+| `BigInt` | signed integer operation capabilities and `NumOps` | `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring`, `Ring`, `CommRing`, `IntegralDomain` |
+| `Float`, `Double` | `AddMonoidOps`, `MulMonoidOps`, `AddGroupOps`, `MulGroupOps`, `SemiringOps`, `RingOps`, `FieldOps`, `NumOps`, `RoundedArithmetic` | none |
 
 `Byte` implements none of them.
 
@@ -579,8 +593,8 @@ test "lift_to" {
 - `Float` and `Double` round to nearest, ties to even, in `from_natural` and
   `from_integer`, so very large values are approximate, and values beyond the
   largest finite number become $\pm\infty$ instead of aborting.
-- `Field` requires commutative multiplication. The compiler cannot check it,
-  so it is the implementor's responsibility.
+- A returned `Law[Th, Self]` is an explicit assumption; the compiler does
+  not prove its equations. Float and Double do not receive exact field laws.
 
 ## Deprecated
 
@@ -612,6 +626,53 @@ pub(open) trait IntegralHomomorphism : NatHomomorphism {
 
 Deprecated for the same reason. Replacement: implement `FromInteger` and
 call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`.
+
+## Additional exact structures and theory tags
+
+`CommRing` requires `comm_ring_law() -> Law[CommRingTh, Self]` over `RingOps`:
+multiplication commutes. `IntegralDomain` requires
+`integral_domain_law() -> Law[IntegralDomainTh, Self]` over `RingOps`: it is a
+commutative ring with no zero divisors. Neither trait supplies a `FieldTh` law.
+
+`OrderedField` requires `ordered_field_law() -> Law[OrderedFieldTh, Self]`
+over `FieldOps + Compare`. Its order is total and compatible with addition
+and multiplication of nonnegative values. It supplies the precise premise
+needed for an exact Complex field instance in G3; `FieldTh` alone is insufficient.
+
+The public empty theory tags are `AddMonoidTh`, `MulMonoidTh`, `AddGroupTh`,
+`MulGroupTh`, `SemiringTh`, `RingTh`, `CommRingTh`, `IntegralDomainTh`,
+`FieldTh`, `OrderedFieldTh`, `IntegralTh`, `NatTh`, and
+`IntegerHomomorphismTh`. `IntegralTh` records the representative round trip;
+`NatTh` also records nonnegative representatives. `IntegerHomomorphismTh`
+records exact preservation by the BigInt conversion without injectivity.
+
+## Law construction and kernel rules
+
+`Law::postulate()` is the explicit trust entry for any theory and carrier.
+It does not prove equations. Weakening methods consume the stronger law
+and return only the indicated weaker law. Product methods consume both
+component laws and return the same theory on `Prod[A, B]`.
+
+```mbti
+pub fn[Th, A] Law::postulate() -> Law[Th, A]
+pub fn[A] Law::semiring_to_add_monoid( _law : Law[SemiringTh, A], ) -> Law[AddMonoidTh, A]
+pub fn[A] Law::semiring_to_mul_monoid( _law : Law[SemiringTh, A], ) -> Law[MulMonoidTh, A]
+pub fn[A] Law::ring_to_semiring(_law : Law[RingTh, A]) -> Law[SemiringTh, A]
+pub fn[A] Law::ring_to_add_group(_law : Law[RingTh, A]) -> Law[AddGroupTh, A]
+pub fn[A] Law::add_group_to_add_monoid( _law : Law[AddGroupTh, A], ) -> Law[AddMonoidTh, A]
+pub fn[A] Law::comm_ring_to_ring(_law : Law[CommRingTh, A]) -> Law[RingTh, A]
+pub fn[A] Law::integral_domain_to_ring(_law : Law[IntegralDomainTh, A]) -> Law[RingTh, A]
+pub fn[A] Law::field_to_ring(_law : Law[FieldTh, A]) -> Law[RingTh, A]
+pub fn[A] Law::field_to_comm_ring(_law : Law[FieldTh, A]) -> Law[CommRingTh, A]
+pub fn[A] Law::field_to_integral_domain( _law : Law[FieldTh, A], ) -> Law[IntegralDomainTh, A]
+pub fn[A] Law::field_to_semiring(_law : Law[FieldTh, A]) -> Law[SemiringTh, A]
+pub fn[A] Law::ordered_field_to_field( _law : Law[OrderedFieldTh, A], ) -> Law[FieldTh, A]
+pub fn[A, B] Law::product_add_monoid( _left : Law[AddMonoidTh, A], _right : Law[AddMonoidTh, B], ) -> Law[AddMonoidTh, Prod[A, B]]
+pub fn[A, B] Law::product_mul_monoid( _left : Law[MulMonoidTh, A], _right : Law[MulMonoidTh, B], ) -> Law[MulMonoidTh, Prod[A, B]]
+pub fn[A, B] Law::product_add_group( _left : Law[AddGroupTh, A], _right : Law[AddGroupTh, B], ) -> Law[AddGroupTh, Prod[A, B]]
+pub fn[A, B] Law::product_semiring( _left : Law[SemiringTh, A], _right : Law[SemiringTh, B], ) -> Law[SemiringTh, Prod[A, B]]
+pub fn[A, B] Law::product_ring( _left : Law[RingTh, A], _right : Law[RingTh, B], ) -> Law[RingTh, Prod[A, B]]
+```
 
 ## Source map
 

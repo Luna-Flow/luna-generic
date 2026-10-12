@@ -177,8 +177,6 @@ test "conversions into Double and Float no longer abort" {
   assert_eq(d, @double.infinity)
   let f : Float = @luna-generic.FromNat::from_natural(pow2(128))
   assert_eq(f, @float.infinity)
-  let h : @luna-generic.Hom[@luna-generic.SemiringSig, BigInt, Double] = @luna-generic.Hom::from_integer()
-  assert_eq(h.apply(-big), @double.neg_infinity)
   let d : Double = @luna-generic.IntegralHomomorphism::from_integral(big)
   assert_eq(d, @double.infinity)
   let f : Float = @luna-generic.IntegralHomomorphism::from_integral(-big)

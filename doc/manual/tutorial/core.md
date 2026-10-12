@@ -7,8 +7,8 @@ design are in the [core design](../design/core.md).
 
 | I want to | Use |
 | --- | --- |
-| write one algorithm for many number types | trait bounds such as `T : Ring` |
-| turn an integer constant or index into a `T` | `@luna-generic.lift_to(i)` with `T : FromInteger` |
+| write one algorithm for many number types | trait bounds such as `T : RingOps` |
+| turn an integer constant or index into a `T` | `@lf_alg.lift_to(i)` with `T : FromInteger` |
 | let my number type be built from integers | implement `FromNat` and `FromInteger` |
 | define a new integer type | also implement `Integral`, and add one check |
 | get one exact form of any integer | `Integral::normalize(x)`, a `BigInt` |
@@ -18,14 +18,14 @@ design are in the [core design](../design/core.md).
 Add the package to your module:
 
 ```bash
-moon add Luna-Flow/luna-generic@0.4.0
+moon add Luna-Flow/luna-generic@0.5.0
 ```
 
 Import it in the `moon.pkg` of the package that uses it:
 
 ```moonbit nocheck
 import {
-  "Luna-Flow/luna-generic",
+  "Luna-Flow/luna-generic" @lf_alg,
 }
 ```
 
@@ -33,10 +33,10 @@ The examples on this page bring the traits into scope with one `using`
 declaration:
 
 ```moonbit
-using @luna-generic {
-  trait Semiring,
-  trait Ring,
-  trait Field,
+using @lf_alg {
+  trait SemiringOps,
+  trait RingOps,
+  trait FieldOps,
   trait Zero,
   trait One,
   trait FromNat,
@@ -48,7 +48,7 @@ using @luna-generic {
 The smallest useful program is one generic function used at three types:
 
 ```moonbit
-fn[T : Ring] double_and_add_one(x : T) -> T {
+fn[T : RingOps] double_and_add_one(x : T) -> T {
   x + x + One::one()
 }
 
@@ -59,18 +59,19 @@ test "quick start" {
 }
 ```
 
-`double_and_add_one` works over the signed integers, `BigInt`, `Float`,
-`Double`, and any future type that implements the same traits.
+`double_and_add_one` needs only operations, so it works over the signed
+integers, `BigInt`, `Float`, `Double`, and any future type that implements the
+same bundle.
 
 ## Everyday tasks
 
 ### Write algorithms against structure, not concrete numbers
 
 Ask for the smallest trait that states what the algorithm needs. A sum of
-products needs only `Semiring`, so it also runs on unsigned integers:
+products needs only `SemiringOps`, so it also runs on unsigned integers:
 
 ```moonbit
-fn[T : Semiring] dot(xs : Array[T], ys : Array[T]) -> T {
+fn[T : SemiringOps] dot(xs : Array[T], ys : Array[T]) -> T {
   let mut acc : T = Zero::zero()
   for i, x in xs {
     acc = acc + x * ys[i]
@@ -84,13 +85,13 @@ test "dot" {
 }
 ```
 
-Require `Ring` when you subtract, and `Field` only when you divide.
+Require `RingOps` when you subtract, and `FieldOps` only when you divide.
 
 ### Turn integers into your number type with `lift_to`
 
 ```moonbit
-fn[T : Semiring + FromInteger] times_index(x : T, i : Int) -> T {
-  x * @luna-generic.lift_to(i)
+fn[T : SemiringOps + FromInteger] times_index(x : T, i : Int) -> T {
+  x * @lf_alg.lift_to(i)
 }
 
 test "lift_to" {
@@ -108,12 +109,12 @@ full range.
 ### Average values in any field
 
 ```moonbit
-fn[F : Field + FromInteger] mean(xs : Array[F]) -> F {
+fn[F : FieldOps + FromInteger] mean(xs : Array[F]) -> F {
   let mut total : F = Zero::zero()
   for x in xs {
     total = total + x
   }
-  total / @luna-generic.lift_to(xs.length())
+  total / @lf_alg.lift_to(xs.length())
 }
 
 test "mean" {
@@ -162,11 +163,26 @@ impl Neg for I8 with fn neg(a) { I8::wrap(-a.v) }
 impl Sub for I8 with fn sub(a, b) { I8::wrap(a.v - b.v) }
 impl Zero for I8 with fn zero() { { v: 0 } }
 impl One for I8 with fn one() { { v: 1 } }
-impl @luna-generic.AddMonoid for I8
-impl @luna-generic.MulMonoid for I8
-impl @luna-generic.AddGroup for I8
-impl Semiring for I8
-impl Ring for I8
+impl @lf_alg.AddMonoidOps for I8
+impl @lf_alg.MulMonoidOps for I8
+impl @lf_alg.AddGroupOps for I8
+impl @lf_alg.SemiringOps for I8
+impl @lf_alg.RingOps for I8
+impl @lf_alg.AddMonoid for I8 with fn add_monoid_law() {
+  @lf_alg.Law::postulate()
+}
+impl @lf_alg.MulMonoid for I8 with fn mul_monoid_law() {
+  @lf_alg.Law::postulate()
+}
+impl @lf_alg.AddGroup for I8 with fn add_group_law() {
+  @lf_alg.Law::postulate()
+}
+impl @lf_alg.Semiring for I8 with fn semiring_law() {
+  @lf_alg.Law::postulate()
+}
+impl @lf_alg.Ring for I8 with fn ring_law() {
+  @lf_alg.Law::postulate()
+}
 
 impl FromNat for I8 with fn from_natural(n) {
   I8::wrap((n % BigInt::from_int(256)).to_int())
@@ -177,17 +193,15 @@ impl FromInteger for I8 with fn from_integer(n) {
 }
 ```
 
-`from_natural` is only called with non-negative values. Both must agree with
-your arithmetic: converting `a + b` gives the sum of the converted values, the
-same holds for `*`, and `0` and `1` become your zero and one. Check it on a
-few values, including large and negative ones:
+`from_natural` is only called with non-negative values. These conversion
+operations do not by themselves certify algebraic laws. For this wrapping
+type they reduce modulo 256, so the same residue arithmetic is used by `+`
+and `*`:
 
 ```moonbit
-test "from_integer is a homomorphism" {
-  let h : @luna-generic.Hom[@luna-generic.RingSig, BigInt, I8] = @luna-generic.Hom::from_integer().to_ring()
-  let samples = [0, 1, -1, 127, 128, -129, 1000].map(BigInt::from_int)
-  assert_true(h.check(@luna-generic.Algebra::ring(), @luna-generic.Algebra::ring(), samples))
-  inspect(h.apply(BigInt::from_int(200)).v, content="-56")
+test "from_integer returns the wrapped value" {
+  let value : I8 = FromInteger::from_integer(BigInt::from_int(200))
+  inspect(value.v, content="-56")
 }
 ```
 
@@ -202,13 +216,23 @@ as your type shows it, so converting it back gives `x` again. Check that
 round trip with the smallest and largest values of your type:
 
 ```moonbit
-impl Integral for I8 with fn normalize(x) { BigInt::from_int(x.v) }
+impl @lf_alg.Integral for I8 with fn integral_law() {
+  @lf_alg.Law::postulate()
+}
+
+impl @lf_alg.Integral for I8 with fn integer_homomorphism_law() {
+  @lf_alg.Law::postulate()
+}
+
+impl @lf_alg.Integral for I8 with fn normalize(x) {
+  BigInt::from_int(x.v)
+}
 
 test "normalize is a section" {
-  let s : @luna-generic.Section[@luna-generic.SemiringSig, I8, BigInt] = @luna-generic.Section::of_integral()
+  let s : @lf_alg.Section[@lf_alg.SemiringSig, I8, BigInt] = @lf_alg.Section::of_integral()
   let samples = [-128, -1, 0, 1, 127].map(I8::wrap)
   assert_true(s.check(samples))
-  let n : Int = @luna-generic.lift_to(I8::wrap(127) + One::one())
+  let n : Int = @lf_alg.lift_to(I8::wrap(127) + One::one())
   inspect(n, content="-128")
 }
 ```
@@ -226,19 +250,20 @@ laws, listed on the [core API](../api/core.md).
 ## Common pitfalls
 
 - Choose the smallest trait set that expresses the algorithm you need.
-- Require `Field` only when reciprocal or division semantics are really needed.
-- `Field` promises `0 != 1` and commutative multiplication. Do not implement
+- Require `FieldOps` only when reciprocal or division operations are needed.
+- `Field` promises `0 != 1` and commutative multiplication through an explicit
+  law certificate. Do not implement
   it for a zero ring or a type whose products depend on factor order; ask for
-  `Ring + Inverse + Div` in code that must accept noncommutative types.
-- Treat `Float` and `Double` as approximate backends even though they satisfy
-  the same abstract surface as exact types.
+  `RingOps + Inverse + Div` in code that must accept noncommutative types.
+- Treat `Float` and `Double` as rounded operation providers. They implement
+  `FieldOps` but do not have exact `Field` law instances.
 - `Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` returns
   an infinity. Test for zero before inverting.
 - Converting a huge integer into `Float` or `Double` with `from_integer` or
   `lift_to` gives an infinity, not an error: anything from about $3.4 \times
   10^{38}$ for `Float` and $1.8 \times 10^{308}$ for `Double`. Check the
   result with `is_inf` when the input can be that large.
-- Unsigned integers are not `Ring`: generic code that negates cannot take
+- Unsigned integers are not `RingOps`: generic code that negates cannot take
   `UInt`.
 - `lift_to` converts the wrapped value. Overflow that happened before the
   call is not undone.

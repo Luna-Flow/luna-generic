@@ -2,17 +2,17 @@
 using @test {assert_eq}
 
 ///|
-fn[T : AddMonoid] add_monoid_identity(x : T) -> T {
+fn[T : AddMonoidOps] add_monoid_identity(x : T) -> T {
   x + @luna-generic.Zero::zero()
 }
 
 ///|
-fn[T : MulMonoid] mul_monoid_identity(x : T) -> T {
+fn[T : MulMonoidOps] mul_monoid_identity(x : T) -> T {
   x * @luna-generic.One::one()
 }
 
 ///|
-fn[T : Nat] nat_semiring_identity(x : T) -> T {
+fn[T : SemiringOps] nat_semiring_identity(x : T) -> T {
   x * @luna-generic.One::one() + @luna-generic.Zero::zero()
 }
 
@@ -64,17 +64,17 @@ fn[F : IntegralHomomorphism] integral_hom_from_bigint(x : BigInt) -> F {
 }
 
 ///|
-fn[T : AddGroup] add_group_cancel(x : T) -> T {
+fn[T : AddGroupOps] add_group_cancel(x : T) -> T {
   x - x
 }
 
 ///|
-fn[T : Ring] ring_roundtrip(x : T) -> T {
+fn[T : RingOps] ring_roundtrip(x : T) -> T {
   x + @luna-generic.Zero::zero()
 }
 
 ///|
-fn[T : Field] field_roundtrip(x : T) -> T {
+fn[T : FieldOps] field_roundtrip(x : T) -> T {
   x / @luna-generic.One::one()
 }
 
@@ -129,9 +129,9 @@ test {
   assert_eq(z, BigInt::from_int(3))
   assert_eq(integral_normalize((-3 : Int16)), BigInt::from_int(-3))
   assert_eq(Int16::abs((-3 : Int16)), (3 : Int16))
-  assert_eq(@luna-generic.Num::signum((-3 : Int16)), (-1 : Int16))
-  assert_eq(@luna-generic.Num::signum((0 : Int16)), (0 : Int16))
-  assert_eq(@luna-generic.Num::signum((3 : Int16)), (1 : Int16))
+  assert_eq(@luna-generic.NumOps::signum((-3 : Int16)), (-1 : Int16))
+  assert_eq(@luna-generic.NumOps::signum((0 : Int16)), (0 : Int16))
+  assert_eq(@luna-generic.NumOps::signum((3 : Int16)), (1 : Int16))
   assert_eq(zf, (3.0 : Float))
   assert_eq(zd, (3.0 : Double))
 }
@@ -148,9 +148,9 @@ test {
   assert_eq(z, BigInt::from_int64(3L))
   assert_eq(integral_normalize(-3L), BigInt::from_int64(-3L))
   assert_eq(Int64::abs(-3L), 3L)
-  assert_eq(@luna-generic.Num::signum(-3L), -1L)
-  assert_eq(@luna-generic.Num::signum(0L), 0L)
-  assert_eq(@luna-generic.Num::signum(3L), 1L)
+  assert_eq(@luna-generic.NumOps::signum(-3L), -1L)
+  assert_eq(@luna-generic.NumOps::signum(0L), 0L)
+  assert_eq(@luna-generic.NumOps::signum(3L), 1L)
   assert_eq(zf, (3.0 : Float))
   assert_eq(zd, (3.0 : Double))
 }
@@ -223,13 +223,16 @@ test {
   assert_eq(integral_normalize(x), x)
   assert_eq(z1, (3.0 : Float))
   assert_eq(z2, (3.0 : Double))
-  assert_eq(@luna-generic.Num::abs(BigInt::from_string("-3")), x)
+  assert_eq(@luna-generic.NumOps::abs(BigInt::from_string("-3")), x)
   assert_eq(
-    @luna-generic.Num::signum(BigInt::from_string("-3")),
+    @luna-generic.NumOps::signum(BigInt::from_string("-3")),
     BigInt::from_int(-1),
   )
-  assert_eq(@luna-generic.Num::signum(BigInt::from_int(0)), BigInt::from_int(0))
-  assert_eq(@luna-generic.Num::signum(x), BigInt::from_int(1))
+  assert_eq(
+    @luna-generic.NumOps::signum(BigInt::from_int(0)),
+    BigInt::from_int(0),
+  )
+  assert_eq(@luna-generic.NumOps::signum(x), BigInt::from_int(1))
   assert_eq(z3, z4)
   assert_eq(z5, z6)
 }
