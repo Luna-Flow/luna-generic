@@ -1,4 +1,4 @@
 ///|
-fn old_numeric_bound[T : @lf_alg.Num](value : T) -> T {
+fn[T : @lf_alg.Num] old_numeric_bound(value : T) -> T {
   value
 }

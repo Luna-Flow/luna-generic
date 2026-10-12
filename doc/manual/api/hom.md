@@ -21,6 +21,8 @@ using @lf_alg {
   type Hom,
   type Section,
   type Algebra,
+  type Model,
+  type LawfulModel,
   type Op,
   type Prod,
   type Reduct,
@@ -97,7 +99,9 @@ pub enum RingSig {
 Two dictionaries of the same `S` must list the same operations (name and
 arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when
 they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return
-`false` for dictionaries with different operation signatures.
+`false` for dictionaries with different operation signatures. These checks
+do not verify the Hom endpoint Model identities; `check_models` and
+`check_models_by` do that for the exact stored Models.
 
 ### `Model`
 
@@ -127,6 +131,29 @@ Construction is not thread-safe: callers must serialize it when using native
 threads. If the counter reaches `UInt64::max`, construction aborts with an
 internal-invariant failure before incrementing; it never wraps or reuses an
 identity. This exhaustion case is physically unreachable in supported use.
+
+### `Model::algebra`, `Model::prod`, `Model::forget`
+
+`Model::algebra()` returns the model's operation dictionary. `Model::prod`
+returns a fresh product identity with the two component identities recorded;
+reuse that value for pairing and projections. `Model::forget` projects a
+kernel mapping and returns `InvalidOperationTable` for incompatible tables.
+
+```mbti
+pub fn[S, A] Model::algebra(Model[S, A]) -> Algebra[S, A]
+pub fn[S, A, B] Model::prod(Model[S, A], Model[S, B]) -> Result[Model[S, Prod[A, B]], ModelMismatch]
+pub fn[S, T, A] Model::forget(Model[S, A], Reduct[S, T]) -> Result[Model[T, A], ModelConstructionError]
+```
+
+`Algebra::make` and `Model::make` validate nonnegative arity only, even for
+built-in phantom signature tags. An empty table is allowed. Finite checks
+over empty operation lists return true vacuously and establish no law.
+`LawfulModel::postulate` can explicitly trust a rounded carrier; a small
+sample may pass while a larger one fails. The caller owns that assumption.
+
+`ModelMismatch` reports incompatible identities, product components, or
+operation lists in checked composition and product construction. Both error
+types implement `Eq` and `Debug`; match their variants to handle failures.
 
 ### `Op`
 
@@ -266,6 +293,20 @@ test "prod" {
   assert_eq(p * q + Prod::one(), { fst: 7, snd: 3.0 })
   assert_true(p != q)
 }
+```
+
+### Product law methods
+
+`Prod::add_monoid_law`, `Prod::mul_monoid_law`, `Prod::add_group_law`,
+`Prod::semiring_law`, and `Prod::ring_law` derive the corresponding law from
+both components. An operation-only component does not provide these methods.
+
+```mbti
+pub fn[A : AddMonoid, B : AddMonoid] Prod::add_monoid_law() -> Law[AddMonoidTh, Prod[A, B]]
+pub fn[A : MulMonoid, B : MulMonoid] Prod::mul_monoid_law() -> Law[MulMonoidTh, Prod[A, B]]
+pub fn[A : AddGroup, B : AddGroup] Prod::add_group_law() -> Law[AddGroupTh, Prod[A, B]]
+pub fn[A : Semiring, B : Semiring] Prod::semiring_law() -> Law[SemiringTh, Prod[A, B]]
+pub fn[A : Ring, B : Ring] Prod::ring_law() -> Law[RingTh, Prod[A, B]]
 ```
 
 ## Homomorphisms
@@ -651,7 +692,7 @@ pub fn[S, T, U] Reduct::then(Reduct[S, T], Reduct[T, U]) -> Reduct[S, U]
 ```moonbit
 test "reducts" {
   let r : Reduct[RingSig, AddMonoidSig] = ring_to_add_group.then(add_group_to_add_monoid)
-  let h = int64_to_int().forget(r)
+  let h = int64_to_int().forget(r).unwrap()
   assert_true(h.check(Algebra::add_monoid(), Algebra::add_monoid(), longs))
 }
 ```
@@ -667,7 +708,9 @@ on every operation of `S`.
 pub fn[S, A, B : Eq] Hom::check(Hom[S, A, B], Algebra[S, A], Algebra[S, B], Array[A]) -> Bool
 ```
 
-Requires `B : Eq`. It is `check_by` with `==`.
+Requires `B : Eq`. It is `check_by` with `==`. Both Algebra-only diagnostics
+test only the supplied tables: they do not verify the Hom endpoint Model
+identities. Use `check_models` or `check_models_by` to validate those identities.
 
 ### `Hom::check_by`
 

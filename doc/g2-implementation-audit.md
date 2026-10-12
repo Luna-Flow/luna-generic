@@ -20,10 +20,39 @@ scope until this change is merged.
 | Exact integer Hom | Old conversion Hom constructors are removed. `from_integer_exact` requires `FromInteger` plus `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]`; no injectivity claim. | `src/hom.mbt`, `src/integer_law_instances.mbt`; `rounded_integer_exact` negative and fixed-width positive fixtures. | Rounded targets cannot use a Semiring law as the exact premise; fixed-width mappings pass exact checks. |
 | Strict upgrades | `to_add_group`/`to_ring` consume law-bound Models, read the opaque law, validate reduced endpoint identities, and return `Result`. | `src/hom.mbt`, `src/section.mbt`, positive hom/section tests. | Canonical law-bound upgrades pass; mismatched endpoints return `ModelMismatch`. |
 | Diagnostics | Algebra-only `check`/`check_by` remain finite diagnostics; model-bound `check_models`/`check_models_by` validate exact endpoint identity and return `Result[Bool, ModelMismatch]`. | `src/hom.mbt`; `diagnostic_not_hom`, `diagnostic_tolerance_not_hom`; runtime model-bound mismatch tests. | Bool cannot be assigned to Hom; tolerance checks stay outside strict composition; unrelated Models return `Err(ModelMismatch)`. |
-| API fixtures | Every §8 row has a negative fixture and positive coverage. | 18 compile-fail cases in `src/compile_fail/cases`, runtime mismatch fixture, four positive tests in `src/api_fixture_positive`. | Runner passes all fixtures on wasm, wasm-gc, JS and native. |
+| API fixtures | Every §8 row has a negative fixture and positive coverage. | 18 compile-fail cases, each with a positive twin in `src/compile_fail/cases`, runtime mismatch fixture, four positive tests in `src/api_fixture_positive`. | Runner passes all fixtures on wasm, wasm-gc, JS and native. |
 | Complex boundary | `FieldTh` alone cannot imply `OrderedFieldTh`; exact Complex instance is downstream G3. | `field_law_not_ordered` fixture and inventory rows 116-121. | Generic package rejects invalid theory weakening; no G3 files changed. |
 | Inventory | Every one of the 128 pinned rows is classified and anchor-checked. | `doc/g2-field-bound-inventory-audit.md`; IDs 001-128 each occur once. | Audit reports `128/128` verified and worktree changes remain in luna-generic. |
 | Docs/interfaces | Public docs, generated `.mbti`, trust audit, changelog and locales describe the implemented API. | `moon info`, `doc/manual/*`, `doc/locale/*`, `doc/trust-audit.md`. | Localization update/check, `msgfmt`, diff review and API scan pass. |
+
+## Localization and scope evidence
+
+Documentation root: `doc/manual`; source locale is English Markdown; published
+package path is `manual`; locale trees are `doc/locale/zh_CN` and
+`doc/locale/ja_JP`; gettext catalog is `manual.po`. Navigation continues via
+`doc/manual/index.md`. Counterparts are synchronized: each has 468/468 entries,
+zero untranslated, fuzzy, or English-identical entries. `lunadoc check .
+--compile` reports zero errors/warnings; `msgfmt` warns only that catalog header
+metadata fields are absent. Every `moonbit` block compiles and 42 embedded tests
+pass per backend. Markdown pages remain ordinary site navigation entries.
+
+## Review follow-up
+
+All PR #21 review items are tracked in `doc/g2-review-audit.md`. The approved
+API additions are `Eq + Debug` for both errors and the actual weakenings
+`CommRingTh -> RingTh` and `IntegralDomainTh -> RingTh`. `Model::describe` is
+deferred per the maintainer's #20 decision; `same_identity` remains the only
+identity API. Operation table arity is validated, while phantom-signature
+shape remains unchecked by the explicit #20 contract.
+
+The Section 8 fixture map now has 18 negative cases, each with a compiling
+positive control. The legacy API baseline runner proves 7 pre-G2 APIs compile
+on pinned origin/main; current-only Model/Law fixtures have positive twins.
+Nineteen mutation checks are killed on native, including independently
+removed endpoints and the earlier Float Field / Num fixture survivors.
+Every `moonbit` documentation fence across four pages is compiled and its
+42 embedded tests run on all four targets in CI. `mbti` blocks are signature
+notation, not source programs.
 
 ## Section 8 Fixture Map
 

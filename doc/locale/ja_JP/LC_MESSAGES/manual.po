@@ -148,7 +148,9 @@ msgstr "`RingTh` 証明書には環の公理が含まれます。乗法は可換
 msgid ""
 "`Field` is a commutative, nontrivial field law contract over field operations: $0 \\n"
 "e 1$, and every non-zero element has an inverse."
-msgstr "`NumOps` は厳密な環の法則を主張せずに絶対値と符号の操作を提供します。古い `Num` trait は削除されました。"
+msgstr ""
+"`Field` は体の操作に対する可換で非自明な体の法則契約です。$0 \\n"
+"e 1$ で、すべての非零要素に逆元があります。"
 
 #: manual/api/core.md:340
 msgid "An implementor must satisfy the `Ring` laws and, for all $a, b$:"
@@ -160,11 +162,11 @@ msgstr "非自明性と可換性は、体の数学的定義と同じく契約の
 
 #: manual/api/core.md:355
 msgid "`Float` and `Double` provide field operations but no `FieldTh` certificate. Their `inv` aborts on `0`, while their `/` follows IEEE 754 and returns an infinity or NaN."
-msgstr "整数変換"
+msgstr "`Float` と `Double` は体の操作を提供しますが、`FieldTh` 証明書はありません。`inv` は `0` で中断し、`/` は IEEE 754 に従い無限大または NaN を返します。"
 
 #: manual/api/core.md:377
 msgid "`NumOps` provides absolute value and sign operations without claiming exact ring laws. The old `Num` trait is removed."
-msgstr "`FromNat::from_natural(n)` は非負の `BigInt` 値を `Self` に変換します。この操作だけでは変換が半環操作を保つことを証明しません。"
+msgstr "`NumOps` は厳密な環の法則を主張せずに絶対値と符号の操作を提供します。古い `Num` trait は削除されました。"
 
 #: manual/api/core.md:387
 msgid "`signum(x)` is $-1$, $0$ or $1$ according to the sign of $x$, and"
@@ -172,19 +174,19 @@ msgstr "`signum(x)` は $x$ の符号に応じて $-1$、$0$、$1$ のいずれ�
 
 #: manual/api/core.md:393
 msgid "Implemented by signed integers, `BigInt`, `Float` and `Double`. On a fixed-width type the identity fails at the most negative value, whose absolute value wraps back to itself. On `Float` and `Double`, `signum` returns its argument for `0.0`, `-0.0` and NaN. This operation bundle does not imply a `RingTh` law."
-msgstr "前提条件: $n \\ge 0$。厳密な保存は別の法則の主張です。丸め変換は通常の操作に過ぎません。"
+msgstr "符号付き整数、`BigInt`、`Float`、`Double` が実装します。固定幅型では最小の負値の絶対値が自身に回り込むため、この恒等式は成り立ちません。`Float` と `Double` の `signum` は `0.0`、`-0.0`、NaN に対して引数をそのまま返します。この操作バンドルは `RingTh` の法則を意味しません。"
 
 #: manual/api/core.md:406
 msgid "Integer conversions"
-msgstr "`FromInteger::from_integer(n)` は `BigInt` 値を `Self` に変換します。厳密な Hom 証明書は構築しません。"
+msgstr "整数変換"
 
 #: manual/api/core.md:410
 msgid "`FromNat::from_natural(n)` converts a non-negative `BigInt` value to `Self`. The operation alone does not certify that the conversion preserves semiring operations."
-msgstr "同梱される能力と法則"
+msgstr "`FromNat::from_natural(n)` は非負の `BigInt` 値を `Self` に変換します。この操作だけでは変換が半環操作を保つことを証明しません。"
 
 #: manual/api/core.md:420
 msgid "Precondition: $n \\ge 0$. Exact preservation is a separate law claim; rounded conversions are ordinary operations only."
-msgstr "操作能力"
+msgstr "前提条件: $n \\ge 0$。厳密な保存は別の法則の主張です。丸め変換は通常の操作に過ぎません。"
 
 #: manual/api/core.md:423
 msgid "Fixed-width integers reduce modulo $2^k$; `Float` and `Double` round to the nearest value, ties to even, as described under `FromInteger` below."
@@ -192,11 +194,11 @@ msgstr "固定幅の整数は $2^k$ を法として簡約し、`Float` と `Doub
 
 #: manual/api/core.md:428
 msgid "`FromInteger::from_integer(n)` converts a `BigInt` value to `Self`. It does not construct a strict Hom certificate."
-msgstr "厳密な法則インスタンス"
+msgstr "`FromInteger::from_integer(n)` は `BigInt` 値を `Self` に変換します。厳密な Hom 証明書は構築しません。"
 
 #: manual/api/core.md:437
 msgid "It is defined for every integer, also on types without negation: on an unsigned type, `from_integer(-1)` is $2^k - 1$. Exact for `BigInt`, reduction modulo $2^k$ for fixed-width integers, rounding for `Float` and `Double`."
-msgstr "符号付き整数の操作能力と `NumOps`"
+msgstr "すべての整数に対して定義され、符号反転のない型でも利用できます。符号なし型で `from_integer(-1)` は $2^k - 1$ です。`BigInt` では厳密、固定幅整数では $2^k$ を法とする縮約、`Float` と `Double` では丸めになります。"
 
 #: manual/api/core.md:442
 msgid "For `Float` and `Double`, `from_integer(n)` is the IEEE 754 conversion convertFromInt: $n$ rounded to the nearest value with $p$ significant bits, $p = 24$ for `Float` and $p = 53$ for `Double`, ties to the even significand. Integers with $|n| \\le 2^p$ are exact. When the rounded value is larger than the largest finite number, the result is $\\pm\\infty$; the conversion never aborts:"
@@ -260,30 +262,30 @@ msgstr "なし"
 
 #: manual/api/core.md:571
 msgid "Type"
-msgstr "型"
+msgstr "同梱される能力と法則"
 
 #: manual/api/core.md:571
 msgid "Operation capabilities"
-msgstr "返された `Law[Th, Self]` は明示的な仮定です。コンパイラはその方程式を証明しません。`Float` と `Double` には厳密な体の法則が与えられません。"
+msgstr "操作能力"
 
 #: manual/api/core.md:571
 msgid "Exact law instances"
-msgstr "`Model[S, A]` は操作辞書を一つの実行時 ID に束縛します。同じシグネチャとキャリアでも、別々に構築された Model は操作が偶然等しくても別物です。"
+msgstr "厳密な法則インスタンス"
 
 #: manual/api/core.md:575
 msgid "signed integer operation capabilities and `NumOps`"
-msgstr "負の操作 arity は ID を割り当てる前に `Err(InvalidArity)` を返します。成功したカスタム Model はプロセス内の `UInt64` ID を使います。構築はスレッドセーフではないため、ネイティブスレッドでは呼び出し側が直列化する必要があります。カウンタが `UInt64::max` に達すると、増分前に内部不変条件違反として中断し、ラップアラウンドや ID の再利用はしません。この枯渇はサポート対象の利用では物理的に到達不能です。"
+msgstr "符号付き整数の操作能力と `NumOps`"
 
 #: manual/api/core.md:576
 msgid "none"
-msgstr "`Hom::id(model)` は指定された実行時 Model に束縛された恒等準同型です。両端点はその Model の同じ ID を使います。"
+msgstr "型"
 
 #: manual/api/core.md:578
 msgid "`Byte` implements none of them."
 msgstr "`Byte` はどれも実装しません。"
 
 #: manual/api/core.md:580
-#: manual/api/hom.md:711
+#: manual/api/hom.md:754
 msgid "Semantic notes"
 msgstr "意味論メモ"
 
@@ -313,7 +315,7 @@ msgstr "`Float` と `Double` は `from_natural` と `from_integer` で最近接�
 
 #: manual/api/core.md:596
 msgid "A returned `Law[Th, Self]` is an explicit assumption; the compiler does not prove its equations. Float and Double do not receive exact field laws."
-msgstr "中央の Model ID が一致するとき、`h.then_checked(g)` は合成です。異なる実行時解釈には `Err(ModelMismatch)` を返します。"
+msgstr "返された `Law[Th, Self]` は明示的な仮定です。コンパイラはその方程式を証明しません。Float と Double には厳密な体の法則はありません。"
 
 #: manual/api/core.md:599
 msgid "Deprecated"
@@ -336,18 +338,42 @@ msgid "Deprecated for the same reason. Replacement: implement `FromInteger` and 
 msgstr "同じ理由で非推奨です。代替: `FromInteger` を実装し、`lift_to(x)` を呼びます。`BigInt`、`Float`、`Double` は引き続き実装しています。"
 
 #: manual/api/core.md:630
+msgid "Additional exact structures and theory tags"
+msgstr "追加の厳密構造と理論タグ"
+
+#: manual/api/core.md:632
+msgid "`CommRing` requires `comm_ring_law() -> Law[CommRingTh, Self]` over `RingOps`: multiplication commutes. `IntegralDomain` requires `integral_domain_law() -> Law[IntegralDomainTh, Self]` over `RingOps`: it is a commutative ring with no zero divisors. Neither trait supplies a `FieldTh` law."
+msgstr "`CommRing` は `RingOps` 上で `comm_ring_law() -> Law[CommRingTh, Self]` を要求し、乗法の可換性を表します。`IntegralDomain` は `RingOps` 上で `integral_domain_law() -> Law[IntegralDomainTh, Self]` を要求し、零因子のない可換環を表します。どちらも `FieldTh` 法則は提供しません。"
+
+#: manual/api/core.md:637
+msgid "`OrderedField` requires `ordered_field_law() -> Law[OrderedFieldTh, Self]` over `FieldOps + Compare`. Its order is total and compatible with addition and multiplication of nonnegative values. It supplies the precise premise needed for an exact Complex field instance in G3; `FieldTh` alone is insufficient."
+msgstr "`OrderedField` は `FieldOps + Compare` 上で `ordered_field_law() -> Law[OrderedFieldTh, Self]` を要求します。順序は全順序で、加法と非負値の乗法に整合します。G3 の厳密な Complex 体インスタンスに必要な前提であり、`FieldTh` だけでは不十分です。"
+
+#: manual/api/core.md:642
+msgid "The public empty theory tags are `AddMonoidTh`, `MulMonoidTh`, `AddGroupTh`, `MulGroupTh`, `SemiringTh`, `RingTh`, `CommRingTh`, `IntegralDomainTh`, `FieldTh`, `OrderedFieldTh`, `IntegralTh`, `NatTh`, and `IntegerHomomorphismTh`. `IntegralTh` records the representative round trip; `NatTh` also records nonnegative representatives. `IntegerHomomorphismTh` records exact preservation by the BigInt conversion without injectivity."
+msgstr "公開される空の理論タグは `AddMonoidTh`、`MulMonoidTh`、`AddGroupTh`、`MulGroupTh`、`SemiringTh`、`RingTh`、`CommRingTh`、`IntegralDomainTh`、`FieldTh`、`OrderedFieldTh`、`IntegralTh`、`NatTh`、`IntegerHomomorphismTh` です。`IntegralTh` は代表元の往復法則を記録し、`NatTh` は代表元の非負性も記録します。`IntegerHomomorphismTh` は BigInt 変換による厳密な保存を記録しますが単射性は要求しません。"
+
+#: manual/api/core.md:649
+msgid "Law construction and kernel rules"
+msgstr "法則の構築とカーネル規則"
+
+#: manual/api/core.md:651
+msgid "`Law::postulate()` is the explicit trust entry for any theory and carrier. It does not prove equations. Weakening methods consume the stronger law and return only the indicated weaker law. Product methods consume both component laws and return the same theory on `Prod[A, B]`."
+msgstr "`Law::postulate()` は任意の理論とキャリアに対する明示的な信頼入口で、方程式を証明しません。弱化メソッドは強い法則を受け取り、指定された弱い法則だけを返します。積メソッドは両成分の法則を受け取り、`Prod[A, B]` 上の同じ理論の法則を返します。"
+
+#: manual/api/core.md:677
 msgid "Source map"
 msgstr "ソース入口"
 
-#: manual/api/core.md:632
+#: manual/api/core.md:679
 msgid "`src/structure.mbt`: trait definitions"
 msgstr "`src/structure.mbt`：trait 定義"
 
-#: manual/api/core.md:633
+#: manual/api/core.md:680
 msgid "`src/operation.mbt`: operational traits"
 msgstr "`src/operation.mbt`：基礎操作 traits"
 
-#: manual/api/core.md:635
+#: manual/api/core.md:682
 msgid "`src/impl_signed.mbt`, `src/impl_unsigned.mbt`, `src/impl_bigint.mbt`, `src/impl_float.mbt`, `src/impl_dbl.mbt`: default instances"
 msgstr "`src/impl_signed.mbt`、`src/impl_unsigned.mbt`、`src/impl_bigint.mbt`、 `src/impl_float.mbt`、`src/impl_dbl.mbt`：既定インスタンス"
 
@@ -367,334 +393,355 @@ msgstr "ソース: `src/hom.mbt`、`src/section.mbt`。数学的な内容は [ho
 msgid "The examples on this page assume this declaration:"
 msgstr "このページの例は次の宣言を前提とします:"
 
-#: manual/api/hom.md:44
+#: manual/api/hom.md:46
 msgid "Signature tags"
 msgstr "シグネチャタグ"
 
-#: manual/api/hom.md:46
+#: manual/api/hom.md:48
 msgid "Signature tags are empty enums that only appear at the type level, as the `S` parameter of `Hom`, `Section`, `Algebra` and `Reduct`. Users may define their own."
 msgstr "シグネチャタグは型レベルにだけ現れる空の列挙型で、`Hom`、`Section`、`Algebra`、`Reduct` のパラメータ `S` として使います。利用者が独自に定義することもできます。"
 
-#: manual/api/hom.md:52
+#: manual/api/hom.md:54
 msgid "`AddMonoidSig` is the signature `0`, `+`."
 msgstr "`AddMonoidSig` はシグネチャ `0`、`+` です。"
 
-#: manual/api/hom.md:61
+#: manual/api/hom.md:63
 msgid "`MulMonoidSig` is the signature `1`, `*`."
 msgstr "`MulMonoidSig` はシグネチャ `1`、`*` です。"
 
-#: manual/api/hom.md:70
+#: manual/api/hom.md:72
 msgid "`AddGroupSig` is the signature `0`, `+`, `neg`."
 msgstr "`AddGroupSig` はシグネチャ `0`、`+`、`neg` です。"
 
-#: manual/api/hom.md:79
+#: manual/api/hom.md:81
 msgid "`SemiringSig` is the signature `0`, `1`, `+`, `*`."
 msgstr "`SemiringSig` はシグネチャ `0`、`1`、`+`、`*` です。"
 
-#: manual/api/hom.md:88
+#: manual/api/hom.md:90
 msgid "`RingSig` is the signature `0`, `1`, `+`, `*`, `neg`."
 msgstr "`RingSig` はシグネチャ `0`、`1`、`+`、`*`、`neg` です。"
 
-#: manual/api/hom.md:95
+#: manual/api/hom.md:97
 msgid "Algebra dictionaries"
 msgstr "代数辞書"
 
-#: manual/api/hom.md:97
-msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures."
-msgstr "同じ `S` の二つの辞書は、同じ操作（名前と arity）を同じ順序で列挙しなければなりません。一致しない場合、`Algebra::prod` は `Err(ModelMismatch)` を返します。操作シグネチャが異なる辞書に対して、有限診断の `Hom::check` と `Hom::check_by` は `false` を返します。"
+#: manual/api/hom.md:99
+#| msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures."
+msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures. These checks do not verify the Hom endpoint Model identities; `check_models` and `check_models_by` do that for the exact stored Models."
+msgstr "同じ `S` の二つの辞書は、同じ操作（名前と arity）を同じ順序で列挙しなければなりません。一致しない場合、`Algebra::prod` は `Err(ModelMismatch)` を返します。操作シグネチャが異なる辞書に対して、有限診断の `Hom::check` と `Hom::check_by` は `false` を返します。 これらの検査は Hom 端点 Model の ID を検証しません。保存された正確な Model の検証には `check_models` と `check_models_by` を使います。"
 
-#: manual/api/hom.md:104
+#: manual/api/hom.md:108
 msgid "`Model[S, A]` binds an operation dictionary to one runtime identity. Two models with the same signature and carrier remain distinct when they were constructed separately, even if their operations happen to compare equal. The identity representation is opaque: callers cannot construct or mutate a `ModelKey`, and `Model::same_identity` is the only public identity operation."
-msgstr "`Model[S, A]` は操作辞書を一つの実行時 ID に結び付けます。同じシグネチャとキャリアでも別々に構築した Model は、操作がたまたま等しくても別物です。ID の表現は不透明で、呼び出し側は `ModelKey` を構築・変更できず、公開された ID 操作は `Model::same_identity` だけです。"
+msgstr "Model の内部 ID はシグネチャラベル、またはカスタム単調 ID と reduct path で構成されます。ID 表現は不透明です。呼び出し側は `ModelKey` を構築・変更できず、公開された ID 操作は `Model::same_identity` だけです。"
 
-#: manual/api/hom.md:124
+#: manual/api/hom.md:128
 msgid "Negative operation arity returns `Err(InvalidArity)` before allocating an identity. Successful custom Models use process-local `UInt64` identities. Construction is not thread-safe: callers must serialize it when using native threads. If the counter reaches `UInt64::max`, construction aborts with an internal-invariant failure before incrementing; it never wraps or reuses an identity. This exhaustion case is physically unreachable in supported use."
-msgstr "`h.to_ring(source_law, target_law)` は、法則に束縛された Model が端点と一致することを確認して、半環準同型を昇格します。"
+msgstr "負の操作 arity は ID を割り当てる前に `Err(InvalidArity)` を返します。成功したカスタム Model はプロセス内の `UInt64` ID を使います。構築はスレッドセーフではないため、ネイティブスレッドでは呼び出し側が直列化する必要があります。カウンタが `UInt64::max` に達すると、増分前に内部不変条件違反として中断し、ラップアラウンドや ID の再利用はしません。この枯渇はサポート対象の利用では物理的に到達不能です。"
 
-#: manual/api/hom.md:133
+#: manual/api/hom.md:137
+msgid "`Model::algebra()` returns the model's operation dictionary. `Model::prod` returns a fresh product identity with the two component identities recorded; reuse that value for pairing and projections. `Model::forget` projects a kernel mapping and returns `InvalidOperationTable` for incompatible tables."
+msgstr "`Model::algebra()` はモデルの操作辞書を返します。`Model::prod` は両成分の ID を記録した新しい積 ID を返すため、pair と射影にはその値を再利用してください。`Model::forget` はカーネル写像を射影し、不整合な操作表には `InvalidOperationTable` を返します。"
+
+#: manual/api/hom.md:148
+msgid "`Algebra::make` and `Model::make` validate nonnegative arity only, even for built-in phantom signature tags. An empty table is allowed. Finite checks over empty operation lists return true vacuously and establish no law. `LawfulModel::postulate` can explicitly trust a rounded carrier; a small sample may pass while a larger one fails. The caller owns that assumption."
+msgstr "`Algebra::make` と `Model::make` は組み込みのファントムシグネチャでも arity の非負性だけを検査します。空の表も許容します。空の操作リストの有限検査は空虚に true を返し、法則を確立しません。`LawfulModel::postulate` は丸めキャリアを明示的に信頼できます。小さいサンプルで通っても大きいサンプルで失敗することがあり、仮定の責任は呼び出し側にあります。"
+
+#: manual/api/hom.md:154
+msgid "`ModelMismatch` reports incompatible identities, product components, or operation lists in checked composition and product construction. Both error types implement `Eq` and `Debug`; match their variants to handle failures."
+msgstr "`ModelMismatch` は検査付き合成と積構築で ID、積成分、操作リストの不整合を報告します。両エラー型は `Eq` と `Debug` を実装し、失敗はバリアントのパターンマッチで処理できます。"
+
+#: manual/api/hom.md:160
 msgid "`Op[A]` is one operation of a single-sorted signature."
 msgstr "`Op[A]` は単一ソートのシグネチャの一つの演算です。"
 
-#: manual/api/hom.md:143
+#: manual/api/hom.md:170
 msgid "`arity == 0` is a constant. `eval` receives exactly `arity` arguments."
 msgstr "`arity == 0` は定数です。`eval` はちょうど `arity` 個の引数を受け取ります。"
 
-#: manual/api/hom.md:147
+#: manual/api/hom.md:174
 msgid "`Algebra[S, A]` is an interpretation of the signature `S` on the carrier `A`: a list of `Op[A]` in the order the signature fixes."
 msgstr "`Algebra[S, A]` はキャリア `A` 上でのシグネチャ `S` の解釈で、シグネチャが定める順に並べた `Op[A]` のリストです。"
 
-#: manual/api/hom.md:158
+#: manual/api/hom.md:185
 msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag. It returns `Err(InvalidArity)` if any operation has a negative arity."
 msgstr "`Algebra::make(ops)` はカスタムシグネチャタグ用の辞書を構築します。いずれかの操作の arity が負なら `Err(InvalidArity)` を返します。"
 
-#: manual/api/hom.md:165
+#: manual/api/hom.md:192
 msgid "Keep one dictionary per tag and carrier, as explained above."
 msgstr "上で説明したとおり、タグとキャリアの組ごとに辞書は一つにします。"
 
-#: manual/api/hom.md:179
+#: manual/api/hom.md:206
 msgid "These functions derive the dictionary of a built-in tag from the structure trait instance of `A`."
 msgstr "これらの関数は、`A` の構造 trait インスタンスから組み込みタグの辞書を導きます。"
 
-#: manual/api/hom.md:190
+#: manual/api/hom.md:217
 msgid "The operations are listed in the order of the tag: for example `0`, `1`, `+`, `*`, `neg` for `RingSig`. Trait coherence gives one dictionary per tag and carrier."
 msgstr "演算はタグの順に並びます。たとえば `RingSig` では `0`、`1`、`+`、`*`、`neg` です。trait の一貫性により、タグとキャリアの組ごとに辞書は一つになります。"
 
-#: manual/api/hom.md:205
+#: manual/api/hom.md:232
 msgid "`Algebra::prod(a, b)` is the componentwise product algebra on `Prod[A, B]`."
 msgstr "`Algebra::prod(a, b)` は `Prod[A, B]` 上の成分ごとの積代数です。"
 
-#: manual/api/hom.md:211
+#: manual/api/hom.md:238
 msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. The actual signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects different operation lists without aborting."
 msgstr "各操作は `fst` では `a` を、`snd` では `b` を使って作用します。実際のシグネチャは `Result[Algebra[S, Prod[A, B]], ModelMismatch]` を返し、操作リストが異なる場合は中断せず拒否します。"
 
-#: manual/api/hom.md:215
+#: manual/api/hom.md:242
 msgid "Product type"
 msgstr "積型"
 
-#: manual/api/hom.md:219
+#: manual/api/hom.md:246
 msgid "`Prod[A, B]` is the binary product carrier with fields `fst` and `snd`."
 msgstr "`Prod[A, B]` はフィールド `fst` と `snd` を持つ二項積のキャリアです。"
 
-#: manual/api/hom.md:228
+#: manual/api/hom.md:255
 msgid "Operations act componentwise. `Prod` implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
 msgstr "演算は成分ごとに行います。`Prod` は `Add`、`Mul`、`Neg`、`Sub`、`Zero`、`One` を実装し、両成分が実装していれば `AddMonoid`、`MulMonoid`、`AddGroup`、`Semiring`、`Ring` も実装します。"
 
-#: manual/api/hom.md:234
+#: manual/api/hom.md:261
 msgid "These methods are the componentwise operations, also available as `+`, `-`, `*`, unary `-` and the `Zero` / `One` traits."
 msgstr "これらのメソッドは成分ごとの演算で、`+`、`-`、`*`、単項 `-`、`Zero` / `One` trait としても使えます。"
 
-#: manual/api/hom.md:253
+#: manual/api/hom.md:280
 msgid "These methods compare componentwise and render a `Prod` for debugging; use `==`, `!=` and `inspect` in new code."
 msgstr "これらのメソッドは成分ごとに比較し、デバッグ用に `Prod` を表示します。新しいコードでは `==`、`!=`、`inspect` を使ってください。"
 
-#: manual/api/hom.md:271
+#: manual/api/hom.md:298
+msgid "Product law methods"
+msgstr "積の法則メソッド"
+
+#: manual/api/hom.md:300
+msgid "`Prod::add_monoid_law`, `Prod::mul_monoid_law`, `Prod::add_group_law`, `Prod::semiring_law`, and `Prod::ring_law` derive the corresponding law from both components. An operation-only component does not provide these methods."
+msgstr "`Prod::add_monoid_law`、`Prod::mul_monoid_law`、`Prod::add_group_law`、`Prod::semiring_law`、`Prod::ring_law` は両成分から対応する法則を導出します。操作だけの成分はこれらのメソッドを提供しません。"
+
+#: manual/api/hom.md:312
 msgid "Homomorphisms"
 msgstr "準同型"
 
-#: manual/api/hom.md:275
+#: manual/api/hom.md:316
 msgid "`Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of `S`."
 msgstr "`Hom[S, A, B]` は、`S` のすべての演算を保存すると証明された写像 `A -> B` です。"
 
-#: manual/api/hom.md:284
+#: manual/api/hom.md:325
 msgid "The certificate means that for every operation $\\omega$ of `S` with arity $n$ and all $x_1, \\dots, x_n$,"
 msgstr "証明書の意味は、`S` の項数 $n$ の各演算 $\\omega$ とすべての $x_1, \\dots, x_n$ について次が成り立つことです。"
 
-#: manual/api/hom.md:291
+#: manual/api/hom.md:332
 msgid "Only this package constructs `Hom` values. The leaves are `Hom::postulate` and `Hom::from_integer_exact`; the latter requires a `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]`. Every other constructor is an inference rule or a checked runtime transformation."
 msgstr "`Hom` 値を構築できるのはこのパッケージだけです。葉は `Hom::postulate` と `Hom::from_integer_exact` で、後者は `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]` を要求します。そのほかの構成子は推論規則または検査済みの実行時変換です。"
 
-#: manual/api/hom.md:298
+#: manual/api/hom.md:339
 msgid "`Hom::postulate(source, target, f)` trusts `f` as an `S`-homomorphism without proof and creates a proof obligation. The two Models bind the operation interpretations used by the certificate."
 msgstr "`Hom::postulate(source, target, f)` は証明なしで `f` を `S`-準同型として信頼し、証明責務を生みます。二つの Model が証明書で使う操作の解釈を束縛します。"
 
-#: manual/api/hom.md:306
+#: manual/api/hom.md:347
 msgid "The caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation. Back every call with a `check` test."
 msgstr "呼び出し側は、`S` の各演算 `op` とすべての引数 `xs` について `f(op_A(xs)) == op_B(xs.map(f))` を約束します。写像を緩い関係や許容誤差で検査するだけの場合でも、約束は常に厳密な等式です。各呼び出しには `check` テストを添えてください。"
 
-#: manual/api/hom.md:323
+#: manual/api/hom.md:364
 msgid "`h.apply(x)` applies the underlying map."
 msgstr "`h.apply(x)` は元の写像を適用します。"
 
-#: manual/api/hom.md:337
+#: manual/api/hom.md:378
 msgid "`Hom::id(model)` is the identity homomorphism bound to the supplied runtime model. Both endpoints use that exact model identity."
-msgstr "`Hom::from_integer_exact(target)` が ℤ → `R` の標準写像になるのは、対象 Model が明示的な `IntegerHomomorphismTh` の法則を持つ場合だけです。この法則は零、単位元、加法、乗法の保存を述べますが、単射性は述べません。"
+msgstr "`Hom::id(model)` は指定された実行時 Model に束縛された恒等準同型です。両端点はその Model の同じ ID を使います。"
 
-#: manual/api/hom.md:346
+#: manual/api/hom.md:387
 msgid "`h.then_checked(g)` is the composite when the middle Model identities match. It returns `Err(ModelMismatch)` for different runtime interpretations."
-msgstr "丸められた `Float` と `Double` の変換はこの法則を提供しません。呼び出し側は `Law::postulate` を明示的に使えますが、その仮定は型と信頼監査に現れます。固定幅のソースには `Section::of_integral` を使います。"
+msgstr "中央の Model ID が一致するとき、`h.then_checked(g)` は合成です。異なる実行時解釈には `Err(ModelMismatch)` を返します。"
 
-#: manual/api/hom.md:353
+#: manual/api/hom.md:394
 msgid "If $f$ and $g$ preserve $\\omega$, so does $g \\circ f$:"
 msgstr "$f$ と $g$ が $\\omega$ を保存するなら、$g \\circ f$ も保存します:"
 
-#: manual/api/hom.md:361
+#: manual/api/hom.md:402
 msgid "`h.forget(r)` forgets structure along a `Reduct[S, T]` witness."
 msgstr "`h.forget(r)` は `Reduct[S, T]` の証拠に沿って構造を忘れます。"
 
-#: manual/api/hom.md:367
+#: manual/api/hom.md:408
 msgid "A map that preserves every operation of `S` preserves the operations of the smaller signature `T`."
 msgstr "`S` のすべての演算を保存する写像は、より小さいシグネチャ `T` の演算も保存します。"
 
-#: manual/api/hom.md:372
+#: manual/api/hom.md:413
 msgid "`Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The explicit product Model must be reused by `Hom::fst(product, left)` and `Hom::snd(product, right)`."
 msgstr "`Hom::pair(product, f, g)` は `x` を `{ fst: f(x), snd: g(x) }` に写します。明示的な product Model は `Hom::fst(product, left)` と `Hom::snd(product, right)` で再利用しなければなりません。"
 
-#: manual/api/hom.md:382
+#: manual/api/hom.md:423
 msgid "With the same product Model and component Models, the checked composites `Hom::pair(product, f, g).then_checked(Hom::fst(product, left))` and `Hom::pair(product, f, g).then_checked(Hom::snd(product, right))` return `f` and `g` respectively."
 msgstr "同じ product Model とコンポーネント Model を使うと、検査済みの合成 `Hom::pair(product, f, g).then_checked(Hom::fst(product, left))` と `Hom::pair(product, f, g).then_checked(Hom::snd(product, right))` はそれぞれ `f` と `g` を返します。"
 
-#: manual/api/hom.md:404
+#: manual/api/hom.md:445
 msgid "`h.to_add_group(source_law, target_law)` upgrades an additive monoid homomorphism after checking the law-bound Models match its endpoints."
-msgstr "削除された変換コンストラクタ"
+msgstr "`h.to_add_group(source_law, target_law)` は法則に束縛された Model と端点の一致を検査して、加法モノイド準同型を昇格します。"
 
-#: manual/api/hom.md:411
+#: manual/api/hom.md:452
 msgid "No new obligation: $f(-x) + f(x) = f(-x + x) = f(0) = 0$, so $f(-x) = -f(x)$."
 msgstr "新しい責務はありません。$f(-x) + f(x) = f(-x + x) = f(0) = 0$ なので $f(-x) = -f(x)$ です。"
 
-#: manual/api/hom.md:415
+#: manual/api/hom.md:456
 msgid "`h.to_ring(source_law, target_law)` upgrades a semiring homomorphism after checking the law-bound Models match its endpoints."
-msgstr "`Hom::from_nat`、`Hom::from_integral`、旧 `Hom::from_integer` は 0.5.0 API に含まれません。通常の値には `FromNat` / `FromInteger`、代表元の持ち上げには `Section::of_integral` を使い、明示的な整数準同型法則がある場合だけ `Hom::from_integer_exact` を使います。"
+msgstr "`h.to_ring(source_law, target_law)` は、法則に束縛された Model が端点と一致することを確認して、半環準同型を昇格します。"
 
-#: manual/api/hom.md:422
+#: manual/api/hom.md:463
 msgid "No new obligation, by the same computation as `to_add_group`."
 msgstr "`to_add_group` と同じ計算により、新しい責務はありません。"
 
-#: manual/api/hom.md:426
+#: manual/api/hom.md:467
 msgid "`Hom::from_integer_exact(target)` is the canonical map ℤ → `R` only when the target Model carries an explicit `IntegerHomomorphismTh` law. This law states preservation of zero, one, addition and multiplication; it does not assert injectivity."
-msgstr "操作能力グラフと厳密な法則層は分離されています。`RingOps` や `FieldOps` などのバンドルは基本操作を合成し、厳密な構造は不透明な `Law[Theory, Self]` 証明書を返します。"
+msgstr "`Hom::from_integer_exact(target)` が ℤ → `R` の標準写像になるのは、対象 Model が明示的な `IntegerHomomorphismTh` の法則を持つ場合だけです。この法則は零、単位元、加法、乗法の保存を述べますが、単射性は述べません。"
 
-#: manual/api/hom.md:435
+#: manual/api/hom.md:476
 msgid "Rounded `Float` and `Double` conversions do not provide this law. A caller may use `Law::postulate` explicitly, but that assumption is visible in the type and trust audit. For a fixed-width source, use `Section::of_integral`."
-msgstr "`Ring`、`Field`、`Integral`、`Nat` などの構造 trait は supertrait の連鎖から厳密な法則を継承しません。各法則には固有の理論タグと明示的な証明書メソッドがあります。"
+msgstr "丸められた `Float` と `Double` の変換はこの法則を提供しません。呼び出し側は `Law::postulate` を明示的に使えますが、その仮定は型と信頼監査に現れます。固定幅のソースには `Section::of_integral` を使います。"
 
-#: manual/api/hom.md:449
+#: manual/api/hom.md:490
 #: manual/design/hom.md:50
 msgid "Sections"
 msgstr "切断"
 
-#: manual/api/hom.md:451
+#: manual/api/hom.md:492
 msgid "A section lifts a quotient `Q` back into `A` along a homomorphism `proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism, but it preserves every operation up to the kernel of `proj`, and exactly whenever the result is itself a representative."
 msgstr "切断は、準同型 `proj : A -> Q` に沿って商 `Q` を `A` へ持ち上げるもので、`proj(lift(q)) == q` を満たします。持ち上げ自体は準同型ではありませんが、`proj` の核を法としてすべての演算を保存し、結果が代表元であるときは厳密に保存します。"
 
-#: manual/api/hom.md:456
+#: manual/api/hom.md:497
 msgid "The section law rejects lifts that leave the class of their argument. It does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are both sections of `BigInt -> Int`, and only the second preserves the signed order."
 msgstr "切断の法則は、引数の類から外れる持ち上げを拒否します。ただし代表元の選び方は決めません。`[0, 2^32)` と `[-2^31, 2^31)` はどちらも `BigInt -> Int` の切断ですが、符号付きの順序を保つのは後者だけです。"
 
-#: manual/api/hom.md:463
+#: manual/api/hom.md:504
 msgid "`Section[S, Q, A]` is a lift of the quotient `Q` back into `A` along the projection `proj : A -> Q`."
 msgstr "`Section[S, Q, A]` は射影 `proj : A -> Q` に沿って商 `Q` を `A` へ持ち上げるものです。"
 
-#: manual/api/hom.md:478
+#: manual/api/hom.md:519
 msgid "`Section::postulate(proj, lift)` trusts `lift` as a section of `proj` and creates a proof obligation."
 msgstr "`Section::postulate(proj, lift)` は `lift` を `proj` の切断として信頼し、証明責務を生みます。"
 
-#: manual/api/hom.md:485
+#: manual/api/hom.md:526
 msgid "The caller promises `proj.apply(lift(q)) == q` for every `q`; `proj` carries its own `Hom` obligation."
 msgstr "呼び出し側はすべての `q` について `proj.apply(lift(q)) == q` を約束します。`proj` は自身の `Hom` の責務を持ちます。"
 
-#: manual/api/hom.md:500
+#: manual/api/hom.md:541
 msgid "`Section::of_integral()` is the canonical section of an integral type."
 msgstr "`Section::of_integral()` は整数型の標準の切断です。"
 
-#: manual/api/hom.md:506
+#: manual/api/hom.md:547
 msgid "`proj` is `FromInteger::from_integer` and `lift` is `Integral::normalize`. The obligation sits on those instances. Use `to_ring` when `Z` is a ring."
 msgstr "`proj` は `FromInteger::from_integer`、`lift` は `Integral::normalize` です。責務はこれらのインスタンスにあります。`Z` が環なら `to_ring` を使います。"
 
-#: manual/api/hom.md:511
+#: manual/api/hom.md:552
 msgid "`s.lift(q)` is the chosen representative of `q`; `s.proj()` is the projection onto the quotient."
 msgstr "`s.lift(q)` は `q` の選ばれた代表元、`s.proj()` は商への射影です。"
 
-#: manual/api/hom.md:521
+#: manual/api/hom.md:562
 msgid "`s.normalize(a)` is `lift(proj(a))`, the normal form of `a`."
 msgstr "`s.normalize(a)` は `lift(proj(a))`、つまり `a` の正規形です。"
 
-#: manual/api/hom.md:527
+#: manual/api/hom.md:568
 msgid "Two values are congruent exactly when their normal forms are equal."
 msgstr "二つの値が合同であるのは、正規形が等しいとき、かつそのときに限ります。"
 
-#: manual/api/hom.md:531
+#: manual/api/hom.md:572
 msgid "`s.is_representative(a)` tells whether `a` is the chosen representative of its class, that is `normalize(a) == a`."
 msgstr "`s.is_representative(a)` は `a` がその類の選ばれた代表元か、つまり `normalize(a) == a` かを判定します。"
 
-#: manual/api/hom.md:538
+#: manual/api/hom.md:579
 msgid "On such results the lift agrees exactly with the operations of `A`."
 msgstr "そのような結果では、持ち上げは `A` の演算と完全に一致します。"
 
-#: manual/api/hom.md:556
+#: manual/api/hom.md:597
 msgid "`s.then(next)` lifts `Q` into `A` with `s`, then `A` into `B` with `next`."
 msgstr "`s.then(next)` は `s` で `Q` を `A` へ、次に `next` で `A` を `B` へ持ち上げます。"
 
-#: manual/api/hom.md:562
+#: manual/api/hom.md:603
 msgid "The projection is `next.proj` followed by `s.proj`. No new obligation: with $s, t$ the two lifts and $\\pi_s, \\pi_t$ their projections, $\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$."
 msgstr "射影は `next.proj` の後に `s.proj` です。新しい責務はありません。$s, t$ を二つの持ち上げ、$\\pi_s, \\pi_t$ をその射影とすると、$\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$ です。"
 
-#: manual/api/hom.md:568
+#: manual/api/hom.md:609
 msgid "These inference rules change the signature of the projection; the lift is unchanged."
 msgstr "これらの推論規則は射影のシグネチャを変え、持ち上げは変えません。"
 
-#: manual/api/hom.md:577
+#: manual/api/hom.md:618
 msgid "They follow `Hom::forget`, `Hom::to_add_group` and `Hom::to_ring`."
 msgstr "それぞれ `Hom::forget`、`Hom::to_add_group`、`Hom::to_ring` に従います。"
 
-#: manual/api/hom.md:581
+#: manual/api/hom.md:622
 msgid "`s.check(samples)` tests the section law `proj(lift(q)) == q` on every sample."
 msgstr "`s.check(samples)` はすべてのサンプルで切断の法則 `proj(lift(q)) == q` をテストします。"
 
-#: manual/api/hom.md:590
+#: manual/api/hom.md:631
 msgid "`s.check_ops(quotient, cover, samples)` tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation over all tuples drawn from `samples`."
 msgstr "`s.check_ops(quotient, cover, samples)` は、`samples` から作るすべての組について、各演算で `proj(op_A(xs.map(lift))) == op_Q(xs)` をテストします。"
 
-#: manual/api/hom.md:598
+#: manual/api/hom.md:639
 msgid "This exercises `proj` as a homomorphism on representatives. It returns `false` when the two dictionaries do not list the same operations."
 msgstr "これは代表元上の準同型として `proj` を検査します。二つの辞書が異なる操作を列挙する場合は `false` を返します。"
 
-#: manual/api/hom.md:611
+#: manual/api/hom.md:652
 msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate; it is listed on the [core API](core.md)."
 msgstr "`lift_to(x)` は整数値を持ち上げ、証明書なしで任意の `FromInteger` 対象へ写します。[core API](core.md) に記載しています。"
 
-#: manual/api/hom.md:614
+#: manual/api/hom.md:655
 msgid "Reduct witnesses"
 msgstr "縮約の証人"
 
-#: manual/api/hom.md:618
+#: manual/api/hom.md:659
 msgid "`Reduct[S, T]` witnesses that every `S`-structure is also a `T`-structure, so an `S`-homomorphism is also a `T`-homomorphism."
 msgstr "`Reduct[S, T]` は、すべての `S`-構造が `T`-構造でもあり、したがって `S`-準同型が `T`-準同型でもあることの証拠です。"
 
-#: manual/api/hom.md:627
+#: manual/api/hom.md:668
 msgid "Only this package constructs `Reduct` values."
 msgstr "`Reduct` はこのパッケージだけが構築できます。"
 
-#: manual/api/hom.md:631
+#: manual/api/hom.md:672
 msgid "These constants are the inclusions between the built-in signatures."
 msgstr "これらの定数は組み込みシグネチャ間の包含です。"
 
-#: manual/api/hom.md:643
+#: manual/api/hom.md:684
 msgid "`Reduct::refl()` is the trivial inclusion of `S` in itself; `r.then(r2)` composes inclusions."
 msgstr "`Reduct::refl()` は `S` から自身への自明な包含、`r.then(r2)` は包含の合成です。"
 
-#: manual/api/hom.md:659
+#: manual/api/hom.md:700
 msgid "Law checks"
 msgstr "法則の検査"
 
-#: manual/api/hom.md:663
+#: manual/api/hom.md:704
 msgid "`h.check(src, dst, samples)` tests the homomorphism law with exact equality on every operation of `S`."
 msgstr "`h.check(src, dst, samples)` は `S` のすべての演算について、厳密な等式で準同型の法則をテストします。"
 
-#: manual/api/hom.md:670
-msgid "Requires `B : Eq`. It is `check_by` with `==`."
-msgstr "`B : Eq` が必要です。`==` を使った `check_by` です。"
+#: manual/api/hom.md:711
+msgid "Requires `B : Eq`. It is `check_by` with `==`. Both Algebra-only diagnostics test only the supplied tables: they do not verify the Hom endpoint Model identities. Use `check_models` or `check_models_by` to validate those identities."
+msgstr "`B : Eq` が必要で、`==` を使った `check_by` です。Algebra だけを使う両診断は指定された表だけをテストし、Hom 端点 Model の ID は検証しません。ID の検証には `check_models` または `check_models_by` を使ってください。"
 
-#: manual/api/hom.md:674
+#: manual/api/hom.md:717
 msgid "`h.check_by(src, dst, samples, rel)` tests `rel(f(op_A(xs)), op_B(f(xs)))` for every operation over all tuples drawn from `samples`."
 msgstr "`h.check_by(src, dst, samples, rel)` は、`samples` から作るすべての組について、各演算で `rel(f(op_A(xs)), op_B(f(xs)))` をテストします。"
 
-#: manual/api/hom.md:681
+#: manual/api/hom.md:724
 msgid "`rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets. An operation of arity `n` is tested on `samples.length()^n` tuples. It returns `false` when `src` and `dst` do not list the same operations."
 msgstr "`rel` が保存の強さを決めます。厳密な準同型には等式、劣加法的な写像のような緩い準同型には `<=`、浮動小数点の対象への近似準同型には許容誤差を使います。項数 `n` の演算は `samples.length()^n` 個の組でテストされます。`src` と `dst` の演算の並びが一致しない場合は `false` を返します。"
 
-#: manual/api/hom.md:689
+#: manual/api/hom.md:732
 msgid "These diagnostics bind the finite check to the exact source and target Models stored in the Hom. They return `Err(ModelMismatch)` when either endpoint has a different runtime identity, then delegate to `check` or `check_by`. They still return diagnostics only and never create a certificate."
 msgstr "これらの診断は、有限検査を Hom に保存された正確なソース Model とターゲット Model に結び付けます。どちらかの端点の実行時 ID が異なる場合は `Err(ModelMismatch)` を返し、それ以外は `check` または `check_by` に委譲します。返すのは診断結果だけで、証明書は生成しません。"
 
-#: manual/api/hom.md:713
+#: manual/api/hom.md:756
 msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so a lift into ℤ is a section, not a homomorphism. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
 msgstr "固定幅の整数ソース（`Int`、`Int64`、`UInt` など）は整数ではなく ℤ/2^k です。そこから `BigInt` への半環準同型は存在しないため、ℤ への持ち上げは準同型ではなく切断です。同じ議論により `Int -> Int64` のような拡幅は準同型ではなく、`Int64 -> Int` のような切り詰めは環準同型です。"
 
-#: manual/api/hom.md:718
+#: manual/api/hom.md:761
 msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
 msgstr "推論規則は証明書を厳密な準同型として合成します。lax（`<=`）や許容誤差付きの法則しか満たさない写像は、合成後に改めて検査する必要があります。"
 
-#: manual/api/hom.md:721
+#: manual/api/hom.md:764
 msgid "`Float` and `Double` provide rounded operations without exact law certificates; use `check_by` with a tolerance for approximate maps. See the embedding notes in the [core API](core.md)."
 msgstr "`Float` と `Double` は厳密な法則証明書なしに丸められた操作を提供します。近似写像には許容誤差付きの `check_by` を使ってください。[core API](core.md) の埋め込みの説明も参照してください。"
 
-#: manual/api/hom.md:725
+#: manual/api/hom.md:768
 msgid "Removed conversion constructors"
-msgstr "`Field` は可換体を意味します。`FieldTh` は実装者が返す契約であり、コンパイラも有限テストもその方程式を証明しません。"
+msgstr "削除された変換コンストラクタ"
 
-#: manual/api/hom.md:727
+#: manual/api/hom.md:770
 msgid "`Hom::from_nat`, `Hom::from_integral` and the old `Hom::from_integer` are not part of the 0.5.0 API. Use `FromNat` / `FromInteger` for ordinary values, `Section::of_integral` for representative lifts, and `Hom::from_integer_exact` only with an explicit integer-homomorphism law."
-msgstr "操作バンドルは利用できる操作を示します。厳密な構造証明書は仮定する方程式を示します。キャリア上の $x, y, z$ を動かすと: "
+msgstr "`Hom::from_nat`、`Hom::from_integral`、旧 `Hom::from_integer` は 0.5.0 API に含まれません。通常の値には `FromNat` / `FromInteger`、代表元の持ち上げには `Section::of_integral` を使い、明示的な整数準同型法則がある場合だけ `Hom::from_integer_exact` を使います。"
 
 #: manual/design/core.md:1
 msgid "core design"
@@ -714,11 +761,11 @@ msgstr "主な設計判断"
 
 #: manual/design/core.md:12
 msgid "The operation capability graph and the exact law layer are separate. Bundles such as `RingOps` and `FieldOps` compose primitive operations; exact structures return opaque `Law[Theory, Self]` certificates."
-msgstr "理論タグ"
+msgstr "操作能力グラフと厳密な法則層は分離されています。`RingOps` や `FieldOps` などのバンドルは基本操作を合成し、厳密な構造は不透明な `Law[Theory, Self]` 証明書を返します。"
 
 #: manual/design/core.md:15
 msgid "Structural traits such as `Ring`, `Field`, `Integral`, and `Nat` do not inherit exact laws through a supertrait chain. Each law has a distinct theory tag and an explicit certificate method."
-msgstr "表される方程式"
+msgstr "`Ring`、`Field`、`Integral`、`Nat` などの構造 trait は supertrait の連鎖から厳密な法則を継承しません。各法則には固有の理論タグと明示的な証明書メソッドがあります。"
 
 #: manual/design/core.md:18
 msgid "Conversions are split into two halves that meet at ℤ, represented by `BigInt`. The target side is an operation `FromInteger`; it does not by itself claim to be a homomorphism. The source side is `Integral::normalize`, which picks a representative. `lift_to` composes the operations and promises nothing about preservation."
@@ -738,7 +785,7 @@ msgstr "符号なし型に加法逆元を主張させず、数学的整合性を
 
 #: manual/design/core.md:32
 msgid "`Field` means a commutative field. `FieldTh` is a contract returned by the implementor; neither the compiler nor finite tests prove its equations."
-msgstr "非零要素の逆元法則"
+msgstr "`Field` は可換体を意味します。`FieldTh` は実装者が返す契約であり、コンパイラも有限テストもその方程式を証明しません。"
 
 #: manual/design/core.md:35
 msgid "Mathematical background"
@@ -746,19 +793,19 @@ msgstr "数学的背景"
 
 #: manual/design/core.md:37
 msgid "Operation bundles state which operations are available. Exact structure certificates state which equations are assumed. With $x, y, z$ ranging over the carrier:"
-msgstr "分配法則、加法の可換性、零の吸収"
+msgstr "操作バンドルは利用できる操作を示します。厳密な構造証明書は仮定する方程式を示します。キャリア上の $x, y, z$ を動かすと: "
 
 #: manual/design/core.md:41
 msgid "Law trait"
-msgstr "シグネチャは証明書上の phantom 型 `S` ですが、厳密な `Hom` 値はソースと対象の `Model` ID を持ちます。Model は操作テーブルを証明書に束縛します。`then_checked`、pair、射影は異なる解釈を黙って合成せず `ModelMismatch` を返します。Algebra だけを受け取る `check` と `check_by` は有限診断にとどまり、証明書を作りません。"
+msgstr "法則 trait"
 
 #: manual/design/core.md:41
 msgid "Theory tag"
-msgstr "加法逆元を含む環の法則"
+msgstr "理論タグ"
 
 #: manual/design/core.md:41
 msgid "Equations represented"
-msgstr "環の法則と乗法の可換性"
+msgstr "表される方程式"
 
 #: manual/design/core.md:46
 msgid "inverse laws for nonzero elements"
@@ -766,35 +813,35 @@ msgstr "可換環の法則と零因子なし"
 
 #: manual/design/core.md:47
 msgid "distributivity, additive commutativity, and zero absorption"
-msgstr ""
-"$0 \\n"
-"e 1$、$xy = yx$、逆元と除法の法則"
+msgstr "非零要素の逆元法則"
 
 #: manual/design/core.md:48
 msgid "ring laws, including additive inverses"
-msgstr "順序体の法則"
+msgstr "加法逆元を含む環の法則"
 
 #: manual/design/core.md:49
 msgid "ring laws and commutative multiplication"
-msgstr "操作バンドルのグラフは利用できるメソッドだけを表します。カーネルが所有する弱化関数は、`FieldTh -> RingTh` や `RingTh -> SemiringTh` のような法則タグ間の証明済み含意を公開します。`RingTh -> CommRingTh` の規則はありません。操作のジェネリック境界は厳密な方程式を意味しません。"
+msgstr "環の法則と乗法の可換性"
 
 #: manual/design/core.md:50
 msgid "commutative ring laws and no zero divisors"
-msgstr "数学的な写像は `R` だけに依存するので、その操作は単一パラメータの trait にできます: `FromNat::from_natural` と `FromInteger::from_integer` です。これらの変換操作自体は厳密な準同型法則を持たず、厳密な証明書には対象に束縛された法則の明示的な前提が必要です。"
+msgstr ""
+"$0 \\n"
+"e 1$、$xy = yx$、逆元と除法の法則"
 
 #: manual/design/core.md:51
 msgid ""
 "$0 \\n"
 "e 1$, $xy = yx$, inverse and division laws"
-msgstr "`Float` と `Double` は体の操作と `RoundedArithmetic` マーカーを実装します。厳密な `FieldTh` 証明書はありません。結合性と分配性は近似的にしか成り立たず、`0` には逆元がありません。`inv` 操作は零で中断します。"
+msgstr "順序体の法則"
 
 #: manual/design/core.md:52
 msgid "ordered-field laws"
-msgstr "`Hom::postulate`、`Section::postulate`、`Law::postulate`、`LawfulModel::postulate` は明示的な信頼エントリです。カーネル規則はパッケージ非公開の `trust` を使うため、`postulate` を検索すればユーザーの仮定をすべて確認できます。`Hom::from_integer_exact` は対象 Model に束縛された不透明な `IntegerHomomorphismTh` を要求し、`Section::of_integral` は `Integral` からその法則を得ます。"
+msgstr "順序体の法則"
 
 #: manual/design/core.md:54
 msgid "The operation bundle graph describes available methods only. Kernel-owned weakening functions expose proven implications between law tags, such as `FieldTh -> RingTh` and `RingTh -> SemiringTh`; there is no `RingTh -> CommRingTh` rule. A generic bound on operations does not imply any exact equations."
-msgstr "シグネチャは証明書上の phantom 型 `S` ですが、厳密な `Hom` 値はソースと対象の `Model` ID を持ちます。Model は操作テーブルを証明書に束縛します。`then_checked`、pair、射影は異なる解釈を黙って合成せず `ModelMismatch` を返します。Algebra だけを受け取る `check` と `check_by` は有限診断にとどまり、証明書を作りません。"
+msgstr "操作バンドルのグラフは利用可能なメソッドだけを示します。カーネルの弱化関数は `FieldTh -> RingTh` と `RingTh -> SemiringTh` など法則タグ間の証明済み含意を公開します。`RingTh -> CommRingTh` の規則はありません。操作の総称境界は厳密な方程式を意味しません。"
 
 #: manual/design/core.md:60
 msgid "A homomorphism $\\varphi : A \\to B$ of such structures preserves every operation of the signature:"
@@ -846,7 +893,7 @@ msgstr "圏論の言葉では、ℕ は半環の圏の始対象、ℤ は環の�
 
 #: manual/design/core.md:139
 msgid "Because the mathematical map depends only on `R`, its operation can use a single-parameter trait: `FromNat::from_natural` and `FromInteger::from_integer`. These conversion operations do not themselves carry the exact homomorphism law; a strict certificate needs an explicit target-bound law premise."
-msgstr "シグネチャ包含はこのパッケージだけが構築できる `Reduct[S, T]` 証人です。組み込み reduct は操作テーブルを射影してカスタム lineage を保持し、`Reduct::refl` はテーブルと ID をそのままにします。"
+msgstr "数学的な写像は `R` だけに依存するので、その操作は単一パラメータの trait にできます: `FromNat::from_natural` と `FromInteger::from_integer` です。これらの変換操作自体は厳密な準同型法則を持たず、厳密な証明書には対象に束縛された法則の明示的な前提が必要です。"
 
 #: manual/design/core.md:145
 msgid "Fixed-width integers"
@@ -1008,11 +1055,11 @@ msgstr "ウェダーバーンの小定理（1905）: 有限の斜体は体であ
 
 #: manual/design/core.md:306
 msgid "Floating-point operation instances"
-msgstr "シグネチャは証明書上の phantom 型 `S` ですが、厳密な `Hom` 値はソースと対象の `Model` ID を持ちます。Model は操作テーブルを証明書に束縛します。`then_checked`、pair、射影は異なる解釈を黙って合成せず `ModelMismatch` を返します。Algebra だけを受け取る `check` と `check_by` は有限診断にとどまり、証明書を作りません。"
+msgstr "浮動小数点の操作インスタンス"
 
 #: manual/design/core.md:308
 msgid "`Float` and `Double` implement field operations and the `RoundedArithmetic` marker. They have no exact `FieldTh` certificate: associativity and distributivity hold only approximately, and `0` has no inverse. Their `inv` operation aborts on zero."
-msgstr "`FromNat` と `FromInteger` は変換操作を提供します。厳密な保存には別の法則証明書が必要です。"
+msgstr "`Float` と `Double` は体の操作と `RoundedArithmetic` マーカーを実装します。厳密な `FieldTh` 証明書はありません。結合性と分配性は近似的にしか成り立たず、`0` には逆元がありません。`inv` 操作は零で中断します。"
 
 #: manual/design/core.md:313
 msgid "Rounding ℤ into `Float` and `Double`"
@@ -1146,7 +1193,7 @@ msgstr "LCF 流の証明書: `Hom[S, A, B]` のフィールドは非公開で、
 
 #: manual/design/hom.md:21
 msgid "`Hom::postulate`, `Section::postulate`, `Law::postulate` and `LawfulModel::postulate` are explicit trust entries. Kernel rules use the package-private `trust`; searching for `postulate` therefore exposes every user-level assumption. `Hom::from_integer_exact` requires an opaque `IntegerHomomorphismTh` bound to its target Model, while `Section::of_integral` obtains that law from `Integral`."
-msgstr "明示的な Law 証明書を持つ厳密構造 `Semiring`、`Ring`、`Field`"
+msgstr "`Hom::postulate`、`Section::postulate`、`Law::postulate`、`LawfulModel::postulate` は明示的な信頼エントリです。カーネル規則はパッケージ非公開の `trust` を使うため、`postulate` を検索すればユーザーの仮定をすべて確認できます。`Hom::from_integer_exact` は対象 Model に束縛された不透明な `IntegerHomomorphismTh` を要求し、`Section::of_integral` は `Integral` からその法則を得ます。"
 
 #: manual/design/hom.md:27
 msgid "A lift from a quotient back to its cover is a `Section`, not a `Hom`. It carries the projection as a `Hom` and only promises `proj(lift(q)) == q`; agreement with the operations on representatives follows from that law. Keeping the two apart stops a representative lift, such as `Int -> BigInt`, from being composed as if it were a homomorphism."
@@ -1162,7 +1209,7 @@ msgstr "`Algebra::make` に渡す独自演算の arity は 0 以上でなけれ�
 
 #: manual/design/hom.md:44
 msgid "Signature inclusions are `Reduct[S, T]` witnesses only this package can build. Built-in reducts project operation tables and preserve custom lineage; `Reduct::refl` leaves the table and identity unchanged."
-msgstr "丸められた浮動小数点操作のための `RoundedArithmetic`"
+msgstr "シグネチャ包含はこのパッケージだけが構築できる `Reduct[S, T]` 証人です。組み込み reduct は操作テーブルを射影してカスタム lineage を保持し、`Reduct::refl` はテーブルと ID をそのままにします。"
 
 #: manual/design/hom.md:47
 msgid "The strength of preservation is the relation `rel` chosen at check time, so strict, lax and approximate homomorphisms share one API."
@@ -1302,7 +1349,7 @@ msgstr "`luna-generic` パッケージ"
 
 #: manual/index.md:3
 msgid "This manual documents the planned `v0.5.0` API of `Luna-Flow/luna-generic`."
-msgstr "丸められた浮動小数点操作のための `RoundedArithmetic`"
+msgstr "このマニュアルは `Luna-Flow/luna-generic` の予定されている `v0.5.0` API を説明します。"
 
 #: manual/index.md:5
 msgid "Overview"
@@ -1318,7 +1365,7 @@ msgstr "このリリース候補の中心は次の 3 点です。"
 
 #: manual/index.md:11
 msgid "`FromNat` and `FromInteger` provide conversion operations; exact preservation requires a separate law certificate."
-msgstr "`Hom[S, A, B]`: `S` を保つ写像の証明書で、ソースと対象の実行時 Model に束縛されます。検査済みの合成は `ModelMismatch` を返します。"
+msgstr "`FromNat` と `FromInteger` は変換操作を提供します。厳密な保存には別の法則証明書が必要です。"
 
 #: manual/index.md:12
 msgid "`Integral` is ℤ or a quotient ℤ/2^k, and `normalize` must be a section of its canonical map."
@@ -1398,15 +1445,15 @@ msgstr "公開 Trait"
 
 #: manual/index.md:38
 msgid "`Semiring`, `Ring`, `Field` exact structures with explicit Law certificates"
-msgstr "`from_natural` は非負値に対してだけ呼び出します。これらの変換操作だけでは代数法則を証明しません。このラッパー型では 256 を法として縮約するため、`+` と `*` は同じ剰余演算を使います:"
+msgstr "明示的な Law 証明書を持つ厳密構造 `Semiring`、`Ring`、`Field`"
 
 #: manual/index.md:39
 msgid "`AddMonoidOps`, `SemiringOps`, `RingOps`, `FieldOps`, `NumOps` operation bundles"
-msgstr "`Float` と `Double` は丸められた操作の提供者として扱います。`FieldOps` は実装しますが、厳密な `Field` 法則インスタンスはありません。"
+msgstr "`AddMonoidOps`、`SemiringOps`、`RingOps`、`FieldOps`、`NumOps` の操作バンドル"
 
 #: manual/index.md:42
 msgid "`RoundedArithmetic` for rounded floating operations"
-msgstr "対象が `IntegerHomomorphismTh` を持つ場合だけ `Hom::from_integer_exact` を使います。丸められた対象では `FromInteger::from_integer` を通常の操作として使うか、その Model で Hom を明示的に postulate します。"
+msgstr "丸めを行う浮動小数点操作のための `RoundedArithmetic`"
 
 #: manual/index.md:43
 msgid "Deprecated: `NatHomomorphism`, `IntegralHomomorphism`"
@@ -1442,7 +1489,7 @@ msgstr "固定幅の整数は ℤ/2^k です。`FromInteger::from_integer` は 2
 
 #: manual/index.md:55
 msgid "`Integral::normalize` picks the representative of a value as a `BigInt`; `IntegralTh` records the round-trip law"
-msgstr "`T : FromInteger` を伴う `@lf_alg.lift_to(i)`"
+msgstr "`Integral::normalize` は値の代表元を `BigInt` として選び、`IntegralTh` は往復法則を記録します"
 
 #: manual/index.md:56
 msgid "Unsigned integer instances stop at `Semiring`"
@@ -1454,7 +1501,7 @@ msgstr "変換"
 
 #: manual/index.md:60
 msgid "`FromInteger::from_integer` converts out of `BigInt`: exact for `BigInt`, modular for fixed-width integers, rounded for `Float` and `Double`"
-msgstr "`double_and_add_one` は操作だけを必要とするため、符号付き整数、`BigInt`、`Float`、`Double`、同じバンドルを実装する将来の型で動きます。"
+msgstr "`FromInteger::from_integer` は `BigInt` から変換します。`BigInt` では厳密、固定幅整数では剰余、`Float` と `Double` では丸めです"
 
 #: manual/index.md:61
 msgid "`lift_to(x)` lifts to the representative and maps it into the target; it is a function, not a homomorphism"
@@ -1470,7 +1517,7 @@ msgstr "一般化された準同型"
 
 #: manual/index.md:66
 msgid "`Hom[S, A, B]`: a certificate for maps preserving `S`, bound to source and target runtime Models; checked composition returns `ModelMismatch`"
-msgstr "アルゴリズムが必要とするものを表す最小の trait を要求します。積の和に必要なのは `SemiringOps` だけなので、符号なし整数でも動きます:"
+msgstr "`Hom[S, A, B]`: `S` を保つ写像の証明書で、ソースと対象の実行時 Model に束縛されます。検査済みの合成は `ModelMismatch` を返します。"
 
 #: manual/index.md:67
 msgid "`Section[S, Q, A]`: a certificate that a lift picks one representative per class of a quotient; `Section::of_integral` is the canonical one for integral types"
@@ -1546,7 +1593,7 @@ msgstr "多くの数値型に対して一つのアルゴリズムを書く"
 
 #: manual/tutorial/core.md:10
 msgid "trait bounds such as `T : RingOps`"
-msgstr "減算するときは `RingOps` を要求し、除算するときだけ `FieldOps` を要求します。"
+msgstr "`T : RingOps` などの trait 境界"
 
 #: manual/tutorial/core.md:11
 msgid "turn an integer constant or index into a `T`"
@@ -1554,7 +1601,7 @@ msgstr "整数の定数や添字を `T` に変換する"
 
 #: manual/tutorial/core.md:11
 msgid "`@lf_alg.lift_to(i)` with `T : FromInteger`"
-msgstr "`from_natural` は非負値に対してだけ呼び出します。これらの変換操作だけでは代数法則を証明しません。このラッパー型では 256 を法として縮約するため、`+` と `*` は同じ剰余演算を使います:"
+msgstr "`T : FromInteger` を伴う `@lf_alg.lift_to(i)`"
 
 #: manual/tutorial/core.md:12
 msgid "let my number type be built from integers"
@@ -1603,7 +1650,7 @@ msgstr "最小の実用的なプログラムは、三つの型で使う一つの
 
 #: manual/tutorial/core.md:62
 msgid "`double_and_add_one` needs only operations, so it works over the signed integers, `BigInt`, `Float`, `Double`, and any future type that implements the same bundle."
-msgstr "逆元または除法の操作が必要なときだけ `FieldOps` を要求します。"
+msgstr "`double_and_add_one` は操作だけを必要とするため、符号付き整数、`BigInt`、`Float`、`Double`、同じバンドルを実装する将来の型で動きます。"
 
 #: manual/tutorial/core.md:66
 #: manual/tutorial/hom.md:44
@@ -1616,11 +1663,11 @@ msgstr "具体型ではなく構造に対してアルゴリズムを書く"
 
 #: manual/tutorial/core.md:70
 msgid "Ask for the smallest trait that states what the algorithm needs. A sum of products needs only `SemiringOps`, so it also runs on unsigned integers:"
-msgstr "`Field` は明示的な法則証明書を通して `0 != 1` と乗法の可換性を約束します。零環や積が因子の順序に依存する型には実装しないでください。非可換型を受け入れるコードでは `RingOps + Inverse + Div` を要求します。"
+msgstr "アルゴリズムが必要とするものを表す最小の trait を要求します。積の和に必要なのは `SemiringOps` だけなので、符号なし整数でも動きます:"
 
 #: manual/tutorial/core.md:88
 msgid "Require `RingOps` when you subtract, and `FieldOps` only when you divide."
-msgstr "`Float` と `Double` は丸められた操作の提供者として扱います。`FieldOps` は実装しますが、厳密な `Field` 法則インスタンスはありません。"
+msgstr "減算するときは `RingOps` を要求し、除算するときだけ `FieldOps` を要求します。"
 
 #: manual/tutorial/core.md:90
 msgid "Turn integers into your number type with `lift_to`"
@@ -1657,7 +1704,7 @@ msgstr "例として 8 ビットの回り込む整数を使います。整数か
 
 #: manual/tutorial/core.md:196
 msgid "`from_natural` is only called with non-negative values. These conversion operations do not by themselves certify algebraic laws. For this wrapping type they reduce modulo 256, so the same residue arithmetic is used by `+` and `*`:"
-msgstr "符号なし整数は `RingOps` ではありません。符号反転を行うジェネリックコードは `UInt` を受け取れません。"
+msgstr "`from_natural` は非負値に対してだけ呼び出します。これらの変換操作だけでは代数法則を証明しません。このラッパー型では 256 を法として縮約するため、`+` と `*` は同じ剰余演算を使います:"
 
 #: manual/tutorial/core.md:208
 msgid "Floating-point types only agree up to rounding; the [hom tutorial](hom.md) shows how to check them with a tolerance."
@@ -1671,73 +1718,73 @@ msgstr "新しい整数型を定義する"
 msgid "This is rare. An integer type implements `Integral` on top of the two conversions above. `normalize` returns the value of `x` as a `BigInt`, exactly as your type shows it, so converting it back gives `x` again. Check that round trip with the smallest and largest values of your type:"
 msgstr "これはまれです。整数型は上の二つの変換に加えて `Integral` を実装します。`normalize` は `x` の値を、その型が表示するとおりに `BigInt` として返すので、変換し直すと元の `x` に戻ります。型の最小値と最大値でこの往復を検査します:"
 
-#: manual/tutorial/core.md:236
+#: manual/tutorial/core.md:240
 msgid "The last line shows the wrap-around: `127 + 1` is `-128` in `I8`, and `lift_to` converts the wrapped value."
 msgstr "最後の行は回り込みを示しています。`I8` では `127 + 1` は `-128` で、`lift_to` は回り込んだ値を変換します。"
 
-#: manual/tutorial/core.md:239
+#: manual/tutorial/core.md:243
 msgid "Combine with sibling packages"
 msgstr "兄弟パッケージとの組み合わせ"
 
-#: manual/tutorial/core.md:241
+#: manual/tutorial/core.md:245
 msgid "Higher-level Luna Flow packages state their requirements with these traits, so a type that implements them can be passed to their generic code. Keep your instances honest: implement a trait only when your type satisfies its laws, listed on the [core API](../api/core.md)."
 msgstr "上位の Luna Flow パッケージはこれらの trait で要件を述べるので、それを実装した型はそれらのジェネリックなコードに渡せます。インスタンスは誠実に保ってください。型が trait の法則を満たすときだけ実装します。法則は [core API](../api/core.md) に載っています。"
 
-#: manual/tutorial/core.md:246
+#: manual/tutorial/core.md:250
 #: manual/tutorial/hom.md:219
 msgid "Common pitfalls"
 msgstr "よくある落とし穴"
 
-#: manual/tutorial/core.md:248
+#: manual/tutorial/core.md:252
 msgid "Choose the smallest trait set that expresses the algorithm you need."
 msgstr "アルゴリズムが本当に必要とする最小の trait 集合を選ぶ。"
 
-#: manual/tutorial/core.md:249
+#: manual/tutorial/core.md:253
 msgid "Require `FieldOps` only when reciprocal or division operations are needed."
-msgstr "操作の arity は非負でなければなりません。それ以外では `Algebra::make` は `Err(InvalidArity)` を返します。"
-
-#: manual/tutorial/core.md:250
-msgid "`Field` promises `0 != 1` and commutative multiplication through an explicit law certificate. Do not implement it for a zero ring or a type whose products depend on factor order; ask for `RingOps + Inverse + Div` in code that must accept noncommutative types."
-msgstr "対象が `IntegerHomomorphismTh` を持つ場合だけ `Hom::from_integer_exact` を使います。丸められた対象では `FromInteger::from_integer` を通常の操作として使うか、その Model で Hom を明示的に postulate します。"
+msgstr "逆元または除法の操作が必要なときだけ `FieldOps` を要求します。"
 
 #: manual/tutorial/core.md:254
+msgid "`Field` promises `0 != 1` and commutative multiplication through an explicit law certificate. Do not implement it for a zero ring or a type whose products depend on factor order; ask for `RingOps + Inverse + Div` in code that must accept noncommutative types."
+msgstr "`Field` は明示的な法則証明書を通して `0 != 1` と乗法の可換性を約束します。零環や積が因子の順序に依存する型には実装しないでください。非可換型を受け入れるコードでは `RingOps + Inverse + Div` を要求します。"
+
+#: manual/tutorial/core.md:258
 msgid "Treat `Float` and `Double` as rounded operation providers. They implement `FieldOps` but do not have exact `Field` law instances."
 msgstr "`Float` と `Double` は丸められた操作の提供者として扱います。`FieldOps` は実装しますが、厳密な `Field` 法則インスタンスはありません。"
 
-#: manual/tutorial/core.md:256
+#: manual/tutorial/core.md:260
 msgid "`Inverse::inv` aborts on `0.0` for `Float` and `Double`, while `/` returns an infinity. Test for zero before inverting."
 msgstr "`Float` と `Double` では `Inverse::inv` は `0.0` で中断しますが、`/` は無限大を返します。逆元をとる前にゼロを確認してください。"
 
-#: manual/tutorial/core.md:258
+#: manual/tutorial/core.md:262
 msgid "Converting a huge integer into `Float` or `Double` with `from_integer` or `lift_to` gives an infinity, not an error: anything from about $3.4 \\times 10^{38}$ for `Float` and $1.8 \\times 10^{308}$ for `Double`. Check the result with `is_inf` when the input can be that large."
 msgstr "`from_integer` や `lift_to` で巨大な整数を `Float` や `Double` に変換すると、エラーではなく無限大になります。`Float` ではおよそ $3.4 \\times 10^{38}$ 以上、`Double` ではおよそ $1.8 \\times 10^{308}$ 以上です。入力がそこまで大きくなりうる場合は、結果を `is_inf` で確かめてください。"
 
-#: manual/tutorial/core.md:262
+#: manual/tutorial/core.md:266
 msgid "Unsigned integers are not `RingOps`: generic code that negates cannot take `UInt`."
 msgstr "符号なし整数は `RingOps` ではありません。符号反転を行うジェネリックコードは `UInt` を受け取れません。"
 
-#: manual/tutorial/core.md:264
+#: manual/tutorial/core.md:268
 msgid "`lift_to` converts the wrapped value. Overflow that happened before the call is not undone."
 msgstr "`lift_to` は回り込んだ値を変換します。呼び出し前に起きたオーバーフローは元に戻りません。"
 
-#: manual/tutorial/core.md:266
+#: manual/tutorial/core.md:270
 msgid "Prefer `lift_to`, `FromNat` and `FromInteger` over the deprecated `NatHomomorphism` and `IntegralHomomorphism`."
 msgstr "非推奨の `NatHomomorphism` と `IntegralHomomorphism` よりも、`lift_to`、`FromNat`、`FromInteger` を使ってください。"
 
-#: manual/tutorial/core.md:269
+#: manual/tutorial/core.md:273
 #: manual/tutorial/hom.md:234
 msgid "Next steps"
 msgstr "次のステップ"
 
-#: manual/tutorial/core.md:271
+#: manual/tutorial/core.md:275
 msgid "The [core API](../api/core.md) lists every trait, its laws and the shipped instances."
 msgstr "[core API](../api/core.md) にはすべての trait、その法則、同梱のインスタンスが載っています。"
 
-#: manual/tutorial/core.md:273
+#: manual/tutorial/core.md:277
 msgid "The [core design](../design/core.md) derives why conversions factor through ℤ and why `Field` must be commutative."
 msgstr "[core 設計](../design/core.md) では、変換が ℤ を経由して分解する理由と、`Field` が可換でなければならない理由を導出しています。"
 
-#: manual/tutorial/core.md:275
+#: manual/tutorial/core.md:279
 msgid "The [hom tutorial](hom.md) checks conversions and other maps with certificates."
 msgstr "[hom チュートリアル](hom.md) では、変換やその他の写像を証明書で検査します。"
 
@@ -1864,6 +1911,9 @@ msgstr "[hom 設計](../design/hom.md) では、切断が保存するものと�
 #: manual/tutorial/hom.md:239
 msgid "The [core tutorial](core.md) covers the traits that the built-in signatures are derived from."
 msgstr "[core チュートリアル](core.md) では、組み込みシグネチャの元になっている trait を扱います。"
+
+#~ msgid "Requires `B : Eq`. It is `check_by` with `==`."
+#~ msgstr "`B : Eq` が必要です。`==` を使った `check_by` です。"
 
 #~ msgid "Only `Float` and `Double` implement it, and for them the laws hold for non-zero elements only: `0` has no inverse."
 #~ msgstr "実装しているのは `Float` と `Double` だけで、これらでは法則は非零の元についてのみ成り立ちます。`0` には逆元がありません。"

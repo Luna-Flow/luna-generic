@@ -83,10 +83,12 @@ pub struct Law[Th, A] {
   // private fields
 }
 pub fn[A] Law::add_group_to_add_monoid(Self[AddGroupTh, A]) -> Self[AddMonoidTh, A]
+pub fn[A] Law::comm_ring_to_ring(Self[CommRingTh, A]) -> Self[RingTh, A]
 pub fn[A] Law::field_to_comm_ring(Self[FieldTh, A]) -> Self[CommRingTh, A]
 pub fn[A] Law::field_to_integral_domain(Self[FieldTh, A]) -> Self[IntegralDomainTh, A]
 pub fn[A] Law::field_to_ring(Self[FieldTh, A]) -> Self[RingTh, A]
 pub fn[A] Law::field_to_semiring(Self[FieldTh, A]) -> Self[SemiringTh, A]
+pub fn[A] Law::integral_domain_to_ring(Self[IntegralDomainTh, A]) -> Self[RingTh, A]
 pub fn[A] Law::ordered_field_to_field(Self[OrderedFieldTh, A]) -> Self[FieldTh, A]
 pub fn[Th, A] Law::postulate() -> Self[Th, A]
 pub fn[A, B] Law::product_add_group(Self[AddGroupTh, A], Self[AddGroupTh, B]) -> Self[AddGroupTh, Prod[A, B]]
@@ -124,13 +126,17 @@ pub fn[A : SemiringOps] Model::semiring() -> Self[SemiringSig, A]
 pub enum ModelConstructionError {
   InvalidArity
   InvalidOperationTable
-}
-
-type ModelKey
+} derive(Eq, @debug.Debug)
+pub fn ModelConstructionError::equal(Self, Self) -> Bool
+pub fn ModelConstructionError::not_equal(Self, Self) -> Bool
+pub fn ModelConstructionError::to_repr(Self) -> @debug.Repr
 
 pub enum ModelMismatch {
   ModelMismatch
-}
+} derive(Eq, @debug.Debug)
+pub fn ModelMismatch::equal(Self, Self) -> Bool
+pub fn ModelMismatch::not_equal(Self, Self) -> Bool
+pub fn ModelMismatch::to_repr(Self) -> @debug.Repr
 
 pub enum MulGroupTh {
 }
@@ -149,8 +155,6 @@ pub(all) struct Op[A] {
   arity : Int
   eval : (Array[A]) -> A
 }
-
-type OperationShape
 
 pub enum OrderedFieldTh {
 }
@@ -189,8 +193,6 @@ pub impl[A : Add, B : Add] Add for Prod[A, B]
 pub impl[A : Mul, B : Mul] Mul for Prod[A, B]
 pub impl[A : Neg, B : Neg] Neg for Prod[A, B]
 pub impl[A : Sub, B : Sub] Sub for Prod[A, B]
-
-type ProductOrigin
 
 pub struct Reduct[S, T] {
   // private fields

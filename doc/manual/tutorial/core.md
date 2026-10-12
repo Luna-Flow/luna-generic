@@ -220,6 +220,10 @@ impl @lf_alg.Integral for I8 with fn integral_law() {
   @lf_alg.Law::postulate()
 }
 
+impl @lf_alg.Integral for I8 with fn integer_homomorphism_law() {
+  @lf_alg.Law::postulate()
+}
+
 impl @lf_alg.Integral for I8 with fn normalize(x) {
   BigInt::from_int(x.v)
 }

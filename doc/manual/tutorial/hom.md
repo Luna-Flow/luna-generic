@@ -21,7 +21,7 @@ using @lf_alg {
   type RingSig,
   type Model,
   type LawfulModel,
-  type FromInteger,
+  trait FromInteger,
   ring_to_add_group,
   lift_to,
 }

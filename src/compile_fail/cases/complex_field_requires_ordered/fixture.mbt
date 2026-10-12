@@ -1,5 +1,5 @@
 ///|
-fn complex_field_premise[T](_law : @lf_alg.Law[@lf_alg.OrderedFieldTh, T]) -> Unit {}
+fn[T] complex_field_premise(_law : @lf_alg.Law[@lf_alg.OrderedFieldTh, T]) -> Unit {}
 
 ///|
 test "a Field law alone cannot justify the exact Complex Field premise" {

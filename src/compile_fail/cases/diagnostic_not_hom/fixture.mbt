@@ -3,7 +3,7 @@ enum FixtureSig {}
 
 ///|
 test "finite diagnostics do not produce Hom certificates" {
-  let ops = [
+  let ops : Array[@lf_alg.Op[Int]] = [
     { name: "id", arity: 1, eval: xs => xs[0], },
   ]
   let model : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make(ops).unwrap()

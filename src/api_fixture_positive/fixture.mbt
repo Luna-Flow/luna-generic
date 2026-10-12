@@ -68,3 +68,33 @@ test "fixed-width integer conversion has an exact homomorphism premise" {
   )
   assert_eq(hom.apply(BigInt::from_string("4294967297")), 1)
 }
+
+///|
+test "approved weakening and error traits" {
+  let comm : @lf_alg.Law[@lf_alg.CommRingTh, Int] = @lf_alg.Law::postulate()
+  let domain : @lf_alg.Law[@lf_alg.IntegralDomainTh, BigInt] = @lf_alg.Law::postulate()
+  let ring : @lf_alg.Law[@lf_alg.RingTh, Int] = @lf_alg.Law::comm_ring_to_ring(
+    comm,
+  )
+  let integer_ring : @lf_alg.Law[@lf_alg.RingTh, BigInt] = @lf_alg.Law::integral_domain_to_ring(
+    domain,
+  )
+  ignore(ring)
+  ignore(integer_ring)
+  let model : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::ring()
+  let other : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::make([]).unwrap()
+  match @lf_alg.Hom::id(model).then_checked(@lf_alg.Hom::id(other)) {
+    Err(error) => {
+      assert_eq(error, error)
+      debug_inspect(error, content="ModelMismatch")
+    }
+    Ok(_) => fail("expected mismatch")
+  }
+  match other.forget(@lf_alg.ring_to_semiring) {
+    Err(error) => {
+      assert_eq(error, error)
+      debug_inspect(error, content="InvalidOperationTable")
+    }
+    Ok(_) => fail("expected malformed table")
+  }
+}

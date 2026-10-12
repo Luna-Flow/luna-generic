@@ -14,10 +14,10 @@ impl Neg for Fake with fn neg(_x) { Fake(0) }
 impl Sub for Fake with fn sub(_x, _y) { Fake(0) }
 
 ///|
-impl Zero for Fake with fn zero() { Fake(0) }
+impl @lf_alg.Zero for Fake with fn zero() { Fake(0) }
 
 ///|
-impl One for Fake with fn one() { Fake(1) }
+impl @lf_alg.One for Fake with fn one() { Fake(1) }
 
 ///|
 impl @lf_alg.AddMonoidOps for Fake

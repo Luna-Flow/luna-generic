@@ -103,3 +103,131 @@ test "model-bound diagnostics reject unrelated endpoints" {
     is Err(@lf_alg.ModelMismatch),
   )
 }
+
+///|
+test "model diagnostics reject each endpoint independently" {
+  let a : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let b : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let wrong : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let h = @lf_alg.Hom::postulate(a, b, x => x)
+  assert_true(h.check_models(a, wrong, [1]) is Err(@lf_alg.ModelMismatch))
+  assert_true(
+    h.check_models_by(wrong, b, [1], (x, y) => x == y)
+    is Err(@lf_alg.ModelMismatch),
+  )
+  // Empty tables have no operation equations. This is vacuous, not proof.
+  assert_true(h.check_models(a, b, []) is Ok(true))
+}
+
+///|
+test "pair rejects source left endpoint and nonproduct independently" {
+  let a : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let b : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let c : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let wrong : @lf_alg.Model[FixtureSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let product = @lf_alg.Model::prod(b, c).unwrap()
+  let f = @lf_alg.Hom::postulate(a, b, x => x)
+  let g = @lf_alg.Hom::postulate(a, c, x => x)
+  let wrong_source = @lf_alg.Hom::postulate(wrong, c, x => x)
+  let wrong_left = @lf_alg.Hom::postulate(a, wrong, x => x)
+  assert_true(@lf_alg.Hom::pair(product, f, g) is Ok(_))
+  assert_true(
+    @lf_alg.Hom::pair(product, f, wrong_source) is Err(@lf_alg.ModelMismatch),
+  )
+  assert_true(
+    @lf_alg.Hom::pair(product, wrong_left, g) is Err(@lf_alg.ModelMismatch),
+  )
+  let nonproduct : @lf_alg.Model[FixtureSig, @lf_alg.Prod[Int, Int]] = @lf_alg.Model::make([],
+  ).unwrap()
+  assert_true(@lf_alg.Hom::pair(nonproduct, f, g) is Err(@lf_alg.ModelMismatch))
+  assert_true(@lf_alg.Hom::fst(nonproduct, b) is Err(@lf_alg.ModelMismatch))
+  assert_true(@lf_alg.Hom::snd(nonproduct, c) is Err(@lf_alg.ModelMismatch))
+  let second = @lf_alg.Model::prod(b, c).unwrap()
+  assert_false(product.same_identity(second))
+}
+
+///|
+test "to_ring checks each endpoint independently" {
+  let a : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::ring()
+  let wrong : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let law : @lf_alg.LawfulModel[@lf_alg.RingTh, @lf_alg.RingSig, Int] = @lf_alg.LawfulModel::postulate(
+    a,
+  )
+  let bad_law : @lf_alg.LawfulModel[@lf_alg.RingTh, @lf_alg.RingSig, Int] = @lf_alg.LawfulModel::postulate(
+    wrong,
+  )
+  let h = @lf_alg.Hom::id(a.forget(@lf_alg.ring_to_semiring).unwrap())
+  assert_true(h.to_ring(law, law) is Ok(_))
+  assert_true(h.to_ring(bad_law, law) is Err(@lf_alg.ModelMismatch))
+  assert_true(h.to_ring(law, bad_law) is Err(@lf_alg.ModelMismatch))
+}
+
+///|
+test "to_add_group checks each endpoint independently" {
+  let a : @lf_alg.Model[@lf_alg.AddGroupSig, Int] = @lf_alg.Model::add_group()
+  let wrong : @lf_alg.Model[@lf_alg.AddGroupSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let law : @lf_alg.LawfulModel[@lf_alg.AddGroupTh, @lf_alg.AddGroupSig, Int] = @lf_alg.LawfulModel::postulate(
+    a,
+  )
+  let bad_law : @lf_alg.LawfulModel[
+    @lf_alg.AddGroupTh,
+    @lf_alg.AddGroupSig,
+    Int,
+  ] = @lf_alg.LawfulModel::postulate(wrong)
+  let h = @lf_alg.Hom::id(a.forget(@lf_alg.add_group_to_add_monoid).unwrap())
+  assert_true(h.to_add_group(law, law) is Ok(_))
+  assert_true(h.to_add_group(bad_law, law) is Err(@lf_alg.ModelMismatch))
+  assert_true(h.to_add_group(law, bad_law) is Err(@lf_alg.ModelMismatch))
+}
+
+///|
+test "reduct index composition preserves operation evaluation" {
+  let model : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::ring()
+  let composite = @lf_alg.ring_to_add_group.then(
+    @lf_alg.add_group_to_add_monoid,
+  )
+  let projected = model.forget(composite).unwrap()
+  // If indices are copied rather than composed, position 1 selects one, not plus.
+  assert_true(
+    @lf_alg.Hom::id(projected).check(
+      @lf_alg.Algebra::add_monoid(),
+      projected.algebra(),
+      [2, 3],
+    ),
+  )
+  let malformed : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::make([]).unwrap()
+  assert_true(
+    malformed.forget(@lf_alg.ring_to_semiring)
+    is Err(@lf_alg.InvalidOperationTable),
+  )
+  let bad_source = @lf_alg.Hom::postulate(malformed, model, x => x)
+  let bad_target = @lf_alg.Hom::postulate(model, malformed, x => x)
+  assert_true(
+    bad_source.forget(@lf_alg.ring_to_semiring)
+    is Err(@lf_alg.InvalidOperationTable),
+  )
+  assert_true(
+    bad_target.forget(@lf_alg.ring_to_semiring)
+    is Err(@lf_alg.InvalidOperationTable),
+  )
+}
+
+///|
+test "postulated rounded integer law remains caller trust" {
+  let target : @lf_alg.Model[@lf_alg.SemiringSig, Float] = @lf_alg.Model::semiring()
+  let trusted : @lf_alg.LawfulModel[
+    @lf_alg.IntegerHomomorphismTh,
+    @lf_alg.SemiringSig,
+    Float,
+  ] = @lf_alg.LawfulModel::postulate(target)
+  let hom = @lf_alg.Hom::from_integer_exact(trusted)
+  let source : @lf_alg.Model[@lf_alg.SemiringSig, BigInt] = @lf_alg.Model::semiring()
+  assert_false(
+    hom
+    .check_models(source, target, [
+      BigInt::from_int(16777217),
+      BigInt::from_int(1),
+    ])
+    .unwrap(),
+  )
+}

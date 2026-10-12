@@ -14,6 +14,23 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 - **Breaking:** replace `Hom::from_integer`, `Hom::from_nat` and `Hom::from_integral` with the model-bound `Hom::from_integer_exact`; runtime identity, pairing, projection, reduct and law upgrades are checked with `Result`.
 - **Breaking:** make runtime `ModelKey` identity opaque and remove `Model::key`; compare Models only with `Model::same_identity` ([#20](https://github.com/Luna-Flow/luna-generic/issues/20)).
 
+The G2 migration is tracked in [#19](https://github.com/Luna-Flow/luna-generic/issues/19).
+
+| Previous entry | 0.5.0 migration |
+|---|---|
+| `Num` | `NumOps` for operations; add the required exact law separately |
+| Float/Double law traits | operation bundles and `RoundedArithmetic` |
+| law trait inheritance | each law trait extends operations and has its own mandatory law method |
+| `Hom::then` | `then_checked`, handle `Result` |
+| `Hom::postulate(f)` | `postulate(source_model, target_model, f)` |
+| `Hom::id()` | `id(model)` |
+| `Hom::pair/fst/snd` | retain and explicitly pass one product Model; handle `Result` |
+| `Hom::from_integer/from_nat/from_integral` | `from_integer_exact` with `IntegerHomomorphismTh`; ordinary conversions use `lift_to` |
+| `Algebra::make/prod` | handle constructor/product `Result` |
+| `Hom::forget`, `Section::forget` | handle `Result` |
+| `Section::then` | `then_checked`, handle `Result` |
+| `Model::key` | `same_identity`; identity representation is private |
+
 ### Added
 
 - Opaque theory certificates and kernel-owned weakening rules.
@@ -29,7 +46,7 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 
 ### Documentation
 
-- Every public item is documented on the API pages with its signature, laws and a compiled example.
+- API pages document public signatures and law contracts. All `moonbit` example blocks are compiled and their tests executed by `tools/check_doc_examples.py` in CI; `mbti` blocks are interface notation.
 - Tutorials are layered: quick start, everyday tasks, going further, common pitfalls.
 - Design pages derive the results they rely on: initiality of ℕ and ℤ, uniqueness of the canonical map, sections of ℤ → ℤ/2^k, and why unsigned types stop at `Semiring`.
 - `Field` documents its nontriviality and commutativity contracts ($0 \ne 1$, $ab = ba$, $a a^{-1} = 1$ for $a \ne 0$, $a / b = a b^{-1}$), both on the API page and as a doc comment on the trait.

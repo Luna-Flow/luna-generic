@@ -9,8 +9,9 @@ downstream package, and checks it against the current source API.
 Each case contains:
 
 - fixture.mbt: the rejected downstream program;
-- expected.txt: a stable diagnostic fragment that must appear in compiler
-  output.
+- expected.txt: `ERROR_CODE|diagnostic fragment`. The runner requires both the
+  structured compiler error code and the diagnostic text, so source echo and
+  unrelated syntax errors cannot make a fixture pass.
 
 Run bash src/compile_fail/run.sh from the module root. A fixture passes only
 when compilation fails and the expected diagnostic fragment is present. The

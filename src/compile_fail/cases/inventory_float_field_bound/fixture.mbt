@@ -1,5 +1,5 @@
 ///|
-fn exact_field_algorithm[T : @lf_alg.Field](_value : T) -> Unit {}
+fn[T : @lf_alg.Field] exact_field_algorithm(_value : T) -> Unit {}
 
 ///|
 test "field-bound inventory algorithms cannot silently accept Float" {

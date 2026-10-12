@@ -25,6 +25,7 @@ checks do not prove universal laws.
 The kernel exposes these theory implications:
 
 - `SemiringTh -> AddMonoidTh` and `SemiringTh -> MulMonoidTh`;
+- `CommRingTh -> RingTh` and `IntegralDomainTh -> RingTh`;
 - `RingTh -> SemiringTh` and `RingTh -> AddGroupTh`;
 - `AddGroupTh -> AddMonoidTh`;
 - `FieldTh -> RingTh`, `CommRingTh`, `IntegralDomainTh`, and `SemiringTh`;
@@ -56,9 +57,10 @@ limitation.
 
 Built-in Reducts carry fixed markers that name the mapping itself, project the
 operation table, and append their marker to custom Model lineage. `refl`
-leaves operation table, identity and path unchanged. Different reduct paths
-remain distinct; composing two mappings and a separately defined direct
-mapping need not produce the same identity. Invalid or incomplete source
+leaves operation table, identity and path unchanged. Different custom reduct paths remain distinct; composing two mappings and a
+separately defined direct mapping need not produce the same custom identity.
+Canonical reducts instead use the fixed target-signature label and can converge
+to the same identity through different paths. Invalid or incomplete source
 tables return `InvalidOperationTable`, not `ModelMismatch`. No custom Reduct
 constructor ships in this release because none of the pinned 128 inventory
 rows requires one. Program identity never uses `physical_equal`.

@@ -275,7 +275,7 @@ pub extend Prod with Zero::{zero}
 pub extend Prod with One::{one}
 
 ///|
-struct OperationShape {
+priv struct OperationShape {
   name : String
   arity : Int
 }
@@ -672,6 +672,8 @@ pub fn[A, B] Hom::to_ring(
 ///|
 /// Tests the homomorphism law with exact equality on every operation of `S`
 /// over all tuples drawn from `samples`.
+/// This Algebra-only diagnostic does not verify endpoint Model identity.
+/// Use check_models for a check bound to the stored endpoint Models.
 pub fn[S, A, B : Eq] Hom::check(
   self : Hom[S, A, B],
   src : Algebra[S, A],
@@ -688,6 +690,8 @@ pub fn[S, A, B : Eq] Hom::check(
 /// subadditive maps, and a tolerance for floating-point targets.
 ///
 /// An operation of arity `n` is tested on `samples.length()^n` tuples.
+/// This Algebra-only diagnostic does not verify endpoint Model identity.
+/// Use check_models_by to validate both stored endpoint Models first.
 pub fn[S, A, B] Hom::check_by(
   self : Hom[S, A, B],
   src : Algebra[S, A],

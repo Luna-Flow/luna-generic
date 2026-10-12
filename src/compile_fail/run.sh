@@ -28,20 +28,35 @@ import {
 }
 PKG
   expected="$(cat "$case_dir/expected.txt")"
+  if [[ -z "$expected" || "$expected" != *"|"* ]]; then
+    echo "expected.txt must contain ERROR_CODE|diagnostic fragment: $case_name" >&2
+    exit 1
+  fi
+  expected_code="${expected%%|*}"
+  expected_fragment="${expected#*|}"
 
   for target in wasm wasm-gc js native; do
     log="$temp_root/$case_name-$target.log"
-    if (cd "$temp_root" && moon check "src/compile_fail_fixture/$case_name" --target "$target") >"$log" 2>&1; then
+    if (cd "$temp_root" && moon check "src/compile_fail_fixture/$case_name" --target "$target" --output-json) >"$log" 2>&1; then
       echo "compile-fail fixture unexpectedly compiled: $case_name ($target)" >&2
       cat "$log" >&2
       exit 1
     fi
-    if ! grep -F -- "$expected" "$log" >/dev/null; then
+    if ! python3 "$script_dir/check_diagnostics.py" "$log" "$expected_code" "$expected_fragment"; then
       echo "fixture failed for an unexpected reason: $case_name ($target)" >&2
-      echo "expected diagnostic fragment: $expected" >&2
       cat "$log" >&2
       exit 1
     fi
+  done
+
+  cp "$case_dir/positive.mbt" "$fixture_pkg/fixture.mbt"
+  for target in wasm wasm-gc js native; do
+    if ! (cd "$temp_root" && moon check "src/compile_fail_fixture/$case_name" --target "$target") >"$log" 2>&1; then
+      echo "positive control did not compile: $case_name ($target)" >&2
+      cat "$log" >&2
+      exit 1
+    fi
+
   done
 
   case_count=$((case_count + 1))

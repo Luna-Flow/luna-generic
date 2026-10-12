@@ -93,13 +93,25 @@ pub struct Law[Th, A] {
 pub enum ModelConstructionError {
   InvalidArity
   InvalidOperationTable
-}
+} derive(Eq, Debug)
 
 ///|
 #warnings("-unused_constructor")
 pub enum ModelMismatch {
   ModelMismatch
-}
+} derive(Eq, Debug)
+
+///|
+pub extend ModelConstructionError with Eq::{equal, not_equal}
+
+///|
+pub extend ModelConstructionError with Debug::{to_repr}
+
+///|
+pub extend ModelMismatch with Eq::{equal, not_equal}
+
+///|
+pub extend ModelMismatch with Debug::{to_repr}
 
 ///|
 /// Runtime identity for one operation interpretation.
@@ -107,7 +119,7 @@ pub enum ModelMismatch {
 /// This representation is package-private. Callers compare Models through
 /// `Model::same_identity`; they cannot forge or mutate a lineage key.
 #warnings("-unused_constructor")
-enum ModelKey {
+priv enum ModelKey {
   Canonical(String)
   Custom(UInt64, Array[String])
 }
@@ -141,7 +153,7 @@ pub struct Model[S, A] {
 }
 
 ///|
-struct ProductOrigin {
+priv struct ProductOrigin {
   left : ModelKey
   right : ModelKey
 }
@@ -361,6 +373,18 @@ pub fn[A] Law::ring_to_add_group(_law : Law[RingTh, A]) -> Law[AddGroupTh, A] {
 pub fn[A] Law::add_group_to_add_monoid(
   _law : Law[AddGroupTh, A],
 ) -> Law[AddMonoidTh, A] {
+  { _witness: (), }
+}
+
+///|
+pub fn[A] Law::comm_ring_to_ring(_law : Law[CommRingTh, A]) -> Law[RingTh, A] {
+  { _witness: (), }
+}
+
+///|
+pub fn[A] Law::integral_domain_to_ring(
+  _law : Law[IntegralDomainTh, A],
+) -> Law[RingTh, A] {
   { _witness: (), }
 }
 

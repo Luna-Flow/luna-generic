@@ -1,1 +1,1 @@
-from_integer
+4015|has no method from_integer

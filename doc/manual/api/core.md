@@ -627,6 +627,53 @@ pub(open) trait IntegralHomomorphism : NatHomomorphism {
 Deprecated for the same reason. Replacement: implement `FromInteger` and
 call `lift_to(x)`. Still implemented by `BigInt`, `Float` and `Double`.
 
+## Additional exact structures and theory tags
+
+`CommRing` requires `comm_ring_law() -> Law[CommRingTh, Self]` over `RingOps`:
+multiplication commutes. `IntegralDomain` requires
+`integral_domain_law() -> Law[IntegralDomainTh, Self]` over `RingOps`: it is a
+commutative ring with no zero divisors. Neither trait supplies a `FieldTh` law.
+
+`OrderedField` requires `ordered_field_law() -> Law[OrderedFieldTh, Self]`
+over `FieldOps + Compare`. Its order is total and compatible with addition
+and multiplication of nonnegative values. It supplies the precise premise
+needed for an exact Complex field instance in G3; `FieldTh` alone is insufficient.
+
+The public empty theory tags are `AddMonoidTh`, `MulMonoidTh`, `AddGroupTh`,
+`MulGroupTh`, `SemiringTh`, `RingTh`, `CommRingTh`, `IntegralDomainTh`,
+`FieldTh`, `OrderedFieldTh`, `IntegralTh`, `NatTh`, and
+`IntegerHomomorphismTh`. `IntegralTh` records the representative round trip;
+`NatTh` also records nonnegative representatives. `IntegerHomomorphismTh`
+records exact preservation by the BigInt conversion without injectivity.
+
+## Law construction and kernel rules
+
+`Law::postulate()` is the explicit trust entry for any theory and carrier.
+It does not prove equations. Weakening methods consume the stronger law
+and return only the indicated weaker law. Product methods consume both
+component laws and return the same theory on `Prod[A, B]`.
+
+```mbti
+pub fn[Th, A] Law::postulate() -> Law[Th, A]
+pub fn[A] Law::semiring_to_add_monoid( _law : Law[SemiringTh, A], ) -> Law[AddMonoidTh, A]
+pub fn[A] Law::semiring_to_mul_monoid( _law : Law[SemiringTh, A], ) -> Law[MulMonoidTh, A]
+pub fn[A] Law::ring_to_semiring(_law : Law[RingTh, A]) -> Law[SemiringTh, A]
+pub fn[A] Law::ring_to_add_group(_law : Law[RingTh, A]) -> Law[AddGroupTh, A]
+pub fn[A] Law::add_group_to_add_monoid( _law : Law[AddGroupTh, A], ) -> Law[AddMonoidTh, A]
+pub fn[A] Law::comm_ring_to_ring(_law : Law[CommRingTh, A]) -> Law[RingTh, A]
+pub fn[A] Law::integral_domain_to_ring(_law : Law[IntegralDomainTh, A]) -> Law[RingTh, A]
+pub fn[A] Law::field_to_ring(_law : Law[FieldTh, A]) -> Law[RingTh, A]
+pub fn[A] Law::field_to_comm_ring(_law : Law[FieldTh, A]) -> Law[CommRingTh, A]
+pub fn[A] Law::field_to_integral_domain( _law : Law[FieldTh, A], ) -> Law[IntegralDomainTh, A]
+pub fn[A] Law::field_to_semiring(_law : Law[FieldTh, A]) -> Law[SemiringTh, A]
+pub fn[A] Law::ordered_field_to_field( _law : Law[OrderedFieldTh, A], ) -> Law[FieldTh, A]
+pub fn[A, B] Law::product_add_monoid( _left : Law[AddMonoidTh, A], _right : Law[AddMonoidTh, B], ) -> Law[AddMonoidTh, Prod[A, B]]
+pub fn[A, B] Law::product_mul_monoid( _left : Law[MulMonoidTh, A], _right : Law[MulMonoidTh, B], ) -> Law[MulMonoidTh, Prod[A, B]]
+pub fn[A, B] Law::product_add_group( _left : Law[AddGroupTh, A], _right : Law[AddGroupTh, B], ) -> Law[AddGroupTh, Prod[A, B]]
+pub fn[A, B] Law::product_semiring( _left : Law[SemiringTh, A], _right : Law[SemiringTh, B], ) -> Law[SemiringTh, Prod[A, B]]
+pub fn[A, B] Law::product_ring( _left : Law[RingTh, A], _right : Law[RingTh, B], ) -> Law[RingTh, Prod[A, B]]
+```
+
 ## Source map
 
 - `src/structure.mbt`: trait definitions

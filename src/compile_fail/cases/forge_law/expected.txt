@@ -1,1 +1,1 @@
-private
+4036|read-only type: @Luna-Flow/luna-generic.Law

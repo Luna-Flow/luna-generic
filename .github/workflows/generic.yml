@@ -1,0 +1,25 @@
+name: Generic acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "0.1.20260920"
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - run: moon version --all
+      - run: moon fmt --check
+      - run: moon check --target all --deny-warn
+      - run: moon test --target all
+      - run: moon test --target all --release
+      - run: bash src/compile_fail/run.sh
+      - run: python3 tools/check_fixture_baseline.py
+      - run: python3 tools/check_doc_examples.py
+      - run: moon info && git diff --exit-code -- '*.mbti'
