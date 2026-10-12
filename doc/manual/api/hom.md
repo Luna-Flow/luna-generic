@@ -97,7 +97,7 @@ pub enum RingSig {
 ## Algebra dictionaries
 
 Two dictionaries of the same `S` must list the same operations (name and
-arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when
+arity) in the same order. `Algebra::prod` returns `Err(SignatureMismatch)` when
 they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return
 `false` for dictionaries with different operation signatures. These checks
 do not verify the Hom endpoint Model identities; `check_models` and
@@ -145,9 +145,12 @@ pub fn[A : SemiringOps] Model::semiring() -> Model[SemiringSig, A]
 ### Construction errors and mismatch diagnostics
 
 `ModelConstructionError` reports invalid arity or an operation table that a
-kernel reduct cannot project. `ModelMismatch` reports different runtime model
-identities. Both derive `Eq` and `Debug`, so callers can compare errors or
-inspect their debug representation.
+kernel reduct cannot project. `ModelMismatch` has three payload-free variants:
+`IdentityMismatch` (two Models that must be the same interpretation are not),
+`SignatureMismatch` (two operation lists differ in name, arity or order) and
+`NotProductModel` (a product-only operation received a Model not built by
+`Model::prod`). Both error types derive `Eq` and `Debug`, so callers can
+compare errors or inspect their debug representation.
 
 ```mbti
 pub fn ModelConstructionError::equal(ModelConstructionError, ModelConstructionError) -> Bool
@@ -186,9 +189,17 @@ over empty operation lists return true vacuously and establish no law.
 `LawfulModel::postulate` can explicitly trust a rounded carrier; a small
 sample may pass while a larger one fails. The caller owns that assumption.
 
-`ModelMismatch` reports incompatible identities, product components, or
-operation lists in checked composition and product construction. Both error
-types implement `Eq` and `Debug`; match their variants to handle failures.
+`ModelMismatch` separates three failures. `IdentityMismatch` is reported when
+runtime Model identities differ in checked composition, pairing, projections,
+strict upgrades and model-bound checks. `SignatureMismatch` is reported only
+by `Algebra::prod` and `Model::prod` for different operation lists.
+`NotProductModel` is reported by `Hom::pair`, `Hom::fst` and `Hom::snd` when
+the supplied product Model was not built by `Model::prod`; it takes
+precedence over identity checks in those functions. The variants carry no
+payload and expose no Model structure; `Model::same_identity` remains the only
+public identity operation. An invalid projected operation table is still
+`ModelConstructionError::InvalidOperationTable`. Both error types implement
+`Eq` and `Debug`; match their variants to handle failures.
 
 ### `Op`
 
@@ -272,7 +283,7 @@ pub fn[S, A, B] Algebra::prod(Algebra[S, A], Algebra[S, B]) -> Result[Algebra[S,
 
 Each operation acts on `fst` with `a` and on `snd` with `b`. The actual
 signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects
-different operation lists without aborting.
+different operation lists with `SignatureMismatch` without aborting.
 
 ## Product type
 
@@ -420,7 +431,7 @@ pub fn[S, A] Hom::id(Model[S, A]) -> Hom[S, A, A]
 ### `Hom::then_checked`
 
 `h.then_checked(g)` is the composite when the middle Model identities match.
-It returns `Err(ModelMismatch)` for different runtime interpretations.
+It returns `Err(IdentityMismatch)` for different runtime interpretations.
 
 ```mbti
 pub fn[S, A, B, C] Hom::then_checked(Hom[S, A, B], Hom[S, B, C]) -> Result[Hom[S, A, C], ModelMismatch]
@@ -447,7 +458,9 @@ smaller signature `T`.
 
 `Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The
 explicit product Model must be reused by `Hom::fst(product, left)` and
-`Hom::snd(product, right)`.
+`Hom::snd(product, right)`. A Model that was not built by `Model::prod`
+yields `Err(NotProductModel)`; a component or source Model with a different
+identity yields `Err(IdentityMismatch)`.
 
 ```mbti
 pub fn[S, A, B, C] Hom::pair(Model[S, Prod[B, C]], Hom[S, A, B], Hom[S, A, C]) -> Result[Hom[S, A, Prod[B, C]], ModelMismatch]
@@ -765,7 +778,7 @@ do not list the same operations.
 ### `Hom::check_models`, `Hom::check_models_by`
 
 These diagnostics bind the finite check to the exact source and target Models
-stored in the Hom. They return `Err(ModelMismatch)` when either endpoint has a
+stored in the Hom. They return `Err(IdentityMismatch)` when either endpoint has a
 different runtime identity, then delegate to `check` or `check_by`. They still
 return diagnostics only and never create a certificate.
 

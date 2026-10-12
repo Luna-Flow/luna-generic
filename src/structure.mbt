@@ -96,9 +96,18 @@ pub enum ModelConstructionError {
 } derive(Eq, Debug)
 
 ///|
-#warnings("-unused_constructor")
+/// Why a checked Model operation was rejected. The variants carry no payload
+/// and expose no Model structure.
+///
+/// - `IdentityMismatch`: two runtime Models that must be the same
+///   interpretation are not (see `Model::same_identity`).
+/// - `SignatureMismatch`: two operation lists differ in name, arity or order.
+/// - `NotProductModel`: a product-only operation received a Model that was not
+///   built by `Model::prod`.
 pub enum ModelMismatch {
-  ModelMismatch
+  IdentityMismatch
+  SignatureMismatch
+  NotProductModel
 } derive(Eq, Debug)
 
 ///|

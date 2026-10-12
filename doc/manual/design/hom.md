@@ -32,7 +32,7 @@ obligations auditable and testable.
 - The signature is a phantom type `S` on the certificate, while strict
   `Hom` values carry source and target `Model` identities. The model binds the
   operation table to the certificate; `then_checked`, pairing and projections
-  return `ModelMismatch` instead of silently composing different
+  return a `ModelMismatch` variant instead of silently composing different
   interpretations. Algebra-only `check` and `check_by` remain finite
   diagnostics and never create certificates; `check_models` and
   `check_models_by` add endpoint identity validation before delegating to those
@@ -177,7 +177,9 @@ preserves the signed order of `Int`. Such properties need their own checks.
   not that the laws hold.
 - Runtime `Hom` endpoints carry `Model` identities, so `then_checked`, pairing,
   projections and strict upgrades reject different operation interpretations
-  with `ModelMismatch`. `check_models` and `check_models_by` validate those
+  with `IdentityMismatch`, or `NotProductModel` for a product operation on a
+  Model not built by `Model::prod`; `Algebra::prod` and `Model::prod` report
+  `SignatureMismatch`. `check_models` and `check_models_by` validate those
   endpoint identities and return `Result[Bool, ModelMismatch]`; the
   Algebra-only checks remain finite diagnostics over supplied dictionaries.
 - Model identity keys are opaque and package-owned. Callers compare Models

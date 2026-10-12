@@ -1,6 +1,6 @@
 # G2 PR review follow-up
 
-Review sources: [round one](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6111979187) and [round two](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6120435848), latest reviewed head 0a26144.
+Review sources: [round one](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6111979187) and [round two](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6120435848), reviewed heads 0a26144 and 81a3454 ([round three](https://github.com/Luna-Flow/luna-generic/pull/21)).
 
 | ID | Class | Contract / change | Acceptance | Status |
 |---|---|---|---|---|
@@ -10,7 +10,7 @@ Review sources: [round one](https://github.com/Luna-Flow/luna-generic/pull/21#is
 | R4 | documentation gap | Distinguish unbound Algebra diagnostics from model-bound checks | Source and API docs agree | complete |
 | R5 | metadata gap | Put the breaking marker and complete removal list on the commit that introduces the API break | Commit marker and CHANGELOG review | in progress |
 | R6 | test gap | Independent endpoint, product, reduct and error-code regressions | Mutation checks kill every listed mutation | complete; CI gate added in this revision |
-| R7 | API boundary | Eq + Debug and two valid weakenings are confirmed; Show and describe are deferred. ModelMismatch variant split conflicts with the confirmed identity-only contract | Resolve variant/error ownership in #20 before changing the API | pending maintainer decision: [#20 comment](https://github.com/Luna-Flow/luna-generic/issues/20#issuecomment-6123022875) |
+| R7 | API boundary | Eq + Debug and two valid weakenings are confirmed; Show and describe are deferred. `ModelMismatch` is split into the payload-free `IdentityMismatch`, `SignatureMismatch` and `NotProductModel` (D-G1b/D-G1e); `ModelConstructionError::InvalidOperationTable` is unchanged | One test per variant that also asserts the other two do not occur; 11 variant-swap mutations killed | complete: split per the maintainer decision (round three); see [#20 comment](https://github.com/Luna-Flow/luna-generic/issues/20#issuecomment-6123022875) |
 | R8 | documentation gap | Empty phantom tables remain allowed per #20; postulate is an explicit trust entry | Boundary documented; fixture coverage | complete |
 | R9 | audit gap | Correct Complex MulGroup classification; refresh source pin and keep broader candidate inventory scoped to G3 | 128 per-row classifications, decisions and anchors verified; downstream source untouched | complete |
 | R10 | documentation gap | Document missing Model factories, LawfulModel factory and derived error methods | Generated interface cross-check | complete; `moon info` reports no interface drift |

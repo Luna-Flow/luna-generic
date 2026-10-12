@@ -225,13 +225,13 @@ test "model-bound diagnostics validate both endpoint identities" {
   ).unwrap()
   assert_true(
     hom.check_models(wrong_source, target, [1])
-    is Err(@luna-generic.ModelMismatch),
+    is Err(@luna-generic.IdentityMismatch),
   )
   assert_true(
     hom.check_models_by(source, wrong_target, [1], (left, right) => {
       left == right
     })
-    is Err(@luna-generic.ModelMismatch),
+    is Err(@luna-generic.IdentityMismatch),
   )
 }
 
@@ -256,7 +256,7 @@ test "algebra product returns a mismatch for different signatures" {
   ]).unwrap()
   let base : Algebra[RingSig, Int32] = Algebra::ring()
   let product = Algebra::prod(base, wrong)
-  assert_true(product is Err(@luna-generic.ModelMismatch))
+  assert_true(product is Err(@luna-generic.SignatureMismatch))
 }
 
 ///|
@@ -312,7 +312,7 @@ test "runtime Hom composition checks the middle model identity" {
   )
   assert_true(first.then_checked(matching) is Ok(_))
   assert_true(
-    first.then_checked(mismatched) is Err(@luna-generic.ModelMismatch),
+    first.then_checked(mismatched) is Err(@luna-generic.IdentityMismatch),
   )
 }
 
@@ -329,10 +329,11 @@ test "pairing and projections reject different runtime models" {
   )
   let product = @luna-generic.Model::prod(model, model).unwrap()
   assert_true(
-    Hom::pair(product, to_model, to_other) is Err(@luna-generic.ModelMismatch),
+    Hom::pair(product, to_model, to_other)
+    is Err(@luna-generic.IdentityMismatch),
   )
-  assert_true(Hom::fst(product, other) is Err(@luna-generic.ModelMismatch))
-  assert_true(Hom::snd(product, other) is Err(@luna-generic.ModelMismatch))
+  assert_true(Hom::fst(product, other) is Err(@luna-generic.IdentityMismatch))
+  assert_true(Hom::snd(product, other) is Err(@luna-generic.IdentityMismatch))
 }
 
 ///|

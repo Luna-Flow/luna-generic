@@ -285,7 +285,7 @@ msgid "`Byte` implements none of them."
 msgstr "`Byte` はどれも実装しません。"
 
 #: manual/api/core.md:580
-#: manual/api/hom.md:789
+#: manual/api/hom.md:802
 msgid "Semantic notes"
 msgstr "意味論メモ"
 
@@ -426,8 +426,8 @@ msgid "Algebra dictionaries"
 msgstr "代数辞書"
 
 #: manual/api/hom.md:99
-msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures. These checks do not verify the Hom endpoint Model identities; `check_models` and `check_models_by` do that for the exact stored Models."
-msgstr "同じ `S` の二つの辞書は、同じ操作（名前と arity）を同じ順序で列挙しなければなりません。一致しない場合、`Algebra::prod` は `Err(ModelMismatch)` を返します。操作シグネチャが異なる辞書に対して、有限診断の `Hom::check` と `Hom::check_by` は `false` を返します。これらの検査は Hom 端点 Model の ID を検証しません。保存された正確な Model の検証には `check_models` と `check_models_by` を使います。"
+msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(SignatureMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures. These checks do not verify the Hom endpoint Model identities; `check_models` and `check_models_by` do that for the exact stored Models."
+msgstr "同じ `S` の二つの辞書は、同じ操作（名前と arity）を同じ順序で列挙しなければなりません。一致しない場合、`Algebra::prod` は `Err(SignatureMismatch)` を返します。操作シグネチャが異なる辞書に対して、有限診断の `Hom::check` と `Hom::check_by` は `false` を返します。これらの検査は Hom 端点 Model の ID を検証しません。保存された正確な Model の検証には `check_models` と `check_models_by` を使います。"
 
 #: manual/api/hom.md:108
 msgid "`Model[S, A]` binds an operation dictionary to one runtime identity. Two models with the same signature and carrier remain distinct when they were constructed separately, even if their operations happen to compare equal. The identity representation is opaque: callers cannot construct or mutate a `ModelKey`, and `Model::same_identity` is the only public identity operation."
@@ -446,315 +446,315 @@ msgid "Construction errors and mismatch diagnostics"
 msgstr "構築エラーと不一致の診断"
 
 #: manual/api/hom.md:147
-msgid "`ModelConstructionError` reports invalid arity or an operation table that a kernel reduct cannot project. `ModelMismatch` reports different runtime model identities. Both derive `Eq` and `Debug`, so callers can compare errors or inspect their debug representation."
-msgstr "`ModelConstructionError` は不正な arity、またはカーネルの reduct で射影できない操作テーブルを報告します。`ModelMismatch` は実行時 Model の ID の不一致を報告します。どちらも `Eq` と `Debug` を導出するため、エラーを比較したりデバッグ表現を確認したりできます。"
+msgid "`ModelConstructionError` reports invalid arity or an operation table that a kernel reduct cannot project. `ModelMismatch` has three payload-free variants: `IdentityMismatch` (two Models that must be the same interpretation are not), `SignatureMismatch` (two operation lists differ in name, arity or order) and `NotProductModel` (a product-only operation received a Model not built by `Model::prod`). Both error types derive `Eq` and `Debug`, so callers can compare errors or inspect their debug representation."
+msgstr "`ModelConstructionError` は、無効な arity、またはカーネル reduct が射影できない操作表を報告します。`ModelMismatch` にはペイロードを持たない三つのバリアントがあります。`IdentityMismatch`（同じ解釈であるべき二つの Model が一致しない）、`SignatureMismatch`（二つの操作リストが名前、arity、順序で異なる）、`NotProductModel`（積専用の操作が `Model::prod` で構築されていない Model を受け取った）です。どちらのエラー型も `Eq` と `Debug` を derive するため、呼び出し側はエラーを比較したり、デバッグ表現を確認したりできます。"
 
-#: manual/api/hom.md:163
+#: manual/api/hom.md:166
 msgid "This canonical convenience binds the `AddGroupTh` certificate and canonical additive-group Model for `A`."
 msgstr "この標準ヘルパーは、`A` の `AddGroupTh` 証明書と標準加法群 Model を結び付けます。"
 
-#: manual/api/hom.md:172
+#: manual/api/hom.md:175
 msgid "`Model::algebra()` returns the model's operation dictionary. `Model::prod` returns a fresh product identity with the two component identities recorded; reuse that value for pairing and projections. `Model::forget` projects a kernel mapping and returns `InvalidOperationTable` for incompatible tables."
 msgstr "`Model::algebra()` はモデルの操作辞書を返します。`Model::prod` は両成分の ID を記録した新しい積 ID を返すため、pair と射影にはその値を再利用してください。`Model::forget` はカーネル写像を射影し、不整合な操作表には `InvalidOperationTable` を返します。"
 
-#: manual/api/hom.md:183
+#: manual/api/hom.md:186
 msgid "`Algebra::make` and `Model::make` validate nonnegative arity only, even for built-in phantom signature tags. An empty table is allowed. Finite checks over empty operation lists return true vacuously and establish no law. `LawfulModel::postulate` can explicitly trust a rounded carrier; a small sample may pass while a larger one fails. The caller owns that assumption."
 msgstr "`Algebra::make` と `Model::make` は組み込みのファントムシグネチャでも arity の非負性だけを検査します。空の表も許容します。空の操作リストの有限検査は空虚に true を返し、法則を確立しません。`LawfulModel::postulate` は丸めキャリアを明示的に信頼できます。小さいサンプルで通っても大きいサンプルで失敗することがあり、仮定の責任は呼び出し側にあります。"
 
-#: manual/api/hom.md:189
-msgid "`ModelMismatch` reports incompatible identities, product components, or operation lists in checked composition and product construction. Both error types implement `Eq` and `Debug`; match their variants to handle failures."
-msgstr "`ModelMismatch` は検査付き合成と積構築で ID、積成分、操作リストの不整合を報告します。両エラー型は `Eq` と `Debug` を実装し、失敗はバリアントのパターンマッチで処理できます。"
+#: manual/api/hom.md:192
+msgid "`ModelMismatch` separates three failures. `IdentityMismatch` is reported when runtime Model identities differ in checked composition, pairing, projections, strict upgrades and model-bound checks. `SignatureMismatch` is reported only by `Algebra::prod` and `Model::prod` for different operation lists. `NotProductModel` is reported by `Hom::pair`, `Hom::fst` and `Hom::snd` when the supplied product Model was not built by `Model::prod`; it takes precedence over identity checks in those functions. The variants carry no payload and expose no Model structure; `Model::same_identity` remains the only public identity operation. An invalid projected operation table is still `ModelConstructionError::InvalidOperationTable`. Both error types implement `Eq` and `Debug`; match their variants to handle failures."
+msgstr "`ModelMismatch` は三つの失敗を区別します。`IdentityMismatch` は、検査付き合成、pair、射影、厳密な昇格、Model に結び付いた検査で、実行時の Model ID が異なるときに報告されます。`SignatureMismatch` は、操作リストが異なるときに `Algebra::prod` と `Model::prod` だけが報告します。`NotProductModel` は、渡された product Model が `Model::prod` で構築されていないときに `Hom::pair`、`Hom::fst`、`Hom::snd` が報告し、これらの関数では ID の検査より優先されます。バリアントはペイロードを持たず、Model の構造も公開しません。公開されている ID 操作は引き続き `Model::same_identity` だけです。無効な射影後の操作表は引き続き `ModelConstructionError::InvalidOperationTable` です。どちらのエラー型も `Eq` と `Debug` を実装しています。失敗を処理するにはそのバリアントで match してください。"
 
-#: manual/api/hom.md:195
+#: manual/api/hom.md:206
 msgid "`Op[A]` is one operation of a single-sorted signature."
 msgstr "`Op[A]` は単一ソートのシグネチャの一つの演算です。"
 
-#: manual/api/hom.md:205
+#: manual/api/hom.md:216
 msgid "`arity == 0` is a constant. `eval` receives exactly `arity` arguments."
 msgstr "`arity == 0` は定数です。`eval` はちょうど `arity` 個の引数を受け取ります。"
 
-#: manual/api/hom.md:209
+#: manual/api/hom.md:220
 msgid "`Algebra[S, A]` is an interpretation of the signature `S` on the carrier `A`: a list of `Op[A]` in the order the signature fixes."
 msgstr "`Algebra[S, A]` はキャリア `A` 上でのシグネチャ `S` の解釈で、シグネチャが定める順に並べた `Op[A]` のリストです。"
 
-#: manual/api/hom.md:220
+#: manual/api/hom.md:231
 msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag. It returns `Err(InvalidArity)` if any operation has a negative arity."
 msgstr "`Algebra::make(ops)` はカスタムシグネチャタグ用の辞書を構築します。いずれかの操作の arity が負なら `Err(InvalidArity)` を返します。"
 
-#: manual/api/hom.md:227
+#: manual/api/hom.md:238
 msgid "Keep one dictionary per tag and carrier, as explained above."
 msgstr "上で説明したとおり、タグとキャリアの組ごとに辞書は一つにします。"
 
-#: manual/api/hom.md:241
+#: manual/api/hom.md:252
 msgid "These functions derive the dictionary of a built-in tag from the structure trait instance of `A`."
 msgstr "これらの関数は、`A` の構造 trait インスタンスから組み込みタグの辞書を導きます。"
 
-#: manual/api/hom.md:252
+#: manual/api/hom.md:263
 msgid "The operations are listed in the order of the tag: for example `0`, `1`, `+`, `*`, `neg` for `RingSig`. Trait coherence gives one dictionary per tag and carrier."
 msgstr "演算はタグの順に並びます。たとえば `RingSig` では `0`、`1`、`+`、`*`、`neg` です。trait の一貫性により、タグとキャリアの組ごとに辞書は一つになります。"
 
-#: manual/api/hom.md:267
+#: manual/api/hom.md:278
 msgid "`Algebra::prod(a, b)` is the componentwise product algebra on `Prod[A, B]`."
 msgstr "`Algebra::prod(a, b)` は `Prod[A, B]` 上の成分ごとの積代数です。"
 
-#: manual/api/hom.md:273
-msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. The actual signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects different operation lists without aborting."
-msgstr "各操作は `fst` では `a` を、`snd` では `b` を使って作用します。実際のシグネチャは `Result[Algebra[S, Prod[A, B]], ModelMismatch]` を返し、操作リストが異なる場合は中断せず拒否します。"
+#: manual/api/hom.md:284
+msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. The actual signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects different operation lists with `SignatureMismatch` without aborting."
+msgstr "各操作は `fst` では `a` を、`snd` では `b` を使って作用します。実際のシグネチャは `Result[Algebra[S, Prod[A, B]], ModelMismatch]` を返し、操作リストが異なる場合は `SignatureMismatch` で拒否し、中断しません。"
 
-#: manual/api/hom.md:277
+#: manual/api/hom.md:288
 msgid "Product type"
 msgstr "積型"
 
-#: manual/api/hom.md:281
+#: manual/api/hom.md:292
 msgid "`Prod[A, B]` is the binary product carrier with fields `fst` and `snd`."
 msgstr "`Prod[A, B]` はフィールド `fst` と `snd` を持つ二項積のキャリアです。"
 
-#: manual/api/hom.md:290
+#: manual/api/hom.md:301
 msgid "Operations act componentwise. `Prod` implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
 msgstr "演算は成分ごとに行います。`Prod` は `Add`、`Mul`、`Neg`、`Sub`、`Zero`、`One` を実装し、両成分が実装していれば `AddMonoid`、`MulMonoid`、`AddGroup`、`Semiring`、`Ring` も実装します。"
 
-#: manual/api/hom.md:296
+#: manual/api/hom.md:307
 msgid "These methods are the componentwise operations, also available as `+`, `-`, `*`, unary `-` and the `Zero` / `One` traits."
 msgstr "これらのメソッドは成分ごとの演算で、`+`、`-`、`*`、単項 `-`、`Zero` / `One` trait としても使えます。"
 
-#: manual/api/hom.md:315
+#: manual/api/hom.md:326
 msgid "These methods compare componentwise and render a `Prod` for debugging; use `==`, `!=` and `inspect` in new code."
 msgstr "これらのメソッドは成分ごとに比較し、デバッグ用に `Prod` を表示します。新しいコードでは `==`、`!=`、`inspect` を使ってください。"
 
-#: manual/api/hom.md:333
+#: manual/api/hom.md:344
 msgid "Product law methods"
 msgstr "積の法則メソッド"
 
-#: manual/api/hom.md:335
+#: manual/api/hom.md:346
 msgid "`Prod::add_monoid_law`, `Prod::mul_monoid_law`, `Prod::add_group_law`, `Prod::semiring_law`, and `Prod::ring_law` derive the corresponding law from both components. An operation-only component does not provide these methods."
 msgstr "`Prod::add_monoid_law`、`Prod::mul_monoid_law`、`Prod::add_group_law`、`Prod::semiring_law`、`Prod::ring_law` は両成分から対応する法則を導出します。操作だけの成分はこれらのメソッドを提供しません。"
 
-#: manual/api/hom.md:347
+#: manual/api/hom.md:358
 msgid "Homomorphisms"
 msgstr "準同型"
 
-#: manual/api/hom.md:351
+#: manual/api/hom.md:362
 msgid "`Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of `S`."
 msgstr "`Hom[S, A, B]` は、`S` のすべての演算を保存すると証明された写像 `A -> B` です。"
 
-#: manual/api/hom.md:360
+#: manual/api/hom.md:371
 msgid "The certificate means that for every operation $\\omega$ of `S` with arity $n$ and all $x_1, \\dots, x_n$,"
 msgstr "証明書の意味は、`S` の項数 $n$ の各演算 $\\omega$ とすべての $x_1, \\dots, x_n$ について次が成り立つことです。"
 
-#: manual/api/hom.md:367
+#: manual/api/hom.md:378
 msgid "Only this package constructs `Hom` values. The leaves are `Hom::postulate` and `Hom::from_integer_exact`; the latter requires a `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]`. Every other constructor is an inference rule or a checked runtime transformation."
 msgstr "`Hom` 値を構築できるのはこのパッケージだけです。葉は `Hom::postulate` と `Hom::from_integer_exact` で、後者は `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]` を要求します。そのほかの構成子は推論規則または検査済みの実行時変換です。"
 
-#: manual/api/hom.md:374
+#: manual/api/hom.md:385
 msgid "`Hom::postulate(source, target, f)` trusts `f` as an `S`-homomorphism without proof and creates a proof obligation. The two Models bind the operation interpretations used by the certificate."
 msgstr "`Hom::postulate(source, target, f)` は証明なしで `f` を `S`-準同型として信頼し、証明責務を生みます。二つの Model が証明書で使う操作の解釈を束縛します。"
 
-#: manual/api/hom.md:382
+#: manual/api/hom.md:393
 msgid "The caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation. Back every call with a `check` test."
 msgstr "呼び出し側は、`S` の各演算 `op` とすべての引数 `xs` について `f(op_A(xs)) == op_B(xs.map(f))` を約束します。写像を緩い関係や許容誤差で検査するだけの場合でも、約束は常に厳密な等式です。各呼び出しには `check` テストを添えてください。"
 
-#: manual/api/hom.md:399
+#: manual/api/hom.md:410
 msgid "`h.apply(x)` applies the underlying map."
 msgstr "`h.apply(x)` は元の写像を適用します。"
 
-#: manual/api/hom.md:413
+#: manual/api/hom.md:424
 msgid "`Hom::id(model)` is the identity homomorphism bound to the supplied runtime model. Both endpoints use that exact model identity."
 msgstr "`Hom::id(model)` は指定された実行時 Model に束縛された恒等準同型です。両端点はその Model の同じ ID を使います。"
 
-#: manual/api/hom.md:422
-msgid "`h.then_checked(g)` is the composite when the middle Model identities match. It returns `Err(ModelMismatch)` for different runtime interpretations."
-msgstr "中央の Model ID が一致するとき、`h.then_checked(g)` は合成です。異なる実行時解釈には `Err(ModelMismatch)` を返します。"
+#: manual/api/hom.md:433
+msgid "`h.then_checked(g)` is the composite when the middle Model identities match. It returns `Err(IdentityMismatch)` for different runtime interpretations."
+msgstr "中央の Model ID が一致するとき、`h.then_checked(g)` は合成です。異なる実行時解釈には `Err(IdentityMismatch)` を返します。"
 
-#: manual/api/hom.md:429
+#: manual/api/hom.md:440
 msgid "If $f$ and $g$ preserve $\\omega$, so does $g \\circ f$:"
 msgstr "$f$ と $g$ が $\\omega$ を保存するなら、$g \\circ f$ も保存します:"
 
-#: manual/api/hom.md:437
+#: manual/api/hom.md:448
 msgid "`h.forget(r)` forgets structure along a `Reduct[S, T]` witness."
 msgstr "`h.forget(r)` は `Reduct[S, T]` の証拠に沿って構造を忘れます。"
 
-#: manual/api/hom.md:443
+#: manual/api/hom.md:454
 msgid "A map that preserves every operation of `S` preserves the operations of the smaller signature `T`."
 msgstr "`S` のすべての演算を保存する写像は、より小さいシグネチャ `T` の演算も保存します。"
 
-#: manual/api/hom.md:448
-msgid "`Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The explicit product Model must be reused by `Hom::fst(product, left)` and `Hom::snd(product, right)`."
-msgstr "`Hom::pair(product, f, g)` は `x` を `{ fst: f(x), snd: g(x) }` に写します。明示的な product Model は `Hom::fst(product, left)` と `Hom::snd(product, right)` で再利用しなければなりません。"
+#: manual/api/hom.md:459
+msgid "`Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The explicit product Model must be reused by `Hom::fst(product, left)` and `Hom::snd(product, right)`. A Model that was not built by `Model::prod` yields `Err(NotProductModel)`; a component or source Model with a different identity yields `Err(IdentityMismatch)`."
+msgstr "`Hom::pair(product, f, g)` は `x` を `{ fst: f(x), snd: g(x) }` に写します。明示的な product Model は `Hom::fst(product, left)` と `Hom::snd(product, right)` で再利用しなければなりません。`Model::prod` で構築されていない Model には `Err(NotProductModel)` を返し、成分 Model または元の Model の ID が異なる場合は `Err(IdentityMismatch)` を返します。"
 
-#: manual/api/hom.md:458
+#: manual/api/hom.md:471
 msgid "With the same product Model and component Models, the checked composites `Hom::pair(product, f, g).then_checked(Hom::fst(product, left))` and `Hom::pair(product, f, g).then_checked(Hom::snd(product, right))` return `f` and `g` respectively."
 msgstr "同じ product Model とコンポーネント Model を使うと、検査済みの合成 `Hom::pair(product, f, g).then_checked(Hom::fst(product, left))` と `Hom::pair(product, f, g).then_checked(Hom::snd(product, right))` はそれぞれ `f` と `g` を返します。"
 
-#: manual/api/hom.md:480
+#: manual/api/hom.md:493
 msgid "`h.to_add_group(source_law, target_law)` upgrades an additive monoid homomorphism after checking the law-bound Models match its endpoints."
 msgstr "`h.to_add_group(source_law, target_law)` は法則に束縛された Model と端点の一致を検査して、加法モノイド準同型を昇格します。"
 
-#: manual/api/hom.md:487
+#: manual/api/hom.md:500
 msgid "No new obligation: $f(-x) + f(x) = f(-x + x) = f(0) = 0$, so $f(-x) = -f(x)$."
 msgstr "新しい責務はありません。$f(-x) + f(x) = f(-x + x) = f(0) = 0$ なので $f(-x) = -f(x)$ です。"
 
-#: manual/api/hom.md:491
+#: manual/api/hom.md:504
 msgid "`h.to_ring(source_law, target_law)` upgrades a semiring homomorphism after checking the law-bound Models match its endpoints."
 msgstr "`h.to_ring(source_law, target_law)` は、法則に束縛された Model が端点と一致することを確認して、半環準同型を昇格します。"
 
-#: manual/api/hom.md:498
+#: manual/api/hom.md:511
 msgid "No new obligation, by the same computation as `to_add_group`."
 msgstr "`to_add_group` と同じ計算により、新しい責務はありません。"
 
-#: manual/api/hom.md:502
+#: manual/api/hom.md:515
 msgid "`Hom::from_integer_exact(target)` is the canonical map ℤ → `R` only when the target Model carries an explicit `IntegerHomomorphismTh` law. This law states preservation of zero, one, addition and multiplication; it does not assert injectivity."
 msgstr "`Hom::from_integer_exact(target)` が ℤ → `R` の標準写像になるのは、対象 Model が明示的な `IntegerHomomorphismTh` の法則を持つ場合だけです。この法則は零、単位元、加法、乗法の保存を述べますが、単射性は述べません。"
 
-#: manual/api/hom.md:511
+#: manual/api/hom.md:524
 msgid "Rounded `Float` and `Double` conversions do not provide this law. A caller may use `Law::postulate` explicitly, but that assumption is visible in the type and trust audit. For a fixed-width source, use `Section::of_integral`."
 msgstr "丸められた `Float` と `Double` の変換はこの法則を提供しません。呼び出し側は `Law::postulate` を明示的に使えますが、その仮定は型と信頼監査に現れます。固定幅のソースには `Section::of_integral` を使います。"
 
-#: manual/api/hom.md:525
+#: manual/api/hom.md:538
 #: manual/design/hom.md:50
 msgid "Sections"
 msgstr "切断"
 
-#: manual/api/hom.md:527
+#: manual/api/hom.md:540
 msgid "A section lifts a quotient `Q` back into `A` along a homomorphism `proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism, but it preserves every operation up to the kernel of `proj`, and exactly whenever the result is itself a representative."
 msgstr "切断は、準同型 `proj : A -> Q` に沿って商 `Q` を `A` へ持ち上げるもので、`proj(lift(q)) == q` を満たします。持ち上げ自体は準同型ではありませんが、`proj` の核を法としてすべての演算を保存し、結果が代表元であるときは厳密に保存します。"
 
-#: manual/api/hom.md:532
+#: manual/api/hom.md:545
 msgid "The section law rejects lifts that leave the class of their argument. It does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are both sections of `BigInt -> Int`, and only the second preserves the signed order."
 msgstr "切断の法則は、引数の類から外れる持ち上げを拒否します。ただし代表元の選び方は決めません。`[0, 2^32)` と `[-2^31, 2^31)` はどちらも `BigInt -> Int` の切断ですが、符号付きの順序を保つのは後者だけです。"
 
-#: manual/api/hom.md:539
+#: manual/api/hom.md:552
 msgid "`Section[S, Q, A]` is a lift of the quotient `Q` back into `A` along the projection `proj : A -> Q`."
 msgstr "`Section[S, Q, A]` は射影 `proj : A -> Q` に沿って商 `Q` を `A` へ持ち上げるものです。"
 
-#: manual/api/hom.md:554
+#: manual/api/hom.md:567
 msgid "`Section::postulate(proj, lift)` trusts `lift` as a section of `proj` and creates a proof obligation."
 msgstr "`Section::postulate(proj, lift)` は `lift` を `proj` の切断として信頼し、証明責務を生みます。"
 
-#: manual/api/hom.md:561
+#: manual/api/hom.md:574
 msgid "The caller promises `proj.apply(lift(q)) == q` for every `q`; `proj` carries its own `Hom` obligation."
 msgstr "呼び出し側はすべての `q` について `proj.apply(lift(q)) == q` を約束します。`proj` は自身の `Hom` の責務を持ちます。"
 
-#: manual/api/hom.md:576
+#: manual/api/hom.md:589
 msgid "`Section::of_integral()` is the canonical section of an integral type."
 msgstr "`Section::of_integral()` は整数型の標準の切断です。"
 
-#: manual/api/hom.md:582
+#: manual/api/hom.md:595
 msgid "`proj` is `FromInteger::from_integer` and `lift` is `Integral::normalize`. The obligation sits on those instances. Use `to_ring` when `Z` is a ring."
 msgstr "`proj` は `FromInteger::from_integer`、`lift` は `Integral::normalize` です。責務はこれらのインスタンスにあります。`Z` が環なら `to_ring` を使います。"
 
-#: manual/api/hom.md:587
+#: manual/api/hom.md:600
 msgid "`s.lift(q)` is the chosen representative of `q`; `s.proj()` is the projection onto the quotient."
 msgstr "`s.lift(q)` は `q` の選ばれた代表元、`s.proj()` は商への射影です。"
 
-#: manual/api/hom.md:597
+#: manual/api/hom.md:610
 msgid "`s.normalize(a)` is `lift(proj(a))`, the normal form of `a`."
 msgstr "`s.normalize(a)` は `lift(proj(a))`、つまり `a` の正規形です。"
 
-#: manual/api/hom.md:603
+#: manual/api/hom.md:616
 msgid "Two values are congruent exactly when their normal forms are equal."
 msgstr "二つの値が合同であるのは、正規形が等しいとき、かつそのときに限ります。"
 
-#: manual/api/hom.md:607
+#: manual/api/hom.md:620
 msgid "`s.is_representative(a)` tells whether `a` is the chosen representative of its class, that is `normalize(a) == a`."
 msgstr "`s.is_representative(a)` は `a` がその類の選ばれた代表元か、つまり `normalize(a) == a` かを判定します。"
 
-#: manual/api/hom.md:614
+#: manual/api/hom.md:627
 msgid "On such results the lift agrees exactly with the operations of `A`."
 msgstr "そのような結果では、持ち上げは `A` の演算と完全に一致します。"
 
-#: manual/api/hom.md:632
+#: manual/api/hom.md:645
 msgid "`s.then(next)` lifts `Q` into `A` with `s`, then `A` into `B` with `next`."
 msgstr "`s.then(next)` は `s` で `Q` を `A` へ、次に `next` で `A` を `B` へ持ち上げます。"
 
-#: manual/api/hom.md:638
+#: manual/api/hom.md:651
 msgid "The projection is `next.proj` followed by `s.proj`. No new obligation: with $s, t$ the two lifts and $\\pi_s, \\pi_t$ their projections, $\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$."
 msgstr "射影は `next.proj` の後に `s.proj` です。新しい責務はありません。$s, t$ を二つの持ち上げ、$\\pi_s, \\pi_t$ をその射影とすると、$\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$ です。"
 
-#: manual/api/hom.md:644
+#: manual/api/hom.md:657
 msgid "These inference rules change the signature of the projection; the lift is unchanged."
 msgstr "これらの推論規則は射影のシグネチャを変え、持ち上げは変えません。"
 
-#: manual/api/hom.md:653
+#: manual/api/hom.md:666
 msgid "They follow `Hom::forget`, `Hom::to_add_group` and `Hom::to_ring`."
 msgstr "それぞれ `Hom::forget`、`Hom::to_add_group`、`Hom::to_ring` に従います。"
 
-#: manual/api/hom.md:657
+#: manual/api/hom.md:670
 msgid "`s.check(samples)` tests the section law `proj(lift(q)) == q` on every sample."
 msgstr "`s.check(samples)` はすべてのサンプルで切断の法則 `proj(lift(q)) == q` をテストします。"
 
-#: manual/api/hom.md:666
+#: manual/api/hom.md:679
 msgid "`s.check_ops(quotient, cover, samples)` tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation over all tuples drawn from `samples`."
 msgstr "`s.check_ops(quotient, cover, samples)` は、`samples` から作るすべての組について、各演算で `proj(op_A(xs.map(lift))) == op_Q(xs)` をテストします。"
 
-#: manual/api/hom.md:674
+#: manual/api/hom.md:687
 msgid "This exercises `proj` as a homomorphism on representatives. It returns `false` when the two dictionaries do not list the same operations."
 msgstr "これは代表元上の準同型として `proj` を検査します。二つの辞書が異なる操作を列挙する場合は `false` を返します。"
 
-#: manual/api/hom.md:687
+#: manual/api/hom.md:700
 msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate; it is listed on the [core API](core.md)."
 msgstr "`lift_to(x)` は整数値を持ち上げ、証明書なしで任意の `FromInteger` 対象へ写します。[core API](core.md) に記載しています。"
 
-#: manual/api/hom.md:690
+#: manual/api/hom.md:703
 msgid "Reduct witnesses"
 msgstr "縮約の証人"
 
-#: manual/api/hom.md:694
+#: manual/api/hom.md:707
 msgid "`Reduct[S, T]` witnesses that every `S`-structure is also a `T`-structure, so an `S`-homomorphism is also a `T`-homomorphism."
 msgstr "`Reduct[S, T]` は、すべての `S`-構造が `T`-構造でもあり、したがって `S`-準同型が `T`-準同型でもあることの証拠です。"
 
-#: manual/api/hom.md:703
+#: manual/api/hom.md:716
 msgid "Only this package constructs `Reduct` values."
 msgstr "`Reduct` はこのパッケージだけが構築できます。"
 
-#: manual/api/hom.md:707
+#: manual/api/hom.md:720
 msgid "These constants are the inclusions between the built-in signatures."
 msgstr "これらの定数は組み込みシグネチャ間の包含です。"
 
-#: manual/api/hom.md:719
+#: manual/api/hom.md:732
 msgid "`Reduct::refl()` is the trivial inclusion of `S` in itself; `r.then(r2)` composes inclusions."
 msgstr "`Reduct::refl()` は `S` から自身への自明な包含、`r.then(r2)` は包含の合成です。"
 
-#: manual/api/hom.md:735
+#: manual/api/hom.md:748
 msgid "Law checks"
 msgstr "法則の検査"
 
-#: manual/api/hom.md:739
+#: manual/api/hom.md:752
 msgid "`h.check(src, dst, samples)` tests the homomorphism law with exact equality on every operation of `S`."
 msgstr "`h.check(src, dst, samples)` は `S` のすべての演算について、厳密な等式で準同型の法則をテストします。"
 
-#: manual/api/hom.md:746
+#: manual/api/hom.md:759
 msgid "Requires `B : Eq`. It is `check_by` with `==`. Both Algebra-only diagnostics test only the supplied tables: they do not verify the Hom endpoint Model identities. Use `check_models` or `check_models_by` to validate those identities."
 msgstr "`B : Eq` が必要で、`==` を使った `check_by` です。Algebra だけを使う両診断は指定された表だけをテストし、Hom 端点 Model の ID は検証しません。ID の検証には `check_models` または `check_models_by` を使ってください。"
 
-#: manual/api/hom.md:752
+#: manual/api/hom.md:765
 msgid "`h.check_by(src, dst, samples, rel)` tests `rel(f(op_A(xs)), op_B(f(xs)))` for every operation over all tuples drawn from `samples`."
 msgstr "`h.check_by(src, dst, samples, rel)` は、`samples` から作るすべての組について、各演算で `rel(f(op_A(xs)), op_B(f(xs)))` をテストします。"
 
-#: manual/api/hom.md:759
+#: manual/api/hom.md:772
 msgid "`rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets. An operation of arity `n` is tested on `samples.length()^n` tuples. It returns `false` when `src` and `dst` do not list the same operations."
 msgstr "`rel` が保存の強さを決めます。厳密な準同型には等式、劣加法的な写像のような緩い準同型には `<=`、浮動小数点の対象への近似準同型には許容誤差を使います。項数 `n` の演算は `samples.length()^n` 個の組でテストされます。`src` と `dst` の演算の並びが一致しない場合は `false` を返します。"
 
-#: manual/api/hom.md:767
-msgid "These diagnostics bind the finite check to the exact source and target Models stored in the Hom. They return `Err(ModelMismatch)` when either endpoint has a different runtime identity, then delegate to `check` or `check_by`. They still return diagnostics only and never create a certificate."
-msgstr "これらの診断は、有限検査を Hom に保存された正確なソース Model とターゲット Model に結び付けます。どちらかの端点の実行時 ID が異なる場合は `Err(ModelMismatch)` を返し、それ以外は `check` または `check_by` に委譲します。返すのは診断結果だけで、証明書は生成しません。"
+#: manual/api/hom.md:780
+msgid "These diagnostics bind the finite check to the exact source and target Models stored in the Hom. They return `Err(IdentityMismatch)` when either endpoint has a different runtime identity, then delegate to `check` or `check_by`. They still return diagnostics only and never create a certificate."
+msgstr "これらの診断は、有限検査を Hom に保存された正確なソース Model とターゲット Model に結び付けます。どちらかの端点の実行時 ID が異なる場合は `Err(IdentityMismatch)` を返し、それ以外は `check` または `check_by` に委譲します。返すのは診断結果だけで、証明書は生成しません。"
 
-#: manual/api/hom.md:791
+#: manual/api/hom.md:804
 msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so a lift into ℤ is a section, not a homomorphism. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
 msgstr "固定幅の整数ソース（`Int`、`Int64`、`UInt` など）は整数ではなく ℤ/2^k です。そこから `BigInt` への半環準同型は存在しないため、ℤ への持ち上げは準同型ではなく切断です。同じ議論により `Int -> Int64` のような拡幅は準同型ではなく、`Int64 -> Int` のような切り詰めは環準同型です。"
 
-#: manual/api/hom.md:796
+#: manual/api/hom.md:809
 msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
 msgstr "推論規則は証明書を厳密な準同型として合成します。lax（`<=`）や許容誤差付きの法則しか満たさない写像は、合成後に改めて検査する必要があります。"
 
-#: manual/api/hom.md:799
+#: manual/api/hom.md:812
 msgid "`Float` and `Double` provide rounded operations without exact law certificates; use `check_by` with a tolerance for approximate maps. See the embedding notes in the [core API](core.md)."
 msgstr "`Float` と `Double` は厳密な法則証明書なしに丸められた操作を提供します。近似写像には許容誤差付きの `check_by` を使ってください。[core API](core.md) の埋め込みの説明も参照してください。"
 
-#: manual/api/hom.md:803
+#: manual/api/hom.md:816
 msgid "Removed conversion constructors"
 msgstr "削除された変換コンストラクタ"
 
-#: manual/api/hom.md:805
+#: manual/api/hom.md:818
 msgid "`Hom::from_nat`, `Hom::from_integral` and the old `Hom::from_integer` are not part of the 0.5.0 API. Use `FromNat` / `FromInteger` for ordinary values, `Section::of_integral` for representative lifts, and `Hom::from_integer_exact` only with an explicit integer-homomorphism law."
 msgstr "`Hom::from_nat`、`Hom::from_integral`、旧 `Hom::from_integer` は 0.5.0 API に含まれません。通常の値には `FromNat` / `FromInteger`、代表元の持ち上げには `Section::of_integral` を使い、明示的な整数準同型法則がある場合だけ `Hom::from_integer_exact` を使います。"
 
@@ -1215,8 +1215,8 @@ msgid "A lift from a quotient back to its cover is a `Section`, not a `Hom`. It 
 msgstr "商から被覆代数へ戻る持ち上げは `Hom` ではなく `Section` です。射影を `Hom` として持ち、`proj(lift(q)) == q` だけを約束します。代表元上で演算と一致することはこの法則から従います。両者を分けることで、`Int -> BigInt` のような代表元の持ち上げが準同型であるかのように合成されるのを防ぎます。"
 
 #: manual/design/hom.md:32
-msgid "The signature is a phantom type `S` on the certificate, while strict `Hom` values carry source and target `Model` identities. The model binds the operation table to the certificate; `then_checked`, pairing and projections return `ModelMismatch` instead of silently composing different interpretations. Algebra-only `check` and `check_by` remain finite diagnostics and never create certificates; `check_models` and `check_models_by` add endpoint identity validation before delegating to those finite checks."
-msgstr "証明書上のシグネチャはファントム型 `S` ですが、厳密な `Hom` 値はソースとターゲットの `Model` ID を持ちます。Model は操作表を証明書に結び付け、`then_checked`、pair、射影は異なる解釈を暗黙に合成せず `ModelMismatch` を返します。Algebra だけを使う `check` と `check_by` は有限診断にとどまり証明書を生成しません。`check_models` と `check_models_by` は端点 ID を検証してから有限検査に委譲します。"
+msgid "The signature is a phantom type `S` on the certificate, while strict `Hom` values carry source and target `Model` identities. The model binds the operation table to the certificate; `then_checked`, pairing and projections return a `ModelMismatch` variant instead of silently composing different interpretations. Algebra-only `check` and `check_by` remain finite diagnostics and never create certificates; `check_models` and `check_models_by` add endpoint identity validation before delegating to those finite checks."
+msgstr "証明書上のシグネチャはファントム型 `S` ですが、厳密な `Hom` 値はソースとターゲットの `Model` ID を持ちます。Model は操作表を証明書に結び付け、`then_checked`、pair、射影は異なる解釈を暗黙に合成せず `ModelMismatch` のいずれかのバリアントを返します。Algebra だけを使う `check` と `check_by` は有限診断にとどまり証明書を生成しません。`check_models` と `check_models_by` は端点 ID を検証してから有限検査に委譲します。"
 
 #: manual/design/hom.md:40
 msgid "Custom operations supplied to `Algebra::make` must have nonnegative arity. Law checking enumerates argument tuples recursively, so rejecting invalid arities at construction prevents nontermination before a certificate is checked."
@@ -1339,22 +1339,22 @@ msgid "Laws are tested, not proven. The certificate guarantees traceable origin,
 msgstr "法則は証明されず、検査されるだけです。証明書が保証するのは由来の追跡可能性であり、法則が成り立つことではありません。"
 
 #: manual/design/hom.md:178
-msgid "Runtime `Hom` endpoints carry `Model` identities, so `then_checked`, pairing, projections and strict upgrades reject different operation interpretations with `ModelMismatch`. `check_models` and `check_models_by` validate those endpoint identities and return `Result[Bool, ModelMismatch]`; the Algebra-only checks remain finite diagnostics over supplied dictionaries."
-msgstr "実行時の `Hom` 端点は `Model` ID を持つため、`then_checked`、pair、射影、厳密な昇格は異なる操作の解釈を `ModelMismatch` で拒否します。`check_models` と `check_models_by` は端点 ID を検証し、`Result[Bool, ModelMismatch]` を返します。Algebra だけを使う検査は、与えられた辞書に対する有限診断にとどまります。"
+msgid "Runtime `Hom` endpoints carry `Model` identities, so `then_checked`, pairing, projections and strict upgrades reject different operation interpretations with `IdentityMismatch`, or `NotProductModel` for a product operation on a Model not built by `Model::prod`; `Algebra::prod` and `Model::prod` report `SignatureMismatch`. `check_models` and `check_models_by` validate those endpoint identities and return `Result[Bool, ModelMismatch]`; the Algebra-only checks remain finite diagnostics over supplied dictionaries."
+msgstr "実行時の `Hom` 端点は `Model` ID を持つため、`then_checked`、pair、射影、厳密な昇格は異なる操作の解釈を `IdentityMismatch` で拒否し、`Model::prod` で構築されていない Model に対する積の操作では `NotProductModel` を返します。`Algebra::prod` と `Model::prod` は `SignatureMismatch` を報告します。`check_models` と `check_models_by` は端点 ID を検証し、`Result[Bool, ModelMismatch]` を返します。Algebra だけを使う検査は、与えられた辞書に対する有限診断にとどまります。"
 
-#: manual/design/hom.md:183
+#: manual/design/hom.md:185
 msgid "Model identity keys are opaque and package-owned. Callers compare Models with `Model::same_identity` and cannot inspect or mutate lineage paths."
 msgstr "Model の ID キーは不透明で、パッケージが管理します。呼び出し側は `Model::same_identity` で Model を比較し、系譜のパスを調べたり変更したりできません。"
 
-#: manual/design/hom.md:185
+#: manual/design/hom.md:187
 msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
 msgstr "証明書は `check_by` で使った関係を記録しないため、lax な写像や近似的な写像も厳密な準同型であるかのように合成されます。"
 
-#: manual/design/hom.md:187
+#: manual/design/hom.md:189
 msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are sections, so they agree with the operations only while arithmetic does not wrap."
 msgstr "固定幅の整数は ℤ や ℕ ではなく ℤ/2^k です。そこから ℤ への写像は切断なので、演算と一致するのは回り込みが起きない間だけです。"
 
-#: manual/design/hom.md:190
+#: manual/design/hom.md:192
 msgid "The section law does not fix which representatives are chosen, so properties such as order preservation need their own checks."
 msgstr "切断の法則はどの代表元を選ぶかを決めないため、順序の保存のような性質は別途検査する必要があります。"
 
@@ -1832,8 +1832,8 @@ msgid "Every `Hom::postulate` is a promise you make. Searching the repository fo
 msgstr "`Hom::postulate` はすべてあなたが行う約束です。リポジトリで `postulate` を検索すればすべて列挙され、それぞれに対応する `check` テストを置くべきです。"
 
 #: manual/tutorial/hom.md:67
-msgid "When a Hom is tied to runtime Models, use `check_models` or `check_models_by` to validate the exact endpoint identities before running a finite diagnostic. A different source or target Model returns `Err(ModelMismatch)`; the successful result is still a diagnostic, not a new certificate."
-msgstr "Hom が実行時 Model に結び付いている場合、有限診断を実行する前に `check_models` または `check_models_by` を使って正確な端点 ID を検証してください。ソースまたはターゲット Model が異なる場合は `Err(ModelMismatch)` を返します。成功結果も診断にすぎず、新しい証明書ではありません。"
+msgid "When a Hom is tied to runtime Models, use `check_models` or `check_models_by` to validate the exact endpoint identities before running a finite diagnostic. A different source or target Model returns `Err(IdentityMismatch)`; the successful result is still a diagnostic, not a new certificate."
+msgstr "Hom が実行時 Model に結び付いている場合、有限診断を実行する前に `check_models` または `check_models_by` を使って正確な端点 ID を検証してください。ソースまたはターゲット Model が異なる場合は `Err(IdentityMismatch)` を返します。成功結果も診断にすぎず、新しい証明書ではありません。"
 
 #: manual/tutorial/hom.md:73
 msgid "Building from smaller homomorphisms"
@@ -1926,6 +1926,12 @@ msgstr "[hom 設計](../design/hom.md) では、切断が保存するものと�
 #: manual/tutorial/hom.md:239
 msgid "The [core tutorial](core.md) covers the traits that the built-in signatures are derived from."
 msgstr "[core チュートリアル](core.md) では、組み込みシグネチャの元になっている trait を扱います。"
+
+#~ msgid "`ModelConstructionError` reports invalid arity or an operation table that a kernel reduct cannot project. `ModelMismatch` reports different runtime model identities. Both derive `Eq` and `Debug`, so callers can compare errors or inspect their debug representation."
+#~ msgstr "`ModelConstructionError` は不正な arity、またはカーネルの reduct で射影できない操作テーブルを報告します。`ModelMismatch` は実行時 Model の ID の不一致を報告します。どちらも `Eq` と `Debug` を導出するため、エラーを比較したりデバッグ表現を確認したりできます。"
+
+#~ msgid "`ModelMismatch` reports incompatible identities, product components, or operation lists in checked composition and product construction. Both error types implement `Eq` and `Debug`; match their variants to handle failures."
+#~ msgstr "`ModelMismatch` は検査付き合成と積構築で ID、積成分、操作リストの不整合を報告します。両エラー型は `Eq` と `Debug` を実装し、失敗はバリアントのパターンマッチで処理できます。"
 
 #~ msgid "Requires `B : Eq`. It is `check_by` with `==`."
 #~ msgstr "`B : Eq` が必要です。`==` を使った `check_by` です。"

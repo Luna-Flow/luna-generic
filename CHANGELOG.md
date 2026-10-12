@@ -12,6 +12,7 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 - **Breaking:** remove the automatic exact Semiring, Ring, and Field instances for Float and Double; retain rounded operation capabilities through RoundedArithmetic.
 - **Breaking:** Algebra::make and Model::make return Result and report negative operation arity as InvalidArity rather than aborting.
 - **Breaking:** replace `Hom::from_integer`, `Hom::from_nat` and `Hom::from_integral` with the model-bound `Hom::from_integer_exact`; runtime identity, pairing, projection, reduct and law upgrades are checked with `Result`.
+- **Breaking:** split `ModelMismatch` into the payload-free variants `IdentityMismatch`, `SignatureMismatch` and `NotProductModel`; `Algebra::prod` and `Model::prod` report `SignatureMismatch`, `Hom::pair`/`fst`/`snd` report `NotProductModel` for a Model not built by `Model::prod`, every other checked operation reports `IdentityMismatch`; `InvalidOperationTable` is unchanged ([#20](https://github.com/Luna-Flow/luna-generic/issues/20)).
 - **Breaking:** make runtime `ModelKey` identity opaque and remove `Model::key`; compare Models only with `Model::same_identity` ([#20](https://github.com/Luna-Flow/luna-generic/issues/20)).
 
 The G2 migration is tracked in [#19](https://github.com/Luna-Flow/luna-generic/issues/19).
@@ -28,6 +29,7 @@ The G2 migration is tracked in [#19](https://github.com/Luna-Flow/luna-generic/i
 | `Hom::from_integer/from_nat/from_integral` | `from_integer_exact` with `IntegerHomomorphismTh`; ordinary conversions use `lift_to` |
 | `Algebra::make/prod` | handle constructor/product `Result` |
 | `Hom::forget`, `Section::forget` | handle `Result` |
+| `ModelMismatch` (single variant) | match `IdentityMismatch`, `SignatureMismatch`, `NotProductModel` |
 | `Section::then` | `then_checked`, handle `Result` |
 | `Model::key` | `same_identity`; identity representation is private |
 

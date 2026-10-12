@@ -67,7 +67,7 @@ test.
 When a Hom is tied to runtime Models, use `check_models` or
 `check_models_by` to validate the exact endpoint identities before running a
 finite diagnostic. A different source or target Model returns
-`Err(ModelMismatch)`; the successful result is still a diagnostic, not a new
+`Err(IdentityMismatch)`; the successful result is still a diagnostic, not a new
 certificate.
 
 ### Building from smaller homomorphisms

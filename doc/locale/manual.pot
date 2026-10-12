@@ -283,7 +283,7 @@ msgid "`Byte` implements none of them."
 msgstr ""
 
 #: manual/api/core.md:580
-#: manual/api/hom.md:789
+#: manual/api/hom.md:802
 msgid "Semantic notes"
 msgstr ""
 
@@ -424,7 +424,7 @@ msgid "Algebra dictionaries"
 msgstr ""
 
 #: manual/api/hom.md:99
-msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(ModelMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures. These checks do not verify the Hom endpoint Model identities; `check_models` and `check_models_by` do that for the exact stored Models."
+msgid "Two dictionaries of the same `S` must list the same operations (name and arity) in the same order. `Algebra::prod` returns `Err(SignatureMismatch)` when they do not. Finite `Hom::check` and `Hom::check_by` diagnostics return `false` for dictionaries with different operation signatures. These checks do not verify the Hom endpoint Model identities; `check_models` and `check_models_by` do that for the exact stored Models."
 msgstr ""
 
 #: manual/api/hom.md:108
@@ -444,315 +444,315 @@ msgid "Construction errors and mismatch diagnostics"
 msgstr ""
 
 #: manual/api/hom.md:147
-msgid "`ModelConstructionError` reports invalid arity or an operation table that a kernel reduct cannot project. `ModelMismatch` reports different runtime model identities. Both derive `Eq` and `Debug`, so callers can compare errors or inspect their debug representation."
+msgid "`ModelConstructionError` reports invalid arity or an operation table that a kernel reduct cannot project. `ModelMismatch` has three payload-free variants: `IdentityMismatch` (two Models that must be the same interpretation are not), `SignatureMismatch` (two operation lists differ in name, arity or order) and `NotProductModel` (a product-only operation received a Model not built by `Model::prod`). Both error types derive `Eq` and `Debug`, so callers can compare errors or inspect their debug representation."
 msgstr ""
 
-#: manual/api/hom.md:163
+#: manual/api/hom.md:166
 msgid "This canonical convenience binds the `AddGroupTh` certificate and canonical additive-group Model for `A`."
 msgstr ""
 
-#: manual/api/hom.md:172
+#: manual/api/hom.md:175
 msgid "`Model::algebra()` returns the model's operation dictionary. `Model::prod` returns a fresh product identity with the two component identities recorded; reuse that value for pairing and projections. `Model::forget` projects a kernel mapping and returns `InvalidOperationTable` for incompatible tables."
 msgstr ""
 
-#: manual/api/hom.md:183
+#: manual/api/hom.md:186
 msgid "`Algebra::make` and `Model::make` validate nonnegative arity only, even for built-in phantom signature tags. An empty table is allowed. Finite checks over empty operation lists return true vacuously and establish no law. `LawfulModel::postulate` can explicitly trust a rounded carrier; a small sample may pass while a larger one fails. The caller owns that assumption."
 msgstr ""
 
-#: manual/api/hom.md:189
-msgid "`ModelMismatch` reports incompatible identities, product components, or operation lists in checked composition and product construction. Both error types implement `Eq` and `Debug`; match their variants to handle failures."
+#: manual/api/hom.md:192
+msgid "`ModelMismatch` separates three failures. `IdentityMismatch` is reported when runtime Model identities differ in checked composition, pairing, projections, strict upgrades and model-bound checks. `SignatureMismatch` is reported only by `Algebra::prod` and `Model::prod` for different operation lists. `NotProductModel` is reported by `Hom::pair`, `Hom::fst` and `Hom::snd` when the supplied product Model was not built by `Model::prod`; it takes precedence over identity checks in those functions. The variants carry no payload and expose no Model structure; `Model::same_identity` remains the only public identity operation. An invalid projected operation table is still `ModelConstructionError::InvalidOperationTable`. Both error types implement `Eq` and `Debug`; match their variants to handle failures."
 msgstr ""
 
-#: manual/api/hom.md:195
+#: manual/api/hom.md:206
 msgid "`Op[A]` is one operation of a single-sorted signature."
 msgstr ""
 
-#: manual/api/hom.md:205
+#: manual/api/hom.md:216
 msgid "`arity == 0` is a constant. `eval` receives exactly `arity` arguments."
 msgstr ""
 
-#: manual/api/hom.md:209
+#: manual/api/hom.md:220
 msgid "`Algebra[S, A]` is an interpretation of the signature `S` on the carrier `A`: a list of `Op[A]` in the order the signature fixes."
 msgstr ""
 
-#: manual/api/hom.md:220
+#: manual/api/hom.md:231
 msgid "`Algebra::make(ops)` builds a dictionary for a custom signature tag. It returns `Err(InvalidArity)` if any operation has a negative arity."
 msgstr ""
 
-#: manual/api/hom.md:227
+#: manual/api/hom.md:238
 msgid "Keep one dictionary per tag and carrier, as explained above."
 msgstr ""
 
-#: manual/api/hom.md:241
+#: manual/api/hom.md:252
 msgid "These functions derive the dictionary of a built-in tag from the structure trait instance of `A`."
 msgstr ""
 
-#: manual/api/hom.md:252
+#: manual/api/hom.md:263
 msgid "The operations are listed in the order of the tag: for example `0`, `1`, `+`, `*`, `neg` for `RingSig`. Trait coherence gives one dictionary per tag and carrier."
 msgstr ""
 
-#: manual/api/hom.md:267
+#: manual/api/hom.md:278
 msgid "`Algebra::prod(a, b)` is the componentwise product algebra on `Prod[A, B]`."
 msgstr ""
 
-#: manual/api/hom.md:273
-msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. The actual signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects different operation lists without aborting."
+#: manual/api/hom.md:284
+msgid "Each operation acts on `fst` with `a` and on `snd` with `b`. The actual signature returns `Result[Algebra[S, Prod[A, B]], ModelMismatch]` and rejects different operation lists with `SignatureMismatch` without aborting."
 msgstr ""
 
-#: manual/api/hom.md:277
+#: manual/api/hom.md:288
 msgid "Product type"
 msgstr ""
 
-#: manual/api/hom.md:281
+#: manual/api/hom.md:292
 msgid "`Prod[A, B]` is the binary product carrier with fields `fst` and `snd`."
 msgstr ""
 
-#: manual/api/hom.md:290
+#: manual/api/hom.md:301
 msgid "Operations act componentwise. `Prod` implements `Add`, `Mul`, `Neg`, `Sub`, `Zero` and `One`, and `AddMonoid`, `MulMonoid`, `AddGroup`, `Semiring` and `Ring` whenever both components do."
 msgstr ""
 
-#: manual/api/hom.md:296
+#: manual/api/hom.md:307
 msgid "These methods are the componentwise operations, also available as `+`, `-`, `*`, unary `-` and the `Zero` / `One` traits."
 msgstr ""
 
-#: manual/api/hom.md:315
+#: manual/api/hom.md:326
 msgid "These methods compare componentwise and render a `Prod` for debugging; use `==`, `!=` and `inspect` in new code."
 msgstr ""
 
-#: manual/api/hom.md:333
+#: manual/api/hom.md:344
 msgid "Product law methods"
 msgstr ""
 
-#: manual/api/hom.md:335
+#: manual/api/hom.md:346
 msgid "`Prod::add_monoid_law`, `Prod::mul_monoid_law`, `Prod::add_group_law`, `Prod::semiring_law`, and `Prod::ring_law` derive the corresponding law from both components. An operation-only component does not provide these methods."
 msgstr ""
 
-#: manual/api/hom.md:347
+#: manual/api/hom.md:358
 msgid "Homomorphisms"
 msgstr ""
 
-#: manual/api/hom.md:351
+#: manual/api/hom.md:362
 msgid "`Hom[S, A, B]` is a map `A -> B` certified to preserve every operation of `S`."
 msgstr ""
 
-#: manual/api/hom.md:360
+#: manual/api/hom.md:371
 msgid "The certificate means that for every operation $\\omega$ of `S` with arity $n$ and all $x_1, \\dots, x_n$,"
 msgstr ""
 
-#: manual/api/hom.md:367
+#: manual/api/hom.md:378
 msgid "Only this package constructs `Hom` values. The leaves are `Hom::postulate` and `Hom::from_integer_exact`; the latter requires a `LawfulModel[IntegerHomomorphismTh, SemiringSig, R]`. Every other constructor is an inference rule or a checked runtime transformation."
 msgstr ""
 
-#: manual/api/hom.md:374
+#: manual/api/hom.md:385
 msgid "`Hom::postulate(source, target, f)` trusts `f` as an `S`-homomorphism without proof and creates a proof obligation. The two Models bind the operation interpretations used by the certificate."
 msgstr ""
 
-#: manual/api/hom.md:382
+#: manual/api/hom.md:393
 msgid "The caller promises that for every operation `op` of `S` and all arguments `xs`, `f(op_A(xs)) == op_B(xs.map(f))`. The promise is always strict equality, even when the map is only checked with a lax or tolerance relation. Back every call with a `check` test."
 msgstr ""
 
-#: manual/api/hom.md:399
+#: manual/api/hom.md:410
 msgid "`h.apply(x)` applies the underlying map."
 msgstr ""
 
-#: manual/api/hom.md:413
+#: manual/api/hom.md:424
 msgid "`Hom::id(model)` is the identity homomorphism bound to the supplied runtime model. Both endpoints use that exact model identity."
 msgstr ""
 
-#: manual/api/hom.md:422
-msgid "`h.then_checked(g)` is the composite when the middle Model identities match. It returns `Err(ModelMismatch)` for different runtime interpretations."
+#: manual/api/hom.md:433
+msgid "`h.then_checked(g)` is the composite when the middle Model identities match. It returns `Err(IdentityMismatch)` for different runtime interpretations."
 msgstr ""
 
-#: manual/api/hom.md:429
+#: manual/api/hom.md:440
 msgid "If $f$ and $g$ preserve $\\omega$, so does $g \\circ f$:"
 msgstr ""
 
-#: manual/api/hom.md:437
+#: manual/api/hom.md:448
 msgid "`h.forget(r)` forgets structure along a `Reduct[S, T]` witness."
 msgstr ""
 
-#: manual/api/hom.md:443
+#: manual/api/hom.md:454
 msgid "A map that preserves every operation of `S` preserves the operations of the smaller signature `T`."
 msgstr ""
 
-#: manual/api/hom.md:448
-msgid "`Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The explicit product Model must be reused by `Hom::fst(product, left)` and `Hom::snd(product, right)`."
+#: manual/api/hom.md:459
+msgid "`Hom::pair(product, f, g)` maps `x` to `{ fst: f(x), snd: g(x) }`. The explicit product Model must be reused by `Hom::fst(product, left)` and `Hom::snd(product, right)`. A Model that was not built by `Model::prod` yields `Err(NotProductModel)`; a component or source Model with a different identity yields `Err(IdentityMismatch)`."
 msgstr ""
 
-#: manual/api/hom.md:458
+#: manual/api/hom.md:471
 msgid "With the same product Model and component Models, the checked composites `Hom::pair(product, f, g).then_checked(Hom::fst(product, left))` and `Hom::pair(product, f, g).then_checked(Hom::snd(product, right))` return `f` and `g` respectively."
 msgstr ""
 
-#: manual/api/hom.md:480
+#: manual/api/hom.md:493
 msgid "`h.to_add_group(source_law, target_law)` upgrades an additive monoid homomorphism after checking the law-bound Models match its endpoints."
 msgstr ""
 
-#: manual/api/hom.md:487
+#: manual/api/hom.md:500
 msgid "No new obligation: $f(-x) + f(x) = f(-x + x) = f(0) = 0$, so $f(-x) = -f(x)$."
 msgstr ""
 
-#: manual/api/hom.md:491
+#: manual/api/hom.md:504
 msgid "`h.to_ring(source_law, target_law)` upgrades a semiring homomorphism after checking the law-bound Models match its endpoints."
 msgstr ""
 
-#: manual/api/hom.md:498
+#: manual/api/hom.md:511
 msgid "No new obligation, by the same computation as `to_add_group`."
 msgstr ""
 
-#: manual/api/hom.md:502
+#: manual/api/hom.md:515
 msgid "`Hom::from_integer_exact(target)` is the canonical map ℤ → `R` only when the target Model carries an explicit `IntegerHomomorphismTh` law. This law states preservation of zero, one, addition and multiplication; it does not assert injectivity."
 msgstr ""
 
-#: manual/api/hom.md:511
+#: manual/api/hom.md:524
 msgid "Rounded `Float` and `Double` conversions do not provide this law. A caller may use `Law::postulate` explicitly, but that assumption is visible in the type and trust audit. For a fixed-width source, use `Section::of_integral`."
 msgstr ""
 
-#: manual/api/hom.md:525
+#: manual/api/hom.md:538
 #: manual/design/hom.md:50
 msgid "Sections"
 msgstr ""
 
-#: manual/api/hom.md:527
+#: manual/api/hom.md:540
 msgid "A section lifts a quotient `Q` back into `A` along a homomorphism `proj : A -> Q`, with `proj(lift(q)) == q`. The lift is not a homomorphism, but it preserves every operation up to the kernel of `proj`, and exactly whenever the result is itself a representative."
 msgstr ""
 
-#: manual/api/hom.md:532
+#: manual/api/hom.md:545
 msgid "The section law rejects lifts that leave the class of their argument. It does not choose among representatives: `[0, 2^32)` and `[-2^31, 2^31)` are both sections of `BigInt -> Int`, and only the second preserves the signed order."
 msgstr ""
 
-#: manual/api/hom.md:539
+#: manual/api/hom.md:552
 msgid "`Section[S, Q, A]` is a lift of the quotient `Q` back into `A` along the projection `proj : A -> Q`."
 msgstr ""
 
-#: manual/api/hom.md:554
+#: manual/api/hom.md:567
 msgid "`Section::postulate(proj, lift)` trusts `lift` as a section of `proj` and creates a proof obligation."
 msgstr ""
 
-#: manual/api/hom.md:561
+#: manual/api/hom.md:574
 msgid "The caller promises `proj.apply(lift(q)) == q` for every `q`; `proj` carries its own `Hom` obligation."
 msgstr ""
 
-#: manual/api/hom.md:576
+#: manual/api/hom.md:589
 msgid "`Section::of_integral()` is the canonical section of an integral type."
 msgstr ""
 
-#: manual/api/hom.md:582
+#: manual/api/hom.md:595
 msgid "`proj` is `FromInteger::from_integer` and `lift` is `Integral::normalize`. The obligation sits on those instances. Use `to_ring` when `Z` is a ring."
 msgstr ""
 
-#: manual/api/hom.md:587
+#: manual/api/hom.md:600
 msgid "`s.lift(q)` is the chosen representative of `q`; `s.proj()` is the projection onto the quotient."
 msgstr ""
 
-#: manual/api/hom.md:597
+#: manual/api/hom.md:610
 msgid "`s.normalize(a)` is `lift(proj(a))`, the normal form of `a`."
 msgstr ""
 
-#: manual/api/hom.md:603
+#: manual/api/hom.md:616
 msgid "Two values are congruent exactly when their normal forms are equal."
 msgstr ""
 
-#: manual/api/hom.md:607
+#: manual/api/hom.md:620
 msgid "`s.is_representative(a)` tells whether `a` is the chosen representative of its class, that is `normalize(a) == a`."
 msgstr ""
 
-#: manual/api/hom.md:614
+#: manual/api/hom.md:627
 msgid "On such results the lift agrees exactly with the operations of `A`."
 msgstr ""
 
-#: manual/api/hom.md:632
+#: manual/api/hom.md:645
 msgid "`s.then(next)` lifts `Q` into `A` with `s`, then `A` into `B` with `next`."
 msgstr ""
 
-#: manual/api/hom.md:638
+#: manual/api/hom.md:651
 msgid "The projection is `next.proj` followed by `s.proj`. No new obligation: with $s, t$ the two lifts and $\\pi_s, \\pi_t$ their projections, $\\pi_s(\\pi_t(t(s(q)))) = \\pi_s(s(q)) = q$."
 msgstr ""
 
-#: manual/api/hom.md:644
+#: manual/api/hom.md:657
 msgid "These inference rules change the signature of the projection; the lift is unchanged."
 msgstr ""
 
-#: manual/api/hom.md:653
+#: manual/api/hom.md:666
 msgid "They follow `Hom::forget`, `Hom::to_add_group` and `Hom::to_ring`."
 msgstr ""
 
-#: manual/api/hom.md:657
+#: manual/api/hom.md:670
 msgid "`s.check(samples)` tests the section law `proj(lift(q)) == q` on every sample."
 msgstr ""
 
-#: manual/api/hom.md:666
+#: manual/api/hom.md:679
 msgid "`s.check_ops(quotient, cover, samples)` tests `proj(op_A(xs.map(lift))) == op_Q(xs)` for every operation over all tuples drawn from `samples`."
 msgstr ""
 
-#: manual/api/hom.md:674
+#: manual/api/hom.md:687
 msgid "This exercises `proj` as a homomorphism on representatives. It returns `false` when the two dictionaries do not list the same operations."
 msgstr ""
 
-#: manual/api/hom.md:687
+#: manual/api/hom.md:700
 msgid "`lift_to(x)` lifts an integral value and maps it into any `FromInteger` target without a certificate; it is listed on the [core API](core.md)."
 msgstr ""
 
-#: manual/api/hom.md:690
+#: manual/api/hom.md:703
 msgid "Reduct witnesses"
 msgstr ""
 
-#: manual/api/hom.md:694
+#: manual/api/hom.md:707
 msgid "`Reduct[S, T]` witnesses that every `S`-structure is also a `T`-structure, so an `S`-homomorphism is also a `T`-homomorphism."
 msgstr ""
 
-#: manual/api/hom.md:703
+#: manual/api/hom.md:716
 msgid "Only this package constructs `Reduct` values."
 msgstr ""
 
-#: manual/api/hom.md:707
+#: manual/api/hom.md:720
 msgid "These constants are the inclusions between the built-in signatures."
 msgstr ""
 
-#: manual/api/hom.md:719
+#: manual/api/hom.md:732
 msgid "`Reduct::refl()` is the trivial inclusion of `S` in itself; `r.then(r2)` composes inclusions."
 msgstr ""
 
-#: manual/api/hom.md:735
+#: manual/api/hom.md:748
 msgid "Law checks"
 msgstr ""
 
-#: manual/api/hom.md:739
+#: manual/api/hom.md:752
 msgid "`h.check(src, dst, samples)` tests the homomorphism law with exact equality on every operation of `S`."
 msgstr ""
 
-#: manual/api/hom.md:746
+#: manual/api/hom.md:759
 msgid "Requires `B : Eq`. It is `check_by` with `==`. Both Algebra-only diagnostics test only the supplied tables: they do not verify the Hom endpoint Model identities. Use `check_models` or `check_models_by` to validate those identities."
 msgstr ""
 
-#: manual/api/hom.md:752
+#: manual/api/hom.md:765
 msgid "`h.check_by(src, dst, samples, rel)` tests `rel(f(op_A(xs)), op_B(f(xs)))` for every operation over all tuples drawn from `samples`."
 msgstr ""
 
-#: manual/api/hom.md:759
+#: manual/api/hom.md:772
 msgid "`rel` sets the strength of preservation: equality for strict homomorphisms, `<=` for lax ones such as subadditive maps, and a tolerance for approximate homomorphisms into floating-point targets. An operation of arity `n` is tested on `samples.length()^n` tuples. It returns `false` when `src` and `dst` do not list the same operations."
 msgstr ""
 
-#: manual/api/hom.md:767
-msgid "These diagnostics bind the finite check to the exact source and target Models stored in the Hom. They return `Err(ModelMismatch)` when either endpoint has a different runtime identity, then delegate to `check` or `check_by`. They still return diagnostics only and never create a certificate."
+#: manual/api/hom.md:780
+msgid "These diagnostics bind the finite check to the exact source and target Models stored in the Hom. They return `Err(IdentityMismatch)` when either endpoint has a different runtime identity, then delegate to `check` or `check_by`. They still return diagnostics only and never create a certificate."
 msgstr ""
 
-#: manual/api/hom.md:791
+#: manual/api/hom.md:804
 msgid "Fixed-width integer sources (`Int`, `Int64`, `UInt`, ...) are ℤ/2^k rather than the integers. There is no semiring map from them into `BigInt`, so a lift into ℤ is a section, not a homomorphism. The same argument rules out widening such as `Int -> Int64`, while truncation such as `Int64 -> Int` is a ring homomorphism."
 msgstr ""
 
-#: manual/api/hom.md:796
+#: manual/api/hom.md:809
 msgid "The inference rules compose certificates as strict homomorphisms. A map that only satisfies a lax (`<=`) or tolerance law must be checked again after composition."
 msgstr ""
 
-#: manual/api/hom.md:799
+#: manual/api/hom.md:812
 msgid "`Float` and `Double` provide rounded operations without exact law certificates; use `check_by` with a tolerance for approximate maps. See the embedding notes in the [core API](core.md)."
 msgstr ""
 
-#: manual/api/hom.md:803
+#: manual/api/hom.md:816
 msgid "Removed conversion constructors"
 msgstr ""
 
-#: manual/api/hom.md:805
+#: manual/api/hom.md:818
 msgid "`Hom::from_nat`, `Hom::from_integral` and the old `Hom::from_integer` are not part of the 0.5.0 API. Use `FromNat` / `FromInteger` for ordinary values, `Section::of_integral` for representative lifts, and `Hom::from_integer_exact` only with an explicit integer-homomorphism law."
 msgstr ""
 
@@ -1204,7 +1204,7 @@ msgid "A lift from a quotient back to its cover is a `Section`, not a `Hom`. It 
 msgstr ""
 
 #: manual/design/hom.md:32
-msgid "The signature is a phantom type `S` on the certificate, while strict `Hom` values carry source and target `Model` identities. The model binds the operation table to the certificate; `then_checked`, pairing and projections return `ModelMismatch` instead of silently composing different interpretations. Algebra-only `check` and `check_by` remain finite diagnostics and never create certificates; `check_models` and `check_models_by` add endpoint identity validation before delegating to those finite checks."
+msgid "The signature is a phantom type `S` on the certificate, while strict `Hom` values carry source and target `Model` identities. The model binds the operation table to the certificate; `then_checked`, pairing and projections return a `ModelMismatch` variant instead of silently composing different interpretations. Algebra-only `check` and `check_by` remain finite diagnostics and never create certificates; `check_models` and `check_models_by` add endpoint identity validation before delegating to those finite checks."
 msgstr ""
 
 #: manual/design/hom.md:40
@@ -1328,22 +1328,22 @@ msgid "Laws are tested, not proven. The certificate guarantees traceable origin,
 msgstr ""
 
 #: manual/design/hom.md:178
-msgid "Runtime `Hom` endpoints carry `Model` identities, so `then_checked`, pairing, projections and strict upgrades reject different operation interpretations with `ModelMismatch`. `check_models` and `check_models_by` validate those endpoint identities and return `Result[Bool, ModelMismatch]`; the Algebra-only checks remain finite diagnostics over supplied dictionaries."
-msgstr ""
-
-#: manual/design/hom.md:183
-msgid "Model identity keys are opaque and package-owned. Callers compare Models with `Model::same_identity` and cannot inspect or mutate lineage paths."
+msgid "Runtime `Hom` endpoints carry `Model` identities, so `then_checked`, pairing, projections and strict upgrades reject different operation interpretations with `IdentityMismatch`, or `NotProductModel` for a product operation on a Model not built by `Model::prod`; `Algebra::prod` and `Model::prod` report `SignatureMismatch`. `check_models` and `check_models_by` validate those endpoint identities and return `Result[Bool, ModelMismatch]`; the Algebra-only checks remain finite diagnostics over supplied dictionaries."
 msgstr ""
 
 #: manual/design/hom.md:185
-msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
+msgid "Model identity keys are opaque and package-owned. Callers compare Models with `Model::same_identity` and cannot inspect or mutate lineage paths."
 msgstr ""
 
 #: manual/design/hom.md:187
+msgid "The certificate does not record the relation used by `check_by`, so lax and approximate maps compose as if they were strict."
+msgstr ""
+
+#: manual/design/hom.md:189
 msgid "Fixed-width integers are ℤ/2^k, not ℤ or ℕ. Maps out of them into ℤ are sections, so they agree with the operations only while arithmetic does not wrap."
 msgstr ""
 
-#: manual/design/hom.md:190
+#: manual/design/hom.md:192
 msgid "The section law does not fix which representatives are chosen, so properties such as order preservation need their own checks."
 msgstr ""
 
@@ -1821,7 +1821,7 @@ msgid "Every `Hom::postulate` is a promise you make. Searching the repository fo
 msgstr ""
 
 #: manual/tutorial/hom.md:67
-msgid "When a Hom is tied to runtime Models, use `check_models` or `check_models_by` to validate the exact endpoint identities before running a finite diagnostic. A different source or target Model returns `Err(ModelMismatch)`; the successful result is still a diagnostic, not a new certificate."
+msgid "When a Hom is tied to runtime Models, use `check_models` or `check_models_by` to validate the exact endpoint identities before running a finite diagnostic. A different source or target Model returns `Err(IdentityMismatch)`; the successful result is still a diagnostic, not a new certificate."
 msgstr ""
 
 #: manual/tutorial/hom.md:73

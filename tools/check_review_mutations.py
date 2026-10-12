@@ -44,13 +44,39 @@ for method in ("pair", "fst", "snd"):
         end = source.find("\n///|", start)
         segment = source[start:end]
         if method == "pair":
-            segment = segment.replace("None => return Err(ModelMismatch)", "None => ()")
+            segment = segment.replace(
+                "guard product.product_origin is Some(origin) else {\n    return Err(NotProductModel)\n  }",
+                "let origin = match product.product_origin {\n    Some(origin) => origin\n    None => { left: f.target.key, right: g.target.key, }\n  }")
         else:
             field, component = ("fst", "left") if method == "fst" else ("snd", "right")
-            segment = segment.replace("None => Err(ModelMismatch)",
+            segment = segment.replace("None => Err(NotProductModel)",
                                       f"None => Ok({{ source: product, target: {component}, f: p => p.{field}, }})")
         return source[:start] + segment + source[end:]
     mutations.append((f"{method}-nonproduct", "src/hom.mbt", accept_nonproduct))
+def swap_variant(path_marker, old, new):
+    def mutate(source):
+        start = source.index(path_marker)
+        end = source.find("\n///|", start)
+        segment = source[start:end].replace(f"Err({old})", f"Err({new})")
+        return source[:start] + segment + source[end:]
+    return mutate
+
+
+# Each variant must be reported as itself, never as one of the other two.
+for name, marker, old, new in (
+    ("pair-nonproduct-as-identity", "Hom::pair(", "NotProductModel", "IdentityMismatch"),
+    ("fst-nonproduct-as-signature", "Hom::fst(", "NotProductModel", "SignatureMismatch"),
+    ("snd-nonproduct-as-identity", "Hom::snd(", "NotProductModel", "IdentityMismatch"),
+    ("pair-identity-as-nonproduct", "Hom::pair(", "IdentityMismatch", "NotProductModel"),
+    ("then-identity-as-signature", "Hom::then_checked(", "IdentityMismatch", "SignatureMismatch"),
+    ("check-models-identity-as-nonproduct", "Hom::check_models(", "IdentityMismatch", "NotProductModel"),
+    ("check-models-by-identity-as-signature", "Hom::check_models_by(", "IdentityMismatch", "SignatureMismatch"),
+    ("to-ring-identity-as-signature", "Hom::to_ring(", "IdentityMismatch", "SignatureMismatch"),
+    ("to-add-group-identity-as-nonproduct", "Hom::to_add_group(", "IdentityMismatch", "NotProductModel"),
+    ("algebra-prod-signature-as-identity", "Algebra::prod(", "SignatureMismatch", "IdentityMismatch"),
+    ("algebra-prod-signature-as-nonproduct", "Algebra::prod(", "SignatureMismatch", "NotProductModel"),
+):
+    mutations.append((name, "src/hom.mbt", swap_variant(marker, old, new)))
 mutations.extend([
     ("reduct-index-composition", "src/hom.mbt",
      lambda source: source.replace("next.indices.map(index => self.indices[index])", "next.indices")),

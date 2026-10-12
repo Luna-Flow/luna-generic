@@ -132,7 +132,9 @@ pub fn ModelConstructionError::not_equal(Self, Self) -> Bool
 pub fn ModelConstructionError::to_repr(Self) -> @debug.Repr
 
 pub enum ModelMismatch {
-  ModelMismatch
+  IdentityMismatch
+  SignatureMismatch
+  NotProductModel
 } derive(Eq, @debug.Debug)
 pub fn ModelMismatch::equal(Self, Self) -> Bool
 pub fn ModelMismatch::not_equal(Self, Self) -> Bool

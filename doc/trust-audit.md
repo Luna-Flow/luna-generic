@@ -91,7 +91,7 @@ law-bound Models, validate the relevant reduct endpoint identity, and return
 `Hom::check` and `check_by` are finite diagnostics over caller-supplied
 operation tables and samples; even a tolerance relation creates no certificate.
 `Hom::check_models` and `check_models_by` first compare the exact source and
-target Model identities and return `Err(ModelMismatch)` on either mismatch,
+target Model identities and return `Err(IdentityMismatch)` on either mismatch,
 then delegate to those finite checks. Their `Ok(Bool)` result remains a
 diagnostic and cannot create a certificate.
 

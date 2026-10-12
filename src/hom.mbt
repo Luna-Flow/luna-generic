@@ -97,7 +97,7 @@ pub fn[S, A, B] Algebra::prod(
   a : Algebra[S, A],
   b : Algebra[S, B],
 ) -> Result[Algebra[S, Prod[A, B]], ModelMismatch] {
-  guard same_signature(a.ops, b.ops) else { return Err(ModelMismatch) }
+  guard same_signature(a.ops, b.ops) else { return Err(SignatureMismatch) }
   Ok({
     ops: a.ops.mapi((i, oa) => {
       let ob = b.ops[i]
@@ -524,7 +524,7 @@ pub fn[S, A, B, C] Hom::then_checked(
   next : Hom[S, B, C],
 ) -> Result[Hom[S, A, C], ModelMismatch] {
   guard same_model_key(self.target.key, next.source.key) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   let f = self.f
   let g = next.f
@@ -551,19 +551,17 @@ pub fn[S, A, B, C] Hom::pair(
   f : Hom[S, A, B],
   g : Hom[S, A, C],
 ) -> Result[Hom[S, A, Prod[B, C]], ModelMismatch] {
-  guard same_model_key(f.source.key, g.source.key) else {
-    return Err(ModelMismatch)
+  guard product.product_origin is Some(origin) else {
+    return Err(NotProductModel)
   }
-  match product.product_origin {
-    Some(origin) => {
-      guard same_model_key(origin.left, f.target.key) else {
-        return Err(ModelMismatch)
-      }
-      guard same_model_key(origin.right, g.target.key) else {
-        return Err(ModelMismatch)
-      }
-    }
-    None => return Err(ModelMismatch)
+  guard same_model_key(f.source.key, g.source.key) else {
+    return Err(IdentityMismatch)
+  }
+  guard same_model_key(origin.left, f.target.key) else {
+    return Err(IdentityMismatch)
+  }
+  guard same_model_key(origin.right, g.target.key) else {
+    return Err(IdentityMismatch)
   }
   let ff = f.f
   let gg = g.f
@@ -578,11 +576,11 @@ pub fn[S, A, B] Hom::fst(
   match product.product_origin {
     Some(origin) => {
       guard same_model_key(origin.left, left.key) else {
-        return Err(ModelMismatch)
+        return Err(IdentityMismatch)
       }
       Ok({ source: product, target: left, f: p => p.fst, })
     }
-    None => Err(ModelMismatch)
+    None => Err(NotProductModel)
   }
 }
 
@@ -594,11 +592,11 @@ pub fn[S, A, B] Hom::snd(
   match product.product_origin {
     Some(origin) => {
       guard same_model_key(origin.right, right.key) else {
-        return Err(ModelMismatch)
+        return Err(IdentityMismatch)
       }
       Ok({ source: product, target: right, f: p => p.snd, })
     }
-    None => Err(ModelMismatch)
+    None => Err(NotProductModel)
   }
 }
 
@@ -631,13 +629,13 @@ pub fn[A, B] Hom::to_add_group(
     key_after_reduct(source_model.key, add_group_to_add_monoid),
     self.source.key,
   ) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   guard same_model_key(
     key_after_reduct(target_model.key, add_group_to_add_monoid),
     self.target.key,
   ) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   Ok(trust(source_model, target_model, self.f))
 }
@@ -658,13 +656,13 @@ pub fn[A, B] Hom::to_ring(
     key_after_reduct(source_model.key, ring_to_semiring),
     self.source.key,
   ) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   guard same_model_key(
     key_after_reduct(target_model.key, ring_to_semiring),
     self.target.key,
   ) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   Ok(trust(source_model, target_model, self.f))
 }
@@ -725,10 +723,10 @@ pub fn[S, A, B : Eq] Hom::check_models(
   samples : Array[A],
 ) -> Result[Bool, ModelMismatch] {
   guard same_model_key(self.source.key, source.key) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   guard same_model_key(self.target.key, target.key) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   Ok(self.check(source.algebra, target.algebra, samples))
 }
@@ -743,10 +741,10 @@ pub fn[S, A, B] Hom::check_models_by(
   rel : (B, B) -> Bool,
 ) -> Result[Bool, ModelMismatch] {
   guard same_model_key(self.source.key, source.key) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   guard same_model_key(self.target.key, target.key) else {
-    return Err(ModelMismatch)
+    return Err(IdentityMismatch)
   }
   Ok(self.check_by(source.algebra, target.algebra, samples, rel))
 }

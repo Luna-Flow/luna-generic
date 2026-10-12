@@ -84,7 +84,7 @@ test "approved weakening and error traits" {
   match @lf_alg.Hom::id(model).then_checked(@lf_alg.Hom::id(other)) {
     Err(error) => {
       assert_eq(error, error)
-      debug_inspect(error, content="ModelMismatch")
+      debug_inspect(error, content="IdentityMismatch")
     }
     Ok(_) => fail("expected mismatch")
   }
