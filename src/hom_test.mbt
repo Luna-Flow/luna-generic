@@ -13,12 +13,12 @@ using @luna-generic {
 ///|
 /// Truncation ℤ/2^64 → ℤ/2^32 is a ring homomorphism, because 2^64 ≡ 0 mod
 /// 2^32, so the law holds on every input, including values that wrap.
-fn int64_to_int() -> Hom[RingSig, Int64, Int] {
+fn int64_to_int() -> Hom[RingSig, Int64, Int32] {
   Hom::postulate(x => x.to_int())
 }
 
 ///|
-let small_ints : Array[Int] = [0, 1, -1, 2, -3, 7, 100]
+let small_ints : Array[Int32] = [0, 1, -1, 2, -3, 7, 100]
 
 ///|
 let edge_int64s : Array[Int64] = [
@@ -47,16 +47,16 @@ test "postulated ring hom passes the exact law check" {
 test "widening Int to Int64 is not a ring hom" {
   // ℤ/2^32 → ℤ/2^64 would need 2^32 ≡ 0 mod 2^64. The law only holds while
   // Int arithmetic does not wrap, so small samples cannot tell.
-  let widen : Hom[RingSig, Int, Int64] = Hom::postulate(x => x.to_int64())
+  let widen : Hom[RingSig, Int32, Int64] = Hom::postulate(x => x.to_int64())
   assert_true(widen.check(Algebra::ring(), Algebra::ring(), small_ints))
   assert_false(widen.check(Algebra::ring(), Algebra::ring(), [1, 2147483647]))
 }
 
 ///|
 test "law check rejects a map that only preserves part of the signature" {
-  let double : Hom[RingSig, Int64, Int] = Hom::postulate(x => 2 * x.to_int())
+  let double : Hom[RingSig, Int64, Int32] = Hom::postulate(x => 2 * x.to_int())
   assert_false(double.check(Algebra::ring(), Algebra::ring(), edge_int64s))
-  let additive : Hom[AddGroupSig, Int64, Int] = Hom::postulate(x => {
+  let additive : Hom[AddGroupSig, Int64, Int32] = Hom::postulate(x => {
     2 * x.to_int()
   })
   assert_true(
@@ -90,7 +90,7 @@ test "reducts forget structure and compose" {
 
 ///|
 test "monoid and semiring homs upgrade between groups and rings" {
-  let m : Hom[AddMonoidSig, Int64, Int] = Hom::postulate(x => 3 * x.to_int())
+  let m : Hom[AddMonoidSig, Int64, Int32] = Hom::postulate(x => 3 * x.to_int())
   assert_true(
     m
     .to_add_group()
@@ -116,7 +116,7 @@ test "pairing and projections" {
     Int16::from_int(x.to_int())
   })
   let p = Hom::pair(h, low)
-  let dst : Algebra[RingSig, Prod[Int, Int16]] = Algebra::prod(
+  let dst : Algebra[RingSig, Prod[Int32, Int16]] = Algebra::prod(
     Algebra::ring(),
     Algebra::ring(),
   )
@@ -132,9 +132,9 @@ test "canonical maps out of the integers" {
   // ℤ -> ℤ/2^32 holds even on inputs far outside the Int range.
   let big = BigInt::from_int64(9223372036854775807L) * BigInt::from_int(10)
   let bigs = [BigInt::from_int(0), BigInt::from_int(-5), big, -big]
-  let to_int : Hom[RingSig, BigInt, Int] = Hom::from_integer().to_ring()
+  let to_int : Hom[RingSig, BigInt, Int32] = Hom::from_integer().to_ring()
   assert_true(to_int.check(Algebra::ring(), Algebra::ring(), bigs))
-  let to_uint : Hom[SemiringSig, BigInt, UInt] = Hom::from_integer()
+  let to_uint : Hom[SemiringSig, BigInt, UInt32] = Hom::from_integer()
   assert_true(to_uint.check(Algebra::semiring(), Algebra::semiring(), bigs))
   let to_double : Hom[SemiringSig, BigInt, Double] = Hom::from_integer()
   assert_true(
@@ -149,7 +149,7 @@ test "canonical maps out of the integers" {
 
 ///|
 test "fixed-width sources are not the integers once arithmetic wraps" {
-  let h : Hom[SemiringSig, Int, BigInt] = Hom::postulate(x => {
+  let h : Hom[SemiringSig, Int32, BigInt] = Hom::postulate(x => {
     @luna-generic.lift_to(x)
   })
   assert_true(h.check(Algebra::semiring(), Algebra::semiring(), [1, 1000]))
@@ -187,7 +187,7 @@ test "lax preservation through a custom relation" {
 
 ///|
 test "panic algebras with different signatures are rejected" {
-  let wrong : Algebra[RingSig, Int] = Algebra::make([
+  let wrong : Algebra[RingSig, Int32] = Algebra::make([
     { name: "0", arity: 0, eval: _ => 0, },
   ])
   ignore(int64_to_int().check(Algebra::ring(), wrong, edge_int64s))
@@ -195,7 +195,7 @@ test "panic algebras with different signatures are rejected" {
 
 ///|
 test "panic negative operation arity is rejected at construction" {
-  let invalid : Algebra[MaxSig, Int] = Algebra::make([
+  let invalid : Algebra[MaxSig, Int32] = Algebra::make([
     { name: "invalid", arity: -1, eval: _ => 0, },
   ])
   ignore(invalid)
@@ -203,7 +203,7 @@ test "panic negative operation arity is rejected at construction" {
 
 ///|
 test "custom signatures through Algebra::make" {
-  let max_src : Algebra[MaxSig, Int] = Algebra::make([
+  let max_src : Algebra[MaxSig, Int32] = Algebra::make([
     {
       name: "max",
       arity: 2,
@@ -217,9 +217,11 @@ test "custom signatures through Algebra::make" {
       eval: xs => if xs[0] > xs[1] { xs[0] } else { xs[1] },
     },
   ])
-  let monotone : Hom[MaxSig, Int, Int64] = Hom::postulate(x => x.to_int64() * 3L)
+  let monotone : Hom[MaxSig, Int32, Int64] = Hom::postulate(x => {
+    x.to_int64() * 3L
+  })
   assert_true(monotone.check(max_src, max_dst, small_ints))
-  let flip : Hom[MaxSig, Int, Int64] = Hom::postulate(x => -x.to_int64())
+  let flip : Hom[MaxSig, Int32, Int64] = Hom::postulate(x => -x.to_int64())
   assert_false(flip.check(max_src, max_dst, small_ints))
 }
 

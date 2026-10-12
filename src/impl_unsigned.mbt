@@ -1,5 +1,5 @@
 ///|
-pub impl AddMonoid for UInt
+pub impl AddMonoid for UInt32
 
 ///|
 pub impl AddMonoid for UInt16
@@ -8,7 +8,7 @@ pub impl AddMonoid for UInt16
 pub impl AddMonoid for UInt64
 
 ///|
-pub impl MulMonoid for UInt
+pub impl MulMonoid for UInt32
 
 ///|
 pub impl MulMonoid for UInt16
@@ -17,7 +17,7 @@ pub impl MulMonoid for UInt16
 pub impl MulMonoid for UInt64
 
 ///|
-pub impl Semiring for UInt
+pub impl Semiring for UInt32
 
 ///|
 pub impl Semiring for UInt16
@@ -26,7 +26,7 @@ pub impl Semiring for UInt16
 pub impl Semiring for UInt64
 
 ///|
-pub impl Integral for UInt
+pub impl Integral for UInt32
 
 ///|
 pub impl Integral for UInt16
@@ -35,7 +35,7 @@ pub impl Integral for UInt16
 pub impl Integral for UInt64
 
 ///|
-pub impl Integral for UInt with fn normalize(a) -> BigInt {
+pub impl Integral for UInt32 with fn normalize(a) -> BigInt {
   BigInt::from_uint(a)
 }
 
@@ -50,7 +50,7 @@ pub impl Integral for UInt64 with fn normalize(a) -> BigInt {
 }
 
 ///|
-pub impl FromNat for UInt
+pub impl FromNat for UInt32
 
 ///|
 pub impl FromNat for UInt16
@@ -59,7 +59,7 @@ pub impl FromNat for UInt16
 pub impl FromNat for UInt64
 
 ///|
-pub impl FromInteger for UInt
+pub impl FromInteger for UInt32
 
 ///|
 pub impl FromInteger for UInt16
@@ -71,7 +71,7 @@ pub impl FromInteger for UInt64
 // `Integral::normalize` is a section of it.
 
 ///|
-pub impl FromNat for UInt with fn from_natural(n) -> UInt {
+pub impl FromNat for UInt32 with fn from_natural(n) -> UInt32 {
   n.to_uint()
 }
 
@@ -86,7 +86,7 @@ pub impl FromNat for UInt64 with fn from_natural(n) -> UInt64 {
 }
 
 ///|
-pub impl FromInteger for UInt with fn from_integer(n) -> UInt {
+pub impl FromInteger for UInt32 with fn from_integer(n) -> UInt32 {
   n.to_uint()
 }
 
@@ -101,7 +101,7 @@ pub impl FromInteger for UInt64 with fn from_integer(n) -> UInt64 {
 }
 
 ///|
-pub impl Nat for UInt
+pub impl Nat for UInt32
 
 ///|
 pub impl Nat for UInt16
@@ -110,7 +110,7 @@ pub impl Nat for UInt16
 pub impl Nat for UInt64
 
 ///|
-pub impl One for UInt with fn one() -> UInt {
+pub impl One for UInt32 with fn one() -> UInt32 {
   1U
 }
 
@@ -125,7 +125,7 @@ pub impl One for UInt64 with fn one() -> UInt64 {
 }
 
 ///|
-pub impl Zero for UInt with fn zero() -> UInt {
+pub impl Zero for UInt32 with fn zero() -> UInt32 {
   0U
 }
 

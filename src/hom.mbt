@@ -33,7 +33,7 @@ pub enum RingSig {}
 /// `eval` receives exactly `arity` arguments.
 pub(all) struct Op[A] {
   name : String
-  arity : Int
+  arity : Int32
   eval : (Array[A]) -> A
 }
 
@@ -453,7 +453,7 @@ pub fn[S, A, B] Hom::check_by(
 }
 
 ///|
-fn[A] tuples(xs : Array[A], n : Int) -> Array[Array[A]] {
+fn[A] tuples(xs : Array[A], n : Int32) -> Array[Array[A]] {
   if n == 0 {
     return [[]]
   }

@@ -1,5 +1,5 @@
 ///|
-pub impl AddMonoid for Int
+pub impl AddMonoid for Int32
 
 ///|
 pub impl AddMonoid for Int16
@@ -8,7 +8,7 @@ pub impl AddMonoid for Int16
 pub impl AddMonoid for Int64
 
 ///|
-pub impl MulMonoid for Int
+pub impl MulMonoid for Int32
 
 ///|
 pub impl MulMonoid for Int16
@@ -17,7 +17,7 @@ pub impl MulMonoid for Int16
 pub impl MulMonoid for Int64
 
 ///|
-pub impl AddGroup for Int
+pub impl AddGroup for Int32
 
 ///|
 pub impl AddGroup for Int16
@@ -26,7 +26,7 @@ pub impl AddGroup for Int16
 pub impl AddGroup for Int64
 
 ///|
-pub impl Semiring for Int
+pub impl Semiring for Int32
 
 ///|
 pub impl Semiring for Int16
@@ -35,7 +35,7 @@ pub impl Semiring for Int16
 pub impl Semiring for Int64
 
 ///|
-pub impl Ring for Int
+pub impl Ring for Int32
 
 ///|
 pub impl Ring for Int16
@@ -44,7 +44,7 @@ pub impl Ring for Int16
 pub impl Ring for Int64
 
 ///|
-pub impl Integral for Int
+pub impl Integral for Int32
 
 ///|
 pub impl Integral for Int16
@@ -53,7 +53,7 @@ pub impl Integral for Int16
 pub impl Integral for Int64
 
 ///|
-pub impl Integral for Int with fn normalize(a) -> BigInt {
+pub impl Integral for Int32 with fn normalize(a) -> BigInt {
   BigInt::from_int(a)
 }
 
@@ -68,7 +68,7 @@ pub impl Integral for Int64 with fn normalize(a) -> BigInt {
 }
 
 ///|
-pub impl FromNat for Int
+pub impl FromNat for Int32
 
 ///|
 pub impl FromNat for Int16
@@ -77,7 +77,7 @@ pub impl FromNat for Int16
 pub impl FromNat for Int64
 
 ///|
-pub impl FromInteger for Int
+pub impl FromInteger for Int32
 
 ///|
 pub impl FromInteger for Int16
@@ -89,7 +89,7 @@ pub impl FromInteger for Int64
 // `Integral::normalize` is a section of it.
 
 ///|
-pub impl FromNat for Int with fn from_natural(n) -> Int {
+pub impl FromNat for Int32 with fn from_natural(n) -> Int32 {
   n.to_int()
 }
 
@@ -104,7 +104,7 @@ pub impl FromNat for Int64 with fn from_natural(n) -> Int64 {
 }
 
 ///|
-pub impl FromInteger for Int with fn from_integer(n) -> Int {
+pub impl FromInteger for Int32 with fn from_integer(n) -> Int32 {
   n.to_int()
 }
 
@@ -119,7 +119,7 @@ pub impl FromInteger for Int64 with fn from_integer(n) -> Int64 {
 }
 
 ///|
-pub impl One for Int with fn one() -> Int {
+pub impl One for Int32 with fn one() -> Int32 {
   1
 }
 
@@ -134,7 +134,7 @@ pub impl One for Int64 with fn one() -> Int64 {
 }
 
 ///|
-pub impl Zero for Int with fn zero() -> Int {
+pub impl Zero for Int32 with fn zero() -> Int32 {
   0
 }
 
@@ -149,8 +149,8 @@ pub impl Zero for Int64 with fn zero() -> Int64 {
 }
 
 ///|
-pub impl Num for Int with fn abs(a) -> Int {
-  Int::abs(a)
+pub impl Num for Int32 with fn abs(a) -> Int32 {
+  Int32::abs(a)
 }
 
 ///|
@@ -164,7 +164,7 @@ pub impl Num for Int64 with fn abs(a) -> Int64 {
 }
 
 ///|
-pub impl Num for Int with fn signum(a) -> Int {
+pub impl Num for Int32 with fn signum(a) -> Int32 {
   if a == 0 {
     0
   } else if a < 0 {

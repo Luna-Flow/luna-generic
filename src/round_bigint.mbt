@@ -34,7 +34,7 @@
 /// is `2^(p-1) * 2^(s+2)`, so the significand is renormalized and the
 /// exponent grows by one. Without carry `e = (p - 1) + (s + 1) = n - 1`; with
 /// carry `e = n`.
-fn round_magnitude(m : BigInt, n : Int, p : Int) -> (Int, UInt64) {
+fn round_magnitude(m : BigInt, n : Int32, p : Int32) -> (Int32, UInt64) {
   let (t, sticky) = if n <= p + 1 {
     // m < 2^(p+1) <= 2^63: to_uint64 is exact and the shift loses nothing.
     (m.to_uint64() << (p + 1 - n), false)

@@ -43,7 +43,7 @@ fn to_float(x : BigInt) -> Float {
 }
 
 ///|
-fn pow2(k : Int) -> BigInt {
+fn pow2(k : Int32) -> BigInt {
   BigInt::from_int(1) << k
 }
 
@@ -59,7 +59,7 @@ fn check_double_table(table : Array[(String, UInt64)]) -> Unit raise {
 }
 
 ///|
-fn check_float_table(table : Array[(String, UInt)]) -> Unit raise {
+fn check_float_table(table : Array[(String, UInt32)]) -> Unit raise {
   for row in table {
     let (hex, bits) = row
     let got = to_float(big_of_hex(hex)).reinterpret_as_uint()
@@ -1563,7 +1563,7 @@ let double_random : Array[(String, UInt64)] = [
 ]
 
 ///|
-let float_boundary : Array[(String, UInt)] = [
+let float_boundary : Array[(String, UInt32)] = [
   ("0", 0x00000000U),
   ("1", 0x3F800000U),
   ("-1", 0xBF800000U),
@@ -1672,7 +1672,7 @@ let float_boundary : Array[(String, UInt)] = [
 ]
 
 ///|
-let float_random : Array[(String, UInt)] = [
+let float_random : Array[(String, UInt32)] = [
   ("19a5504", 0x4BCD2A82U),
   ("19a5505", 0x4BCD2A82U),
   ("19a5506", 0x4BCD2A83U),

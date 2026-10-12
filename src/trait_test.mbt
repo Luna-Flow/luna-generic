@@ -23,7 +23,7 @@ fn[T : Integral] integral_normalize(x : T) -> BigInt {
 
 ///|
 #warnings("-deprecated")
-fn[F : NatHomomorphism] nat_hom_from_uint(x : UInt) -> F {
+fn[F : NatHomomorphism] nat_hom_from_uint(x : UInt32) -> F {
   @luna-generic.NatHomomorphism::from_nat(x)
 }
 
@@ -41,7 +41,7 @@ fn[F : NatHomomorphism] nat_hom_from_uint64(x : UInt64) -> F {
 
 ///|
 #warnings("-deprecated")
-fn[F : IntegralHomomorphism] integral_hom_from_int(x : Int) -> F {
+fn[F : IntegralHomomorphism] integral_hom_from_int(x : Int32) -> F {
   @luna-generic.IntegralHomomorphism::from_integral(x)
 }
 
