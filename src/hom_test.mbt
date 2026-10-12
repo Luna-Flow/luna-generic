@@ -1,4 +1,9 @@
 ///|
+fn identity_i32(x : Int32) -> Int32 {
+  x
+}
+
+///|
 using @luna-generic {
   type Hom,
   type Algebra,
@@ -205,7 +210,9 @@ test "lax preservation through a custom relation" {
 test "model-bound diagnostics validate both endpoint identities" {
   let source : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([]).unwrap()
   let target : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([]).unwrap()
-  let hom : Hom[MaxSig, Int32, Int32] = Hom::postulate(source, target, x => x)
+  let hom : Hom[MaxSig, Int32, Int32] = Hom::postulate(
+    source, target, identity_i32,
+  )
   assert_true(hom.check_models(source, target, [1, 2]) is Ok(true))
   assert_true(
     hom.check_models_by(source, target, [1, 2], (left, right) => left == right)
@@ -292,10 +299,12 @@ test "runtime Hom composition checks the middle model identity" {
   let other_middle : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([],
   ).unwrap()
   let target : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([]).unwrap()
-  let first : Hom[MaxSig, Int32, Int32] = Hom::postulate(source, middle, x => x)
-  let matching : Hom[MaxSig, Int32, Int32] = Hom::postulate(middle, target, x => {
-    x
-  })
+  let first : Hom[MaxSig, Int32, Int32] = Hom::postulate(
+    source, middle, identity_i32,
+  )
+  let matching : Hom[MaxSig, Int32, Int32] = Hom::postulate(
+    middle, target, identity_i32,
+  )
   let mismatched : Hom[MaxSig, Int32, Int32] = Hom::postulate(
     other_middle,
     target,
@@ -312,12 +321,12 @@ test "pairing and projections reject different runtime models" {
   let model : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([]).unwrap()
   let other : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([]).unwrap()
   let source : @luna-generic.Model[MaxSig, Int32] = @luna-generic.Model::make([]).unwrap()
-  let to_model : Hom[MaxSig, Int32, Int32] = Hom::postulate(source, model, x => {
-    x
-  })
-  let to_other : Hom[MaxSig, Int32, Int32] = Hom::postulate(source, other, x => {
-    x
-  })
+  let to_model : Hom[MaxSig, Int32, Int32] = Hom::postulate(
+    source, model, identity_i32,
+  )
+  let to_other : Hom[MaxSig, Int32, Int32] = Hom::postulate(
+    source, other, identity_i32,
+  )
   let product = @luna-generic.Model::prod(model, model).unwrap()
   assert_true(
     Hom::pair(product, to_model, to_other) is Err(@luna-generic.ModelMismatch),
