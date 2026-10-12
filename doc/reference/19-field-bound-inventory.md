@@ -1,8 +1,8 @@
 # Field-bound source inventory
 
-Rechecked 2026-10-09. Audit clones are used only where their HEAD matches the queried remote main; current read-only clones replace changed linear-algebra and floating snapshots. Non-algebraic names such as FlowField are excluded. All backend variants remain in this raw inventory.
+Rechecked 2026-10-12. Audit clones are used only where their HEAD matches the queried remote main; current read-only clones replace changed linear-algebra and floating snapshots. Non-algebraic names such as FlowField are excluded. All backend variants remain in this raw inventory.
 
-## linear-algebra @ 2ce90eeceb1a367d5e84f32b8388d6eb6e43346f
+## linear-algebra @ e0cfa95c2c544c9d8d4b070a47e7f5bfa0ff3926
 
 - `src/mutable/lu_internal_js.mbt:10`: `fn[T : Compare + Field + Num + Tolerance] Matrix::lu_decompose_internal(`
 - `src/mutable/lu_internal_js.mbt:88`: `fn[T : Compare + Field + Num + Tolerance] LuDecomposition::solve_internal(`

@@ -1,12 +1,12 @@
 # G2 Field Bound Inventory Audit
 
-Audited on 2026-10-11 against every pinned source commit in [the pinned raw inventory](reference/19-field-bound-inventory.md). For each raw row, the file at the pinned commit was loaded with git show <commit>:<path> and the recorded line excerpt was matched at the recorded line number. All 128 anchor checks passed. This audit classifies downstream evidence only; G2 changes this repository alone, and G3 updates downstream packages after G2 is merged.
+Audited on 2026-10-12 against every source commit in [the raw inventory](reference/19-field-bound-inventory.md). For each raw row, the file at its recorded commit was loaded with git show <commit>:<path>, and the declaration was matched at its recorded line. The 115 linear-algebra rows were rechecked against current main `e0cfa95` and all match; the other 13 pinned rows also match. All 128 rows have an explicit classification, G3 decision and verified source anchor. This audit classifies downstream evidence only; G2 changes this repository alone, and G3 updates downstream packages after G2 is merged.
 
 ## Classification rule
 
 Use the accepted G1 design draft section 6: numerical algorithms and floating analytic capabilities need operation bundles and rounded semantics, not exact field laws; only the exact Complex[T] Field instance needs an OrderedFieldTh premise. Aliases and compile probes are recorded separately so G3 cannot omit them.
 
-## linear-algebra at 2ce90eeceb1a367d5e84f32b8388d6eb6e43346f
+## linear-algebra at e0cfa95c2c544c9d8d4b070a47e7f5bfa0ff3926
 
 | # | Source anchor | Inventory declaration | Classification | G3 decision | Anchor |
 |---:|---|---|---|---|---|
@@ -156,17 +156,17 @@ Use the accepted G1 design draft section 6: numerical algorithms and floating an
 
 ## Snapshot scope and drift
 
-The original 128 rows remain pinned so their IDs and source anchors are reproducible.
-The linear-algebra snapshot is three commits behind the inspected origin/main
-e0cfa95c2c544c9d8d4b070a47e7f5bfa0ff3926: an immutable determinant fix,
-a release bump, and publishing CI. The broader G3 inventory below uses the
-inspected main refs and must be refreshed when G3 starts; it does not migrate source.
+The original 128 row IDs remain stable, with the linear-algebra source anchors
+refreshed to current main. The broader G3 inventory below also uses the inspected
+main refs and must be refreshed when G3 starts; it does not migrate source.
 
 The raw declaration and classification are distinct from the migration decision.
 Rows 116-118 contain formulas, but the old MulGroup declaration cannot be carried
 over as a law-bearing trait without a law. Row 118 therefore migrates to MulGroupOps.
 
-See [the broader G3 dependency inventory](g3-dependency-inventory.csv). It records
-every source/interface line mentioning the affected exact traits or Num at each
-listed commit, including aliases and generated interfaces outside the 128 Field rows.
-These are migration candidates; a mention is not evidence of an exact law.
+See [the broader G3 dependency inventory](g3-dependency-inventory.csv). Its 846
+rows are a candidate list of source/interface mentions for G3 triage, including
+aliases and generated interfaces outside the 128 Field rows. The repeated CSV
+action text is a triage reminder, not an approved per-row migration decision;
+each G3 row still needs semantic classification. A mention is not evidence of
+an exact law.

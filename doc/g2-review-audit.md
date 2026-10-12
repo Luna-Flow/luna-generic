@@ -1,22 +1,24 @@
 # G2 PR review follow-up
 
-Review source: [PR #21 comment](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6111979187), head b924e01.
+Review sources: [round one](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6111979187) and [round two](https://github.com/Luna-Flow/luna-generic/pull/21#issuecomment-6120435848), latest reviewed head 0a26144.
 
 | ID | Class | Contract / change | Acceptance | Status |
 |---|---|---|---|---|
-| R1 | test gap | Fix invalid fixture syntax; structured diagnostic matching; nonempty expectations; positive twins and baseline probes | Four backend fixture gates reject only intended diagnostics; mutation checks | in progress |
-| R2 | documentation gap | Audit and realign Japanese catalog by msgid | Translation and code-span alignment checks | pending |
-| R3 | test gap | Fix doc imports, Result handling and I8 law method; compile every MoonBit doc page in CI | All examples compile and tests execute | pending |
-| R4 | documentation gap | Explicitly distinguish unbound Algebra diagnostics from model-bound checks | Source and API docs agree | pending |
-| R5 | metadata gap | Add scoped breaking commit and migration table | Commit marker and CHANGELOG review | pending |
-| R6 | test gap | Independent endpoint, product, reduct and error-code regressions | Tests detect each listed mutation | pending |
-| R7 | API boundary | Internal types priv; error Eq/Debug/Show and extra weakening methods need contract review | No unapproved public shape | pending decision |
-| R8 | documentation gap | Empty phantom tables remain allowed per #20; postulate is explicit trust | Boundary documented and exercised | pending |
-| R9 | audit gap | Correct Complex MulGroup classification; inventory decisions and broader G3 search | 128 decisions checked, pinned anchors, downstream source untouched | pending |
-| R10 | documentation gap | Complete missing public-name documentation | Generated interface cross-check | pending |
-| R11 | integration gap | Run source tests, fixtures, docs in CI | CI gate contains all commands | pending |
-| R12 | API boundary | describe request conflicts with latest same_identity-only decision | #20 decision or evidence-backed omission | pending |
-| R13 | documentation gap | Canonical reduct path collapse documented separately from custom lineage | Trust audit matches implementation | pending |
+| R1 | test gap | Structured compile-fail diagnostics, positive twins, baseline probes | Four backend fixture gates reject only intended diagnostics | complete; re-run after this revision |
+| R2 | documentation gap | Correct Japanese msgid alignment and the reported Chinese entry; remove stale previous msgids | Both catalogs 472/472; `lunadoc check` clean; `msgfmt` parses both | complete |
+| R3 | test gap | Compile and execute all MoonBit documentation examples | Four-backend doc example gate | complete; re-run after this revision |
+| R4 | documentation gap | Distinguish unbound Algebra diagnostics from model-bound checks | Source and API docs agree | complete |
+| R5 | metadata gap | Put the breaking marker and complete removal list on the commit that introduces the API break | Commit marker and CHANGELOG review | in progress |
+| R6 | test gap | Independent endpoint, product, reduct and error-code regressions | Mutation checks kill every listed mutation | complete; CI gate added in this revision |
+| R7 | API boundary | Eq + Debug and two valid weakenings are confirmed; Show and describe are deferred. ModelMismatch variant split conflicts with the confirmed identity-only contract | Resolve variant/error ownership in #20 before changing the API | pending maintainer decision: [#20 comment](https://github.com/Luna-Flow/luna-generic/issues/20#issuecomment-6123022875) |
+| R8 | documentation gap | Empty phantom tables remain allowed per #20; postulate is an explicit trust entry | Boundary documented; fixture coverage | complete |
+| R9 | audit gap | Correct Complex MulGroup classification; refresh source pin and keep broader candidate inventory scoped to G3 | 128 per-row classifications, decisions and anchors verified; downstream source untouched | complete |
+| R10 | documentation gap | Document missing Model factories, LawfulModel factory and derived error methods | Generated interface cross-check | complete; `moon info` reports no interface drift |
+| R11 | integration gap | Run source tests, fixtures, docs and mutation checks in CI | CI gate contains all commands | in progress; mutation gate added in this revision |
+| R12 | API boundary | `Model::describe` conflicts with the confirmed `same_identity`-only API | Defer describe in G2 | complete; confirmed in #20 |
+| R13 | documentation gap | Describe canonical reduct convergence separately from custom lineage | Trust audit matches implementation | complete |
+| R14 | docs/CI | Add second-round catalog, error-shape and API-doc findings | No unresolved catalog/API mismatch | in progress |
+| R15 | CI reproducibility | Pin the MoonBit installer version | Toolchain install must resolve a versioned binary | blocked by upstream artifact availability: pinned binary and core URLs return HTTP 403; latest URLs return HTTP 200 |
 
 The approved #20 contract explicitly permits Algebra::make operation tables
 that do not match a phantom signature. Model::make delegates to it. This

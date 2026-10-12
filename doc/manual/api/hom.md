@@ -132,6 +132,41 @@ threads. If the counter reaches `UInt64::max`, construction aborts with an
 internal-invariant failure before incrementing; it never wraps or reuses an
 identity. This exhaustion case is physically unreachable in supported use.
 
+Canonical factories use one stable identity per signature and carrier type
+implementation. Repeated calls for the same canonical interpretation return
+Models with the same identity.
+
+```mbti
+pub fn[A : AddGroupOps] Model::add_group() -> Model[AddGroupSig, A]
+pub fn[A : MulMonoidOps] Model::mul_monoid() -> Model[MulMonoidSig, A]
+pub fn[A : SemiringOps] Model::semiring() -> Model[SemiringSig, A]
+```
+
+### Construction errors and mismatch diagnostics
+
+`ModelConstructionError` reports invalid arity or an operation table that a
+kernel reduct cannot project. `ModelMismatch` reports different runtime model
+identities. Both derive `Eq` and `Debug`, so callers can compare errors or
+inspect their debug representation.
+
+```mbti
+pub fn ModelConstructionError::equal(ModelConstructionError, ModelConstructionError) -> Bool
+pub fn ModelConstructionError::not_equal(ModelConstructionError, ModelConstructionError) -> Bool
+pub fn ModelConstructionError::to_repr(ModelConstructionError) -> @debug.Repr
+pub fn ModelMismatch::equal(ModelMismatch, ModelMismatch) -> Bool
+pub fn ModelMismatch::not_equal(ModelMismatch, ModelMismatch) -> Bool
+pub fn ModelMismatch::to_repr(ModelMismatch) -> @debug.Repr
+```
+
+### `LawfulModel::add_group`
+
+This canonical convenience binds the `AddGroupTh` certificate and canonical
+additive-group Model for `A`.
+
+```mbti
+pub fn[A : AddGroup] LawfulModel::add_group() -> LawfulModel[AddGroupTh, AddGroupSig, A]
+```
+
 ### `Model::algebra`, `Model::prod`, `Model::forget`
 
 `Model::algebra()` returns the model's operation dictionary. `Model::prod`

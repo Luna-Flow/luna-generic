@@ -22,4 +22,5 @@ jobs:
       - run: bash src/compile_fail/run.sh
       - run: python3 tools/check_fixture_baseline.py
       - run: python3 tools/check_doc_examples.py
+      - run: python3 tools/check_review_mutations.py
       - run: moon info && git diff --exit-code -- '*.mbti'
