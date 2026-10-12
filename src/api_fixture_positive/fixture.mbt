@@ -8,14 +8,14 @@ fn[T : @lf_alg.FieldOps + @lf_alg.RoundedArithmetic] accepts_rounded_field_ops(
 
 ///|
 test "law methods require explicit postulates" {
-  let law : @lf_alg.Law[@lf_alg.RingTh, Int] = @lf_alg.Ring::ring_law()
+  let law : @lf_alg.Law[@lf_alg.RingTh, Int32] = @lf_alg.Ring::ring_law()
   ignore(law)
   let ops : @lf_alg.Algebra[@lf_alg.RingSig, Float] = @lf_alg.Algebra::ring()
   ignore(ops)
   accepts_rounded_field_ops((1.0 : Float))
   accepts_rounded_field_ops((1.0 : Double))
-  let field_law : @lf_alg.Law[@lf_alg.FieldTh, Int] = @lf_alg.Law::postulate()
-  let ring_law : @lf_alg.Law[@lf_alg.RingTh, Int] = @lf_alg.Law::field_to_ring(
+  let field_law : @lf_alg.Law[@lf_alg.FieldTh, Int32] = @lf_alg.Law::postulate()
+  let ring_law : @lf_alg.Law[@lf_alg.RingTh, Int32] = @lf_alg.Law::field_to_ring(
     field_law,
   )
   ignore(ring_law)
@@ -23,8 +23,8 @@ test "law methods require explicit postulates" {
 
 ///|
 test "ordered field weakening is explicit" {
-  let ordered_law : @lf_alg.Law[@lf_alg.OrderedFieldTh, Int] = @lf_alg.Law::postulate()
-  let ordered_as_field : @lf_alg.Law[@lf_alg.FieldTh, Int] = @lf_alg.Law::ordered_field_to_field(
+  let ordered_law : @lf_alg.Law[@lf_alg.OrderedFieldTh, Int32] = @lf_alg.Law::postulate()
+  let ordered_as_field : @lf_alg.Law[@lf_alg.FieldTh, Int32] = @lf_alg.Law::ordered_field_to_field(
     ordered_law,
   )
   ignore(ordered_as_field)
@@ -35,7 +35,7 @@ priv enum FixtureSig {}
 
 ///|
 test "custom lawful models bind a postulate to one model" {
-  let model : @lf_alg.Model[FixtureSig, Int] = match
+  let model : @lf_alg.Model[FixtureSig, Int32] = match
     @lf_alg.Model::make([
       { name: "0", arity: 0, eval: _ => 0, },
       { name: "+", arity: 2, eval: xs => xs[0] + xs[1], },
@@ -45,7 +45,7 @@ test "custom lawful models bind a postulate to one model" {
     Err(@lf_alg.InvalidOperationTable) =>
       abort("valid model table was rejected")
   }
-  let lawful : @lf_alg.LawfulModel[@lf_alg.RingTh, FixtureSig, Int] = @lf_alg.LawfulModel::postulate(
+  let lawful : @lf_alg.LawfulModel[@lf_alg.RingTh, FixtureSig, Int32] = @lf_alg.LawfulModel::postulate(
     model,
   )
   ignore(lawful)
@@ -71,22 +71,16 @@ test "fixed-width integer conversion has an exact homomorphism premise" {
 
 ///|
 test "approved weakening and error traits" {
-  let comm : @lf_alg.Law[@lf_alg.CommRingTh, Int] = @lf_alg.Law::postulate()
+  let comm : @lf_alg.Law[@lf_alg.CommRingTh, Int32] = @lf_alg.Law::postulate()
   let domain : @lf_alg.Law[@lf_alg.IntegralDomainTh, BigInt] = @lf_alg.Law::postulate()
-  let _int_additive : @lf_alg.Law[@lf_alg.AddMonoidTh, Int] =
-    @lf_alg.Law::semiring_to_add_monoid(
-      @lf_alg.Law::ring_to_semiring(
-        @lf_alg.Law::comm_ring_to_ring(comm),
-      ),
-    )
-  let _bigint_additive : @lf_alg.Law[@lf_alg.AddMonoidTh, BigInt] =
-    @lf_alg.Law::semiring_to_add_monoid(
-      @lf_alg.Law::ring_to_semiring(
-        @lf_alg.Law::integral_domain_to_ring(domain),
-      ),
-    )
-  let model : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::ring()
-  let other : @lf_alg.Model[@lf_alg.RingSig, Int] = @lf_alg.Model::make([]).unwrap()
+  let _int_additive : @lf_alg.Law[@lf_alg.AddMonoidTh, Int32] = @lf_alg.Law::semiring_to_add_monoid(
+    @lf_alg.Law::ring_to_semiring(@lf_alg.Law::comm_ring_to_ring(comm)),
+  )
+  let _bigint_additive : @lf_alg.Law[@lf_alg.AddMonoidTh, BigInt] = @lf_alg.Law::semiring_to_add_monoid(
+    @lf_alg.Law::ring_to_semiring(@lf_alg.Law::integral_domain_to_ring(domain)),
+  )
+  let model : @lf_alg.Model[@lf_alg.RingSig, Int32] = @lf_alg.Model::ring()
+  let other : @lf_alg.Model[@lf_alg.RingSig, Int32] = @lf_alg.Model::make([]).unwrap()
   match @lf_alg.Hom::id(model).then_checked(@lf_alg.Hom::id(other)) {
     Err(error) => {
       assert_eq(error, error)

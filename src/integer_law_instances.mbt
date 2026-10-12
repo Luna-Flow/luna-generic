@@ -7,7 +7,7 @@ pub impl Integral for BigInt with fn integer_homomorphism_law() {
 }
 
 ///|
-pub impl Integral for Int with fn integer_homomorphism_law() {
+pub impl Integral for Int32 with fn integer_homomorphism_law() {
   Law::postulate()
 }
 
@@ -22,7 +22,7 @@ pub impl Integral for Int64 with fn integer_homomorphism_law() {
 }
 
 ///|
-pub impl Integral for UInt with fn integer_homomorphism_law() {
+pub impl Integral for UInt32 with fn integer_homomorphism_law() {
   Law::postulate()
 }
 

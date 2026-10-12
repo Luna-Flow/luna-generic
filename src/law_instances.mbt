@@ -37,32 +37,32 @@ pub impl IntegralDomain for BigInt with fn integral_domain_law() {
 }
 
 ///|
-pub impl Ring for Int with fn ring_law() {
+pub impl Ring for Int32 with fn ring_law() {
   Law::postulate()
 }
 
 ///|
-pub impl Semiring for Int with fn semiring_law() {
+pub impl Semiring for Int32 with fn semiring_law() {
   Law::ring_to_semiring(Ring::ring_law())
 }
 
 ///|
-pub impl AddGroup for Int with fn add_group_law() {
+pub impl AddGroup for Int32 with fn add_group_law() {
   Law::ring_to_add_group(Ring::ring_law())
 }
 
 ///|
-pub impl AddMonoid for Int with fn add_monoid_law() {
+pub impl AddMonoid for Int32 with fn add_monoid_law() {
   Law::add_group_to_add_monoid(AddGroup::add_group_law())
 }
 
 ///|
-pub impl MulMonoid for Int with fn mul_monoid_law() {
+pub impl MulMonoid for Int32 with fn mul_monoid_law() {
   Law::semiring_to_mul_monoid(Semiring::semiring_law())
 }
 
 ///|
-pub impl CommRing for Int with fn comm_ring_law() {
+pub impl CommRing for Int32 with fn comm_ring_law() {
   Law::postulate()
 }
 
@@ -127,22 +127,22 @@ pub impl CommRing for Int64 with fn comm_ring_law() {
 }
 
 ///|
-pub impl Semiring for UInt with fn semiring_law() {
+pub impl Semiring for UInt32 with fn semiring_law() {
   Law::postulate()
 }
 
 ///|
-pub impl AddMonoid for UInt with fn add_monoid_law() {
+pub impl AddMonoid for UInt32 with fn add_monoid_law() {
   Law::semiring_to_add_monoid(Semiring::semiring_law())
 }
 
 ///|
-pub impl MulMonoid for UInt with fn mul_monoid_law() {
+pub impl MulMonoid for UInt32 with fn mul_monoid_law() {
   Law::semiring_to_mul_monoid(Semiring::semiring_law())
 }
 
 ///|
-pub impl Nat for UInt with fn nat_law() {
+pub impl Nat for UInt32 with fn nat_law() {
   Law::postulate()
 }
 

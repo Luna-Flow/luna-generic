@@ -34,7 +34,7 @@ pub enum RingSig {}
 /// `eval` receives exactly `arity` arguments.
 pub(all) struct Op[A] {
   name : String
-  arity : Int
+  arity : Int32
   eval : (Array[A]) -> A
 }
 
@@ -277,7 +277,7 @@ pub extend Prod with One::{one}
 ///|
 priv struct OperationShape {
   name : String
-  arity : Int
+  arity : Int32
 }
 
 ///|
@@ -287,7 +287,7 @@ priv struct OperationShape {
 pub struct Reduct[S, T] {
   priv markers : Array[String]
   priv source_ops : Array[OperationShape]
-  priv indices : Array[Int]
+  priv indices : Array[Int32]
   priv target_label : String
 }
 
@@ -752,7 +752,7 @@ pub fn[S, A, B] Hom::check_models_by(
 }
 
 ///|
-fn[A] tuples(xs : Array[A], n : Int) -> Array[Array[A]] {
+fn[A] tuples(xs : Array[A], n : Int32) -> Array[Array[A]] {
   if n == 0 {
     return [[]]
   }
