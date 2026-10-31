@@ -154,7 +154,7 @@ pub enum NatTh {
 
 pub(all) struct Op[A] {
   name : String
-  arity : Int
+  arity : Int32
   eval : (Array[A]) -> A
 }
 
@@ -236,14 +236,14 @@ pub enum SemiringTh {
 pub(open) trait AddGroup : AddGroupOps {
   fn add_group_law() -> Law[AddGroupTh, Self]
 }
-pub impl AddGroup for Int
+pub impl AddGroup for Int32
 pub impl AddGroup for Int16
 pub impl AddGroup for Int64
 pub impl AddGroup for @bigint.BigInt
 
 pub(open) trait AddGroupOps : AddMonoidOps + Neg + Sub {
 }
-pub impl AddGroupOps for Int
+pub impl AddGroupOps for Int32
 pub impl AddGroupOps for Int16
 pub impl AddGroupOps for Int64
 pub impl AddGroupOps for Float
@@ -253,20 +253,20 @@ pub impl AddGroupOps for @bigint.BigInt
 pub(open) trait AddMonoid : AddMonoidOps {
   fn add_monoid_law() -> Law[AddMonoidTh, Self]
 }
-pub impl AddMonoid for Int
+pub impl AddMonoid for Int32
 pub impl AddMonoid for Int16
 pub impl AddMonoid for Int64
-pub impl AddMonoid for UInt
+pub impl AddMonoid for UInt32
 pub impl AddMonoid for UInt16
 pub impl AddMonoid for UInt64
 pub impl AddMonoid for @bigint.BigInt
 
 pub(open) trait AddMonoidOps : Add + Zero {
 }
-pub impl AddMonoidOps for Int
+pub impl AddMonoidOps for Int32
 pub impl AddMonoidOps for Int16
 pub impl AddMonoidOps for Int64
-pub impl AddMonoidOps for UInt
+pub impl AddMonoidOps for UInt32
 pub impl AddMonoidOps for UInt16
 pub impl AddMonoidOps for UInt64
 pub impl AddMonoidOps for Float
@@ -276,7 +276,7 @@ pub impl AddMonoidOps for @bigint.BigInt
 pub(open) trait CommRing : RingOps {
   fn comm_ring_law() -> Law[CommRingTh, Self]
 }
-pub impl CommRing for Int
+pub impl CommRing for Int32
 pub impl CommRing for Int16
 pub impl CommRing for Int64
 pub impl CommRing for @bigint.BigInt
@@ -297,10 +297,10 @@ pub impl FieldOps for Double
 pub(open) trait FromInteger : FromNat {
   fn from_integer(@bigint.BigInt) -> Self
 }
-pub impl FromInteger for Int
+pub impl FromInteger for Int32
 pub impl FromInteger for Int16
 pub impl FromInteger for Int64
-pub impl FromInteger for UInt
+pub impl FromInteger for UInt32
 pub impl FromInteger for UInt16
 pub impl FromInteger for UInt64
 pub impl FromInteger for Float
@@ -310,10 +310,10 @@ pub impl FromInteger for @bigint.BigInt
 pub(open) trait FromNat {
   fn from_natural(@bigint.BigInt) -> Self
 }
-pub impl FromNat for Int
+pub impl FromNat for Int32
 pub impl FromNat for Int16
 pub impl FromNat for Int64
-pub impl FromNat for UInt
+pub impl FromNat for UInt32
 pub impl FromNat for UInt16
 pub impl FromNat for UInt64
 pub impl FromNat for Float
@@ -325,10 +325,10 @@ pub(open) trait Integral : SemiringOps + FromInteger {
   fn integer_homomorphism_law() -> Law[IntegerHomomorphismTh, Self]
   fn normalize(Self) -> @bigint.BigInt
 }
-pub impl Integral for Int
+pub impl Integral for Int32
 pub impl Integral for Int16
 pub impl Integral for Int64
-pub impl Integral for UInt
+pub impl Integral for UInt32
 pub impl Integral for UInt16
 pub impl Integral for UInt64
 pub impl Integral for @bigint.BigInt
@@ -364,20 +364,20 @@ pub impl MulGroupOps for Double
 pub(open) trait MulMonoid : MulMonoidOps {
   fn mul_monoid_law() -> Law[MulMonoidTh, Self]
 }
-pub impl MulMonoid for Int
+pub impl MulMonoid for Int32
 pub impl MulMonoid for Int16
 pub impl MulMonoid for Int64
-pub impl MulMonoid for UInt
+pub impl MulMonoid for UInt32
 pub impl MulMonoid for UInt16
 pub impl MulMonoid for UInt64
 pub impl MulMonoid for @bigint.BigInt
 
 pub(open) trait MulMonoidOps : Mul + One {
 }
-pub impl MulMonoidOps for Int
+pub impl MulMonoidOps for Int32
 pub impl MulMonoidOps for Int16
 pub impl MulMonoidOps for Int64
-pub impl MulMonoidOps for UInt
+pub impl MulMonoidOps for UInt32
 pub impl MulMonoidOps for UInt16
 pub impl MulMonoidOps for UInt64
 pub impl MulMonoidOps for Float
@@ -387,7 +387,7 @@ pub impl MulMonoidOps for @bigint.BigInt
 pub(open) trait Nat : Integral {
   fn nat_law() -> Law[NatTh, Self]
 }
-pub impl Nat for UInt
+pub impl Nat for UInt32
 pub impl Nat for UInt16
 pub impl Nat for UInt64
 
@@ -403,7 +403,7 @@ pub(open) trait NumOps : RingOps {
   fn abs(Self) -> Self
   fn signum(Self) -> Self
 }
-pub impl NumOps for Int
+pub impl NumOps for Int32
 pub impl NumOps for Int16
 pub impl NumOps for Int64
 pub impl NumOps for Float
@@ -413,10 +413,10 @@ pub impl NumOps for @bigint.BigInt
 pub(open) trait One {
   fn one() -> Self
 }
-pub impl One for Int
+pub impl One for Int32
 pub impl One for Int16
 pub impl One for Int64
-pub impl One for UInt
+pub impl One for UInt32
 pub impl One for UInt16
 pub impl One for UInt64
 pub impl One for Float
@@ -430,14 +430,14 @@ pub(open) trait OrderedField : FieldOps + Compare {
 pub(open) trait Ring : RingOps {
   fn ring_law() -> Law[RingTh, Self]
 }
-pub impl Ring for Int
+pub impl Ring for Int32
 pub impl Ring for Int16
 pub impl Ring for Int64
 pub impl Ring for @bigint.BigInt
 
 pub(open) trait RingOps : SemiringOps + Neg + Sub {
 }
-pub impl RingOps for Int
+pub impl RingOps for Int32
 pub impl RingOps for Int16
 pub impl RingOps for Int64
 pub impl RingOps for Float
@@ -452,20 +452,20 @@ pub impl RoundedArithmetic for Double
 pub(open) trait Semiring : SemiringOps {
   fn semiring_law() -> Law[SemiringTh, Self]
 }
-pub impl Semiring for Int
+pub impl Semiring for Int32
 pub impl Semiring for Int16
 pub impl Semiring for Int64
-pub impl Semiring for UInt
+pub impl Semiring for UInt32
 pub impl Semiring for UInt16
 pub impl Semiring for UInt64
 pub impl Semiring for @bigint.BigInt
 
 pub(open) trait SemiringOps : AddMonoidOps + MulMonoidOps {
 }
-pub impl SemiringOps for Int
+pub impl SemiringOps for Int32
 pub impl SemiringOps for Int16
 pub impl SemiringOps for Int64
-pub impl SemiringOps for UInt
+pub impl SemiringOps for UInt32
 pub impl SemiringOps for UInt16
 pub impl SemiringOps for UInt64
 pub impl SemiringOps for Float
@@ -475,10 +475,10 @@ pub impl SemiringOps for @bigint.BigInt
 pub(open) trait Zero {
   fn zero() -> Self
 }
-pub impl Zero for Int
+pub impl Zero for Int32
 pub impl Zero for Int16
 pub impl Zero for Int64
-pub impl Zero for UInt
+pub impl Zero for UInt32
 pub impl Zero for UInt16
 pub impl Zero for UInt64
 pub impl Zero for Float
