@@ -6,6 +6,10 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 
 ## Unreleased
 
+### Fixed
+
+- The core tutorial installs the published release (`moon add Luna-Flow/luna-generic@0.4.0`); it named 0.4.0's unpublished successor 0.5.0 ([#26](https://github.com/Luna-Flow/luna-generic/issues/26)).
+
 ### Changed
 
 - Require MoonBit `moonc` 0.10.20 or later, verified with `moon 0.1.20261104` and `moonc v0.10.20`: `derive(...)` clauses are now `#derive(...)` attributes, which older 0.10 compilers ignore. No public API changed.
