@@ -90,10 +90,11 @@ pub struct Law[Th, A] {
 /// error reports user input validation only; exhausting the monotonic ID
 /// counter violates an internal invariant and aborts before the counter can
 /// wrap.
+#derive(Eq, Debug)
 pub enum ModelConstructionError {
   InvalidArity
   InvalidOperationTable
-} derive(Eq, Debug)
+}
 
 ///|
 /// Why a checked Model operation was rejected. The variants carry no payload
@@ -104,11 +105,12 @@ pub enum ModelConstructionError {
 /// - `SignatureMismatch`: two operation lists differ in name, arity or order.
 /// - `NotProductModel`: a product-only operation received a Model that was not
 ///   built by `Model::prod`.
+#derive(Eq, Debug)
 pub enum ModelMismatch {
   IdentityMismatch
   SignatureMismatch
   NotProductModel
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend ModelConstructionError with Eq::{equal, not_equal}
