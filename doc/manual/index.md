@@ -19,7 +19,7 @@ moon add Luna-Flow/luna-generic@0.4.0
 ```
 
 Then import `"Luna-Flow/luna-generic"` in your `moon.pkg`. The package needs
-the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10).
+the MoonBit toolchain 0.10.20 or later (`moonc` ≥ 0.10.20).
 
 ## Pages
 

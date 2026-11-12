@@ -1384,7 +1384,7 @@ msgid "Install"
 msgstr ""
 
 #: manual/index.md:21
-msgid "Then import `\"Luna-Flow/luna-generic\"` in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10)."
+msgid "Then import `\"Luna-Flow/luna-generic\"` in your `moon.pkg`. The package needs the MoonBit toolchain 0.10.20 or later (`moonc` ≥ 0.10.20)."
 msgstr ""
 
 #: manual/index.md:24

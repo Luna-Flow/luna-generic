@@ -8,6 +8,7 @@ All notable changes to `Luna-Flow/luna-generic` are recorded here. The format fo
 
 ### Changed
 
+- Require MoonBit `moonc` 0.10.20 or later, verified with `moon 0.1.20261104` and `moonc v0.10.20`: `derive(...)` clauses are now `#derive(...)` attributes, which older 0.10 compilers ignore. No public API changed.
 - **Breaking:** split operation-only bundles (AddMonoidOps, RingOps, FieldOps, and NumOps) from exact law-bearing traits. Law-bearing traits now require an explicit opaque Law certificate, and Num is removed.
 - **Breaking:** remove the automatic exact Semiring, Ring, and Field instances for Float and Double; retain rounded operation capabilities through RoundedArithmetic.
 - **Breaking:** Algebra::make and Model::make return Result and report negative operation arity as InvalidArity rather than aborting.
