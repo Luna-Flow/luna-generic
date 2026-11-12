@@ -123,19 +123,21 @@ pub fn[A : RingOps] Model::ring() -> Self[RingSig, A]
 pub fn[S, A] Model::same_identity(Self[S, A], Self[S, A]) -> Bool
 pub fn[A : SemiringOps] Model::semiring() -> Self[SemiringSig, A]
 
+#derive(Eq, @debug.Debug)
 pub enum ModelConstructionError {
   InvalidArity
   InvalidOperationTable
-} derive(Eq, @debug.Debug)
+}
 pub fn ModelConstructionError::equal(Self, Self) -> Bool
 pub fn ModelConstructionError::not_equal(Self, Self) -> Bool
 pub fn ModelConstructionError::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub enum ModelMismatch {
   IdentityMismatch
   SignatureMismatch
   NotProductModel
-} derive(Eq, @debug.Debug)
+}
 pub fn ModelMismatch::equal(Self, Self) -> Bool
 pub fn ModelMismatch::not_equal(Self, Self) -> Bool
 pub fn ModelMismatch::to_repr(Self) -> @debug.Repr
@@ -161,10 +163,11 @@ pub(all) struct Op[A] {
 pub enum OrderedFieldTh {
 }
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Prod[A, B] {
   fst : A
   snd : B
-} derive(Eq, @debug.Debug)
+}
 pub fn[A : Add, B : Add] Prod::add(Self[A, B], Self[A, B]) -> Self[A, B]
 pub fn[A : AddGroup, B : AddGroup] Prod::add_group_law() -> Law[AddGroupTh, Self[A, B]]
 pub fn[A : AddMonoid, B : AddMonoid] Prod::add_monoid_law() -> Law[AddMonoidTh, Self[A, B]]

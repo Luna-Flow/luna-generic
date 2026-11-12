@@ -154,10 +154,11 @@ fn[A, B] same_signature(a : Array[Op[A]], b : Array[Op[B]]) -> Bool {
 
 ///|
 /// Binary product carrier. Operations act componentwise.
+#derive(Eq, Debug)
 pub(all) struct Prod[A, B] {
   fst : A
   snd : B
-} derive(Eq, Debug)
+}
 
 ///|
 pub impl[A : Add, B : Add] Add for Prod[A, B] with fn add(x, y) {
