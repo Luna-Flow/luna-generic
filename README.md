@@ -60,7 +60,7 @@ The current version is `0.4.0`. Release notes for every version are in [CHANGELO
 
 ## Development
 
-Requires the MoonBit toolchain 0.10 or later. Useful local commands:
+Requires MoonBit with `moonc` 0.10.20 or later (verified with `moon 0.1.20261104` and `moonc v0.10.20`; older 0.10 compilers ignore `#derive`). Useful local commands:
 
 ```bash
 moon check
