@@ -18,7 +18,7 @@ design are in the [core design](../design/core.md).
 Add the package to your module:
 
 ```bash
-moon add Luna-Flow/luna-generic@0.5.0
+moon add Luna-Flow/luna-generic@0.4.0
 ```
 
 Import it in the `moon.pkg` of the package that uses it:
